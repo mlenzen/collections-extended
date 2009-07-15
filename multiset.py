@@ -28,6 +28,8 @@ class basemultiset(Set):
 		to the number of times they should appear in the multiset.  Otherwise each element 
 		from iterable will be added to the multiset however many times it appears.
 
+		This runs in O(len(iterable))
+
 		>>> basemultiset()                     # create empty set
 		basemultiset()
 		>>> basemultiset('abracadabra')        # create from an Iterable
@@ -43,6 +45,8 @@ class basemultiset(Set):
 		""" The string representation is a call to the constructor given a tuple 
 		containing all of the elements.
 		
+		This runs in whatever tuple(self) does, I'm assuming O(len(self))
+
 		>>> ms = basemultiset()
 
 		>>> ms == eval(ms.__repr__())
@@ -61,6 +65,8 @@ class basemultiset(Set):
 	def __str__(self):
 		""" The printable string appears just like a set, except that each element 
 		is raised to the power of the multiplicity if it is greater than 1.
+
+		This runs in O(self.num_unique_elements())
 
 		>>> print(basemultiset())
 		{}
@@ -90,7 +96,10 @@ class basemultiset(Set):
 	## Internal methods
 
 	def __inc(self, elem, count=1):
-		""" Increment the multiplicity of elem by count (if count <0 then decrement). """
+		""" Increment the multiplicity of elem by count (if count <0 then decrement). 
+		
+		This runs in O(1) time
+		"""
 		old_count = self.multiplicity(elem)
 		new_count = max(0, old_count + count)
 		if new_count == 0:
@@ -105,17 +114,25 @@ class basemultiset(Set):
 	## New public methods (not overriding/implementing anything)
 
 	def num_unique_elements(self):
-		""" Returns the number of unique elements. """
+		""" Returns the number of unique elements. 
+		
+		This runs in O(1) time
+		"""
 		return len(self.__dict)
 
 	def unique_elements(self):
-		""" Returns a view of unique elements in this multiset. """
+		""" Returns a view of unique elements in this multiset. 
+		
+		This runs in O(1) time
+		"""
 		return self.__dict.keys()
 
 	def multiplicity(self, elem):
 		""" Return the multiplicity of elem.  If elem is not in the set no Error is
 		raised, instead 0 is returned. 
 		
+		This runs in O(1) time
+
 		>>> ms = basemultiset('abracadabra')
 
 		>>> ms.multiplicity('a')
@@ -132,6 +149,8 @@ class basemultiset(Set):
 		""" List the n most common elements and their counts from the most
 		common to the least.  If n is None, the list all element counts.
 
+		TODO find big-O time for sorting/heapq.nlargest, my guess is O(n log n)
+
 		>>> basemultiset('abracadabra').nlargest()
 		[('a', 5), ('r', 2), ('b', 2), ('c', 1), ('d', 1)]
 		>>> basemultiset('abracadabra').nlargest(2)
@@ -146,6 +165,8 @@ class basemultiset(Set):
 	def _from_map(cls, map):
 		""" Creates a multiset from a dict of elem->count.  Each key in the dict 
 		is added if the value is > 0.
+
+		This runs in O(len(map))
 		
 		>>> basemultiset._from_map({'a': 1, 'b': 2})
 		basemultiset(('a', 'b', 'b'))
@@ -157,6 +178,8 @@ class basemultiset(Set):
 
 	def copy(self):
 		""" Create a shallow copy of self.
+
+		This runs in O(len(self.num_unique_elements()))
 		
 		>>> basemultiset().copy() == basemultiset()
 		True
@@ -170,7 +193,6 @@ class basemultiset(Set):
 	## Alias methods - these methods are just names for other operations
 
 	def cardinality(self):
-		""" The total number of elements, including repeated memberships. """
 		return len(self)
 
 	def underlying_set(self):
@@ -204,6 +226,8 @@ class basemultiset(Set):
 
 	def __len__(self):
 		""" Returns the cardinality of the multiset. 
+
+		This runs in O(1)
 		
 		>>> len(basemultiset())
 		0
@@ -218,6 +242,8 @@ class basemultiset(Set):
 
 	def __contains__(self, elem):
 		""" Returns the multiplicity of the element. 
+
+		This runs in O(1)
 		
 		>>> 'a' in basemultiset('bbac')
 		True
@@ -244,6 +270,13 @@ class basemultiset(Set):
 	def __le__(self, other):
 		"""
 
+		This runs in O(l + n) where:
+			n is self.num_unique_elements()
+			if other is a multiset:
+				l = 1
+			else:
+				l = len(other)
+
 		TODO write test cases for __le__
 		"""
 		if not isinstance(other, basemultiset):
@@ -260,6 +293,13 @@ class basemultiset(Set):
 	def __and__(self, other):
 		""" Intersection is the minimum of corresponding counts. 
 		
+		This runs in O(l + n) where:
+			n is self.num_unique_elements()
+			if other is a multiset:
+				l = 1
+			else:
+				l = len(other)
+
 		TODO write unit tests for and
 		"""
 		if not isinstance(other, basemultiset):
@@ -272,6 +312,18 @@ class basemultiset(Set):
 		return self._from_map(values)
 
 	def isdisjoint(self, other):
+		"""
+
+		This runs in O(l + m*n) where:
+			m is self.num_unique_elements()
+			n is other.num_unique_elements()
+			if other is a multiset:
+				l = 1
+			else:
+				l = len(other)
+
+		TODO write unit tests for isdisjoint
+		"""
 		if not isinstance(other, basemultiset):
 			if not isinstance(other, Iterable):
 				return NotImplemented
@@ -281,6 +333,13 @@ class basemultiset(Set):
 	def __or__(self, other):
 		""" Union is the maximum of all elements. 
 		
+		This runs in O(m + n) where:
+			n is self.num_unique_elements()
+			if other is a multiset:
+				m = other.num_unique_elements()
+			else:
+				m = len(other)
+
 		TODO write unit tests for or
 		"""
 		if not isinstance(other, basemultiset):
@@ -296,6 +355,10 @@ class basemultiset(Set):
 		""" Sum of sets
 		other can be any iterable.
 		self + other = self & other + self | other 
+
+		This runs in O(m + n) where:
+			n is self.num_unique_elements()
+			m is len(other)
 		
 		TODO write unit tests for add
 		"""
@@ -312,6 +375,10 @@ class basemultiset(Set):
 		For normal sets this is all s.t. x in self and x not in other. 
 		For multisets this is multiplicity(x) = max(0, self.multiplicity(x)-other.multiplicity(x))
 
+		This runs in O(m + n) where:
+			n is self.num_unique_elements()
+			m is len(other)
+
 		TODO write tests for sub
 		"""
 		if not isinstance(other, Iterable):
@@ -325,6 +392,7 @@ class basemultiset(Set):
 		""" Cartesian product of the two sets.
 		other can be any iterable.
 		Both self and other must contain elements that can be added together.
+
 		This should run in O(m*n+l) where:
 			m is the number of unique elements in self
 			n is the number of unique elements in other
@@ -358,6 +426,10 @@ class basemultiset(Set):
 	def __xor__(self, other):
 		""" Symmetric difference between the sets. 
 		other can be any iterable.
+
+		This runs in < O(m+n) where:
+			m = len(self)
+			n = len(other)
 
 		TODO write unit tests for xor
 		"""
