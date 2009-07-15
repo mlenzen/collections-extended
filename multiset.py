@@ -13,7 +13,7 @@ This module provides three classes:
 """
 
 import heapq
-from collections import MutableSet, Set, Hashable
+from collections import MutableSet, Set, Hashable, Iterable
 from operator import itemgetter
 
 class basemultiset(Set):
@@ -36,7 +36,8 @@ class basemultiset(Set):
 		self.__dict = dict()
 		self.__size = 0
 		if iterable:
-			self += iterable
+			for elem in iterable:
+				self.__inc(elem)
 	
 	def __repr__(self):
 		""" The string representation is a call to the constructor given a tuple 
@@ -131,9 +132,9 @@ class basemultiset(Set):
 		""" List the n most common elements and their counts from the most
 		common to the least.  If n is None, the list all element counts.
 
-		>>> basemultiset('abracadabra').most_common()
+		>>> basemultiset('abracadabra').nlargest()
 		[('a', 5), ('r', 2), ('b', 2), ('c', 1), ('d', 1)]
-		>>> basemultiset('abracadabra').most_common(2)
+		>>> basemultiset('abracadabra').nlargest(2)
 		[('a', 5), ('r', 2)]
 		"""
 		if n is None:
@@ -242,6 +243,7 @@ class basemultiset(Set):
 
 	def __le__(self, other):
 		"""
+
 		TODO write test cases for __le__
 		"""
 		if not isinstance(other, basemultiset):
@@ -256,7 +258,10 @@ class basemultiset(Set):
 		return True
 
 	def __and__(self, other):
-		""" Intersection is the minimum of corresponding counts. """
+		""" Intersection is the minimum of corresponding counts. 
+		
+		TODO write unit tests for and
+		"""
 		if not isinstance(other, basemultiset):
 			if not isinstance(other, Iterable):
 				return NotImplemented
@@ -267,7 +272,6 @@ class basemultiset(Set):
 		return self._from_map(values)
 
 	def isdisjoint(self, other):
-		"""  """
 		if not isinstance(other, basemultiset):
 			if not isinstance(other, Iterable):
 				return NotImplemented
@@ -275,7 +279,10 @@ class basemultiset(Set):
 		return super.isdisjoint(self.unique_elements(), other.unique_elements())
 
 	def __or__(self, other):
-		""" Union is the maximum of all elements. """
+		""" Union is the maximum of all elements. 
+		
+		TODO write unit tests for or
+		"""
 		if not isinstance(other, basemultiset):
 			if not isinstance(other, Iterable):
 				return NotImplemented
@@ -288,7 +295,10 @@ class basemultiset(Set):
 	def __add__(self, other):
 		""" Sum of sets
 		other can be any iterable.
-		self + other = self & other + self | other """
+		self + other = self & other + self | other 
+		
+		TODO write unit tests for add
+		"""
 		if not isinstance(other, Iterable):
 			return NotImplemented
 		out = self.copy()
@@ -301,6 +311,8 @@ class basemultiset(Set):
 		other can be any iterable.
 		For normal sets this is all s.t. x in self and x not in other. 
 		For multisets this is multiplicity(x) = max(0, self.multiplicity(x)-other.multiplicity(x))
+
+		TODO write tests for sub
 		"""
 		if not isinstance(other, Iterable):
 			return NotImplemented
@@ -323,22 +335,31 @@ class basemultiset(Set):
 		The +l will only really matter when other is an iterable with MANY repeated elements
 		For example: {'a'^2} * 'bbbbbbbbbbbbbbbbbbbbbbbbbb'
 		The algorithm will be dominated by counting the 'b's
+
+		>>> ms = basemultiset('aab')
+
+		>>> ms * set('a')
+		basemultiset(('aa', 'aa', 'ba'))
+		>>> ms * set()
+		basemultiset()
 		"""
 		if not isinstance(other, basemultiset):
 			if not isinstance(other, Iterable):
 				return NotImplemented
 			other = self._from_iterable(other)
 		values = dict()
-		for elem, count in self.__dict:
-			for other_elem, other_count in other.__dict:
+		for elem, count in self.__dict.items():
+			for other_elem, other_count in other.__dict.items():
 				new_elem = elem + other_elem
 				new_count = count * other_count
 				values[new_elem] = new_count
-		return _from_map(values)
+		return self._from_map(values)
 
 	def __xor__(self, other):
 		""" Symmetric difference between the sets. 
 		other can be any iterable.
+
+		TODO write unit tests for xor
 		"""
 		return (self - other) | (other - self)
 
@@ -346,7 +367,7 @@ class multiset(basemultiset, MutableSet):
 	""" multiset is a Mutable basemultiset, thus not hashable and unusable for dict keys or in
 	other sets.
 
-	>>> 
+	TODO write multiset add, discard and clear unit tests
 	"""
 	def add(self, elem):
 		self.__inc(elem, 1)
@@ -364,5 +385,7 @@ class frozenmultiset(basemultiset, Hashable):
 	def __hash__(self):
 		""" Use the hash funtion inherited from somewhere.  For now this is from Set,
 		I'm not sure that it works for collections with multiple elements.
+
+		TODO write unit tests for hash
 		"""
 		return self._hash()
