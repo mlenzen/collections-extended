@@ -12,6 +12,8 @@ This module provides three classes:
 	frozenmultiset - A hashable (immutable) multiset.
 """
 
+_version = '0.1.0'
+
 import heapq
 from collections import MutableSet, Set, Hashable, Iterable
 from operator import itemgetter
