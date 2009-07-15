@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.1
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
@@ -8,6 +8,8 @@
 TODO write long desc
 """
 
+_version = '0.0.1'
+
 class bijection(dict, MutableMapping):
 	"""
 
@@ -15,15 +17,18 @@ class bijection(dict, MutableMapping):
 	"""
 	def __init__(self, *args):
 		dict.__init__(self, args)
-		self.invr = dict()
+		self.invr = bijection()
+		for key, value in self.items():
+			self.invr[value] = key
 	
 	def clear(self):
 		dict.clear(self)
 		dict.clear(invr)
 
 	def __setitem__(self, key, value):
+		# TODO make sure setitem doesn't run recursively
 		if key in self or value in self.invr:
-			# TODO hand inserts that already exist
+			# TODO handle inserts that already exist
 			pass
 		dict.__setitem__(self, key, value)
 		dict.__setitem__(invr, value, key)
