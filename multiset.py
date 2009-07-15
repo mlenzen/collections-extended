@@ -13,7 +13,7 @@ This module provides three classes:
 """
 
 import heapq
-from collections import MutableSet, Set, Hashable, Mapping
+from collections import MutableSet, Set, Hashable
 from operator import itemgetter
 
 class basemultiset(Set):
@@ -36,14 +36,13 @@ class basemultiset(Set):
 		self.__dict = dict()
 		self.__size = 0
 		if iterable:
-			for elem in iterable:
-				self.__inc(elem)
+			self += iterable
 	
 	def __repr__(self):
 		""" The string representation is a call to the constructor given a tuple 
 		containing all of the elements.
 		
-		>>> ms=basemultiset()
+		>>> ms = basemultiset()
 
 		>>> ms == eval(ms.__repr__())
 		True
@@ -128,7 +127,7 @@ class basemultiset(Set):
 		except KeyError:
 			return 0
 	
-	def most_common(self, n=None):
+	def nlargest(self, n=None):
 		""" List the n most common elements and their counts from the most
 		common to the least.  If n is None, the list all element counts.
 
@@ -152,12 +151,19 @@ class basemultiset(Set):
 		"""
 		out = cls()
 		for elem, count in map.items():
-			if count > 0:
-				out.__inc(elem, count)
+			out.__inc(elem, count)
 		return out
 
 	def copy(self):
-		""" Create a shallow copy of self. """
+		""" Create a shallow copy of self.
+		
+		>>> basemultiset().copy() == basemultiset()
+		True
+		>>> abc = basemultiset('abc')
+
+		>>> abc.copy() == abc
+		True
+		"""
 		return self._from_map(self.__dict)
 
 	## Alias methods - these methods are just names for other operations
@@ -196,13 +202,29 @@ class basemultiset(Set):
 	## implementing Sized (inherited from Set) methods
 
 	def __len__(self):
-		""" Returns the cardinality of the multiset. """
+		""" Returns the cardinality of the multiset. 
+		
+		>>> len(basemultiset())
+		0
+		>>> len(basemultiset('abc'))
+		3
+		>>> len(basemultiset('aaba'))
+		4
+		"""
 		return self.__size
 
 	## implementing Container (inherited from Set) methods
 
 	def __contains__(self, elem):
-		""" Returns the multiplicity of the element. """
+		""" Returns the multiplicity of the element. 
+		
+		>>> 'a' in basemultiset('bbac')
+		True
+		>>> 'a' in basemultiset()
+		False
+		>>> 'a' in basemultiset('missing letter')
+		False
+		"""
 		return self.multiplicity(elem)
 	
 	## implementing Iterable (inherited from Set) methods
@@ -219,6 +241,9 @@ class basemultiset(Set):
 	## I figured it would be better to keep it with the other set operations.
 
 	def __le__(self, other):
+		"""
+		TODO write test cases for __le__
+		"""
 		if not isinstance(other, basemultiset):
 			if not isinstance(other, Iterable):
 				return NotImplemented
@@ -318,7 +343,10 @@ class basemultiset(Set):
 		return (self - other) | (other - self)
 
 class multiset(basemultiset, MutableSet):
-	""" multiset is a Mutable basemultiset, thus not hashable and unusable for dict keys
+	""" multiset is a Mutable basemultiset, thus not hashable and unusable for dict keys or in
+	other sets.
+
+	>>> 
 	"""
 	def add(self, elem):
 		self.__inc(elem, 1)
