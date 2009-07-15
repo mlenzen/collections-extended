@@ -194,35 +194,16 @@ class basemultiset(Set):
 
 	## Alias methods - these methods are just names for other operations
 
-	def cardinality(self):
-		return len(self)
-
-	def underlying_set(self):
-		return unique_elements()
-
-	def cartesian_product(self, other):
-		return self * other
-
-	def join(self, other):
-		return self + other
-
-	def sum(self, other):
-		return self + other
-
-	def difference(self, other):
-		return self - other
-
-	def symmetric_difference(self, other):
-		return self ^ other
-
-	def xor(self, other):
-		return self ^ other
-
-	def intersect(self, other):
-		return self & other
-
-	def union(self, other):
-		return self | other
+	def cardinality(self): return len(self)
+	def underlying_set(self): return unique_elements()
+	def cartesian_product(self, other): return self * other
+	def join(self, other): return self + other
+	def sum(self, other): return self + other
+	def difference(self, other): return self - other
+	def symmetric_difference(self, other): return self ^ other
+	def xor(self, other): return self ^ other
+	def intersect(self, other): return self & other
+	def union(self, other): return self | other
 	
 	## implementing Sized (inherited from Set) methods
 
