@@ -12,7 +12,7 @@ This module provides three classes:
 	frozenmultiset - A hashable (immutable) multiset.
 """
 
-_version = '0.1.0'
+_version = '0.1.1'
 
 import heapq
 from collections import MutableSet, Set, Hashable, Iterable
@@ -151,7 +151,7 @@ class basemultiset(Set):
 		""" List the n most common elements and their counts from the most
 		common to the least.  If n is None, the list all element counts.
 
-		TODO find big-O time for sorting/heapq.nlargest, my guess is O(n log n)
+		Run time should be O(m log m) where m is len(self)
 
 		>>> basemultiset('abracadabra').nlargest()
 		[('a', 5), ('r', 2), ('b', 2), ('c', 1), ('d', 1)]
@@ -463,3 +463,52 @@ class frozenmultiset(basemultiset, Hashable):
 		TODO write unit tests for hash
 		"""
 		return self._hash()
+	
+def multichoose(iterable, k):
+	""" Returns a set of all possible multisets of length k on unique elements from iterable.
+	The number of sets returned is C(n+k-1, k) where:
+		C is the binomial coefficient function
+		n is the number of unique elements in iterable
+		k is the cardinality of the resulting multisets
+
+	The run time is O(n^min(k,n)) !!!
+	DO NOT run this on big inputs.
+
+	see http://en.wikipedia.org/wiki/Multiset#Multiset_coefficients
+
+	>>> multichoose((), 1)
+	set()
+	>>> multichoose('a', 1)
+	{frozenmultiset(('a',))}
+	>>> multichoose('a', 2)
+	{frozenmultiset(('a', 'a'))}
+	>>> result = multichoose('ab', 3)
+
+	>>> len(result)
+	4
+	>>> frozenmultiset(('a', 'a', 'a')) in result
+	True
+	>>> frozenmultiset(('a', 'a', 'b')) in result
+	True
+	>>> frozenmultiset(('a', 'b', 'b')) in result
+	True
+	>>> frozenmultiset(('b', 'b', 'b')) in result
+	True
+	"""
+	# if iterable is empty there are no multisets
+	if not iterable:
+		return set()
+
+	symbols = set(iterable)
+	
+	symbol = symbols.pop()
+	result = set()
+	if len(symbols) == 0:
+		result.add(frozenmultiset._from_map({symbol : k}))
+	else:
+		for symbol_multiplicity in range(k+1):
+			symbol_set = frozenmultiset._from_map({symbol : symbol_multiplicity})
+			for others in multichoose(symbols, k-symbol_multiplicity):
+				result.add(symbol_set + others)
+	return result
+
