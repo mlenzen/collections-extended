@@ -452,7 +452,7 @@ def multichoose(iterable, k):
 		n is the number of unique elements in iterable
 		k is the cardinality of the resulting multisets
 
-	The run time is O(n^min(k,n)) !!!
+	The run time is O((n+k)!/(n!*k!)) which is O((n+k)^min(k,n))
 	DO NOT run this on big inputs.
 
 	see http://en.wikipedia.org/wiki/Multiset#Multiset_coefficients
