@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.1
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
@@ -57,7 +57,7 @@ class basemultiset(Set):
 		True
 		"""
 		if self.__size == 0:
-			return '{}()'.format(self.__class__.__name__)
+			return '{0}()'.format(self.__class__.__name__)
 		else:
 			format = '{class_name}({tuple!r})'
 			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
@@ -90,7 +90,7 @@ class basemultiset(Set):
 			string = '{first}'.format(first=strings[0])
 			for i in range(1,len(strings)):
 				string = '{prev}, {next}'.format(prev=string, next=strings[i])
-			string = '{{{}}}'.format(string)
+			string = '{{{0}}}'.format(string)
 			return string
 
 	## Internal methods
