@@ -40,8 +40,12 @@ class basebag(Collection):
 		self._dict = dict()
 		self._size = 0
 		if iterable:
-			for value in iterable:
-				self._inc(value)
+			if isinstance(iterable, basebag):
+				for elem, count in iterable._dict.items():
+					self._inc(elem, count)
+			else:
+				for value in iterable:
+					self._inc(value)
 	
 	def __repr__(self):
 		""" The string representation is a call to the constructor given a tuple 
