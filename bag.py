@@ -12,13 +12,14 @@ This module provides three classes:
 	frozenbag - A hashable (immutable) multiset.
 """
 
-_version = '0.2.1'
+_version = '0.3.0'
 
 import heapq
-from collections import MutableSet, Set, Hashable, Iterable
+from collections import Set, Hashable, Iterable
+from collection import Collection, MutableCollection
 from operator import itemgetter
 
-class basebag(Set):
+class basebag(Collection):
 	""" Base class for bag and frozenbag.	Is not mutable and not hashable, so there's 
 	no reason to use this instead of either bag or frozenbag.
 	"""
@@ -26,13 +27,12 @@ class basebag(Set):
 
 	def __init__(self, iterable=None):
 		""" Create a new basebag.  If iterable isn't given, is None or is empty then the 
-		set starts empty.  If iterable is a map, then it is assumed to be a map from elements
-		to the number of times they should appear in the bag.  Otherwise each element 
-		from iterable will be added to the bag however many times it appears.
+		bag starts empty.  Otherwise each element from iterable will be added to the bag 
+		however many times it appears.
 
 		This runs in O(len(iterable))
 
-		>>> basebag()                     # create empty set
+		>>> basebag()                     # create empty bag
 		basebag()
 		>>> basebag('abracadabra')        # create from an Iterable
 		basebag(('a', 'a', 'a', 'a', 'a', 'r', 'r', 'b', 'b', 'c', 'd'))
@@ -40,8 +40,8 @@ class basebag(Set):
 		self.__dict = dict()
 		self.__size = 0
 		if iterable:
-			for elem in iterable:
-				self.__inc(elem)
+			for value in iterable:
+				self.__inc(value)
 	
 	def __repr__(self):
 		""" The string representation is a call to the constructor given a tuple 
@@ -95,22 +95,25 @@ class basebag(Set):
 			string = '{{{0}}}'.format(string)
 			return string
 
+	def __getitem__(self, value):
+		return self.multiplicity(value)
+
 	## Internal methods
 
-	def __inc(self, elem, count=1):
-		""" Increment the multiplicity of elem by count (if count <0 then decrement). 
+	def __inc(self, value, count=1):
+		""" Increment the multiplicity of value by count (if count <0 then decrement). 
 		
 		This runs in O(1) time
 		"""
-		old_count = self.multiplicity(elem)
+		old_count = self.multiplicity(value)
 		new_count = max(0, old_count + count)
 		if new_count == 0:
 			try:
-				del self.__dict[elem]
+				del self.__dict[value]
 			except KeyError:
 				pass
 		else:
-			self.__dict[elem] = new_count
+			self.__dict[value] = new_count
 		self.__size += new_count - old_count
 
 	## New public methods (not overriding/implementing anything)
@@ -129,8 +132,8 @@ class basebag(Set):
 		"""
 		return self.__dict.keys()
 
-	def multiplicity(self, elem):
-		""" Return the multiplicity of elem.  If elem is not in the set no Error is
+	def multiplicity(self, value):
+		""" Return the multiplicity of value.  If value is not in the bag no Error is
 		raised, instead 0 is returned. 
 		
 		This runs in O(1) time
@@ -143,7 +146,7 @@ class basebag(Set):
 		0
 		"""
 		try:
-			return self.__dict[elem]
+			return self.__dict[value]
 		except KeyError:
 			return 0
 	
@@ -205,7 +208,7 @@ class basebag(Set):
 	def intersect(self, other): return self & other
 	def union(self, other): return self | other
 	
-	## implementing Sized (inherited from Set) methods
+	## implementing Sized methods
 
 	def __len__(self):
 		""" Returns the cardinality of the bag. 
@@ -221,9 +224,9 @@ class basebag(Set):
 		"""
 		return self.__size
 
-	## implementing Container (inherited from Set) methods
+	## implementing Container methods
 
-	def __contains__(self, elem):
+	def __contains__(self, value):
 		""" Returns the multiplicity of the element. 
 
 		This runs in O(1)
@@ -235,23 +238,21 @@ class basebag(Set):
 		>>> 'a' in basebag('missing letter')
 		False
 		"""
-		return self.multiplicity(elem)
+		return self.multiplicity(value)
 	
-	## implementing Iterable (inherited from Set) methods
+	## implementing Iterable methods
 
 	def __iter__(self):
 		""" Iterate through all elements, multiple copies will be returned if they exist. """
-		for elem, count in self.__dict.items():
+		for value, count in self.__dict.items():
 			for i in range(count):
-				yield(elem)
+				yield(value)
 
-	## implementing/overriding Set methods
-	##
-	## Also included here is __add__ even though its not overriding a Set method.
-	## I figured it would be better to keep it with the other set operations.
-
-	def __le__(self, other):
-		"""
+	## Comparison methods
+	## A bag can be compared to any iterable
+	
+	def __le__(self, other: Iterable):
+		""" Tests if self <= other where other is any Iterable
 
 		This runs in O(l + n) where:
 			n is self.num_unique_elements()
@@ -263,8 +264,6 @@ class basebag(Set):
 		TODO write test cases for __le__
 		"""
 		if not isinstance(other, basebag):
-			if not isinstance(other, Iterable):
-				return NotImplemented
 			other = self._from_iterable(other)
 		if len(self) > len(other):
 			return False
@@ -272,6 +271,33 @@ class basebag(Set):
 			if self.multiplicity(elem) > other.multiplicity(elem):
 				return False
 		return True
+
+	def __lt__(self, other: Iterable):
+		if not isinstance(other, basebag):
+			other = self._from_iterable(other)
+		return len(self) < len(other) and self <= other
+
+	def __gt__(self, other: Iterable):
+		if not isinstance(other, basebag):
+			other = self._from_iterable(other)
+		return other < self
+
+	def __ge__(self, other: Iterable):
+		if not isinstance(other, basebag):
+			other = self._from_iterable(other)
+		return other <= self
+
+	def __eq__(self, other: Iterable):
+		if not isinstance(other, basebag):
+			other = self._from_iterable(other)
+		return len(self) == len(other) and self <= other 
+
+	def __ne__(self, other: Iterable):
+		if not isinstance(other, basebag):
+			other = self._from_iterable(other)
+		return not (self == other)
+
+	## Operations - &, |, +, -, ^, * and isdisjoint
 
 	def __and__(self, other):
 		""" Intersection is the minimum of corresponding counts. 
@@ -297,21 +323,18 @@ class basebag(Set):
 	def isdisjoint(self, other):
 		"""
 
-		This runs in O(l + m*n) where:
-			m is self.num_unique_elements()
-			n is other.num_unique_elements()
-			if other is a bag:
-				l = 1
-			else:
-				l = len(other)
+		This runs in O(n) where:
+			n is len(other)
 
 		TODO write unit tests for isdisjoint
+		TODO move isdisjoint somewhere more appropriate
 		"""
-		if not isinstance(other, basebag):
-			if not isinstance(other, Iterable):
-				return NotImplemented
-			other = self._from_iterable(other)
-		return super.isdisjoint(self.unique_elements(), other.unique_elements())
+		if not isinstance(other, Iterable):
+			return NotImplemented
+		for value in other:
+			if value in self:
+				return False
+		return True
 
 	def __or__(self, other):
 		""" Union is the maximum of all elements. 
@@ -335,7 +358,7 @@ class basebag(Set):
 		return self._from_map(values)
 
 	def __add__(self, other):
-		""" Sum of sets
+		"""
 		other can be any iterable.
 		self + other = self & other + self | other 
 
@@ -348,8 +371,8 @@ class basebag(Set):
 		if not isinstance(other, Iterable):
 			return NotImplemented
 		out = self.copy()
-		for elem in other:
-			out.__inc(elem)
+		for value in other:
+			out.__inc(value)
 		return out
 	
 	def __sub__(self, other):
@@ -367,8 +390,8 @@ class basebag(Set):
 		if not isinstance(other, Iterable):
 			return NotImplemented
 		out = self.copy()
-		for elem in other:
-			out.__inc(elem, -1)
+		for value in other:
+			out.__inc(value, -1)
 		return out
 
 	def __mul__(self, other):
@@ -418,32 +441,134 @@ class basebag(Set):
 		"""
 		return (self - other) | (other - self)
 
-class bag(basebag, MutableSet):
+class bag(basebag, MutableCollection):
 	""" bag is a Mutable basebag, thus not hashable and unusable for dict keys or in
 	other sets.
 
 	TODO write bag add, discard and clear unit tests
 	"""
-	def add(self, elem):
-		self.__inc(elem, 1)
+
+	def __setitem__(self, elem, value=True):
+		if value:
+			add(elem)
 	
-	def discard(self, elem):
-		self.__inc(elem, -1)
+	def __delitem__(self, value):
+		self.remove(value)
+
+	def add(self, value):
+		self.__inc(value, 1)
+	
+	def discard(self, value):
+		self.__inc(value, -1)
+
+	def remove(self, value):
+		if value not in self:
+			raise KeyError(value)
+		self.discard(value)
 
 	def clear(self):
 		self.__dict = dict()
 		self.__size = 0
 
+	def pop(self):
+		it = iter(self)
+		try:
+			value = next(it)
+		except StopIteration:
+			raise KeyError
+		self.discard(value)
+		return value
+
+	## In-place operations
+
+	def __ior__(self, it: Iterable):
+		"""
+		This runs in O(len(it))
+
+		TODO write test cases
+		"""
+		if isinstance(it, basebag):
+			other = it
+		else:
+			other = self._from_iterable(it)
+		for elem, other_count in other.__dict.items():
+			self_count = self.multiplicity(elem)
+			self.__inc(elem, max(other_count, self_count) - self_count)
+	
+	def __iand__(self, it: Iterable):
+		"""
+		This runs in O(len(it))
+
+		TODO write test cases
+		"""
+		if isinstance(it, basebag):
+			other = it
+		else:
+			other = self._from_iterable(it)
+		for elem, other_count in other.__dict.items():
+			self_count = self.multiplicity(elem)
+			self.__inc(elem, min(other_count, self_count) - self_count)
+	
+	def __ixor__(self, it: Iterable):
+		"""
+		if isinstance(it, basebag):
+			This runs in O(it.num_unique_elements())
+		else:
+			This runs in O(len(it))
+
+		TODO write test cases
+		"""
+		if isinstance(it, basebag):
+			other = it
+		else:
+			other = self._from_iterable(it)
+		other_minus_self = other - self
+		self -= other
+		self |= other_minus_self
+	
+	def __isub__(self, it: Iterable):
+		"""
+		if isinstance(it, basebag):
+			This runs in O(it.num_unique_elements())
+		else:
+			This runs in O(len(it))
+
+		TODO write test cases
+		"""
+		if isinstance(it, basebag):
+			for elem, count in it.__dict.items():
+				self.__inc(value, -count)
+		else:
+			for value in it:
+				self.__inc(value, -1)
+
+	def __iadd__(self, it: Iterable):
+		"""
+		if isinstance(it, basebag):
+			This runs in O(it.num_unique_elements())
+		else:
+			This runs in O(len(it))
+
+		TODO write test cases
+		"""
+		if isinstance(it, basebag):
+			for elem, count in it.__dict.items():
+				self.__inc(value, count)
+		else:
+			for value in it:
+				self.__inc(value, 1)
+	
+
 class frozenbag(basebag, Hashable):
 	""" frozenbag is a Hashable basebag, thus it is immutable and usable for dict keys
 	"""
 	def __hash__(self):
-		""" Use the hash funtion inherited from somewhere.  For now this is from Set,
+		""" Use the hash funtion from Set,
 		I'm not sure that it works for collections with multiple elements.
 
 		TODO write unit tests for hash
 		"""
-		return self._hash()
+		return Set._hash(self)
 	
 def multichoose(iterable, k):
 	""" Returns a set of all possible multisets of length k on unique elements from iterable.
