@@ -12,11 +12,11 @@ This module provides three classes:
 	frozenbag - A hashable (immutable) multiset.
 """
 
-_version = '0.3.0'
+_version = '0.3.1'
 
 import heapq
 from collections import Set, Hashable, Iterable
-from collection import Collection, MutableCollection
+from collection import Collection, Mutable
 from operator import itemgetter
 
 class basebag(Collection):
@@ -37,11 +37,11 @@ class basebag(Collection):
 		>>> basebag('abracadabra')        # create from an Iterable
 		basebag(('a', 'a', 'a', 'a', 'a', 'r', 'r', 'b', 'b', 'c', 'd'))
 		"""
-		self.__dict = dict()
-		self.__size = 0
+		self._dict = dict()
+		self._size = 0
 		if iterable:
 			for value in iterable:
-				self.__inc(value)
+				self._inc(value)
 	
 	def __repr__(self):
 		""" The string representation is a call to the constructor given a tuple 
@@ -58,7 +58,7 @@ class basebag(Collection):
 		>>> ms == eval(ms.__repr__())
 		True
 		"""
-		if self.__size == 0:
+		if self._size == 0:
 			return '{0}()'.format(self.__class__.__name__)
 		else:
 			format = '{class_name}({tuple!r})'
@@ -77,13 +77,13 @@ class basebag(Collection):
 		>>> basebag('abc').__str__() == set('abc').__str__()
 		True
 		"""
-		if self.__size == 0:
+		if self._size == 0:
 			return '{}'
 		else:
 			format_single = '{elem!r}'
 			format_mult = '{elem!r}^{mult}'
 			strings = []
-			for elem, mult in self.__dict.items():
+			for elem, mult in self._dict.items():
 				if mult > 1:
 					strings.append(format_mult.format(elem=elem, mult=mult))
 				else:
@@ -100,7 +100,7 @@ class basebag(Collection):
 
 	## Internal methods
 
-	def __inc(self, value, count=1):
+	def _inc(self, value, count=1):
 		""" Increment the multiplicity of value by count (if count <0 then decrement). 
 		
 		This runs in O(1) time
@@ -109,12 +109,12 @@ class basebag(Collection):
 		new_count = max(0, old_count + count)
 		if new_count == 0:
 			try:
-				del self.__dict[value]
+				del self._dict[value]
 			except KeyError:
 				pass
 		else:
-			self.__dict[value] = new_count
-		self.__size += new_count - old_count
+			self._dict[value] = new_count
+		self._size += new_count - old_count
 
 	## New public methods (not overriding/implementing anything)
 
@@ -123,14 +123,14 @@ class basebag(Collection):
 		
 		This runs in O(1) time
 		"""
-		return len(self.__dict)
+		return len(self._dict)
 
 	def unique_elements(self):
 		""" Returns a view of unique elements in this bag. 
 		
 		This runs in O(1) time
 		"""
-		return self.__dict.keys()
+		return self._dict.keys()
 
 	def multiplicity(self, value):
 		""" Return the multiplicity of value.  If value is not in the bag no Error is
@@ -146,7 +146,7 @@ class basebag(Collection):
 		0
 		"""
 		try:
-			return self.__dict[value]
+			return self._dict[value]
 		except KeyError:
 			return 0
 	
@@ -162,9 +162,9 @@ class basebag(Collection):
 		[('a', 5), ('r', 2)]
 		"""
 		if n is None:
-			return sorted(self.__dict.items(), key=itemgetter(1), reverse=True)
+			return sorted(self._dict.items(), key=itemgetter(1), reverse=True)
 		else:
-			return heapq.nlargest(n, self.__dict.items(), key=itemgetter(1))
+			return heapq.nlargest(n, self._dict.items(), key=itemgetter(1))
 
 	@classmethod
 	def _from_map(cls, map):
@@ -178,7 +178,7 @@ class basebag(Collection):
 		"""
 		out = cls()
 		for elem, count in map.items():
-			out.__inc(elem, count)
+			out._inc(elem, count)
 		return out
 
 	def copy(self):
@@ -193,7 +193,7 @@ class basebag(Collection):
 		>>> abc.copy() == abc
 		True
 		"""
-		return self._from_map(self.__dict)
+		return self._from_map(self._dict)
 
 	## Alias methods - these methods are just names for other operations
 
@@ -222,7 +222,7 @@ class basebag(Collection):
 		>>> len(basebag('aaba'))
 		4
 		"""
-		return self.__size
+		return self._size
 
 	## implementing Container methods
 
@@ -244,7 +244,7 @@ class basebag(Collection):
 
 	def __iter__(self):
 		""" Iterate through all elements, multiple copies will be returned if they exist. """
-		for value, count in self.__dict.items():
+		for value, count in self._dict.items():
 			for i in range(count):
 				yield(value)
 
@@ -316,7 +316,7 @@ class basebag(Collection):
 				return NotImplemented
 			other = self._from_iterable(other)
 		values = dict()
-		for elem in self.__dict:
+		for elem in self._dict:
 			values[elem] = min(other.multiplicity(elem), self.multiplicity(elem))
 		return self._from_map(values)
 
@@ -372,7 +372,7 @@ class basebag(Collection):
 			return NotImplemented
 		out = self.copy()
 		for value in other:
-			out.__inc(value)
+			out._inc(value)
 		return out
 	
 	def __sub__(self, other):
@@ -391,7 +391,7 @@ class basebag(Collection):
 			return NotImplemented
 		out = self.copy()
 		for value in other:
-			out.__inc(value, -1)
+			out._inc(value, -1)
 		return out
 
 	def __mul__(self, other):
@@ -422,8 +422,8 @@ class basebag(Collection):
 				return NotImplemented
 			other = self._from_iterable(other)
 		values = dict()
-		for elem, count in self.__dict.items():
-			for other_elem, other_count in other.__dict.items():
+		for elem, count in self._dict.items():
+			for other_elem, other_count in other._dict.items():
 				new_elem = elem + other_elem
 				new_count = count * other_count
 				values[new_elem] = new_count
@@ -441,7 +441,7 @@ class basebag(Collection):
 		"""
 		return (self - other) | (other - self)
 
-class bag(basebag, MutableCollection):
+class bag(basebag, Mutable):
 	""" bag is a Mutable basebag, thus not hashable and unusable for dict keys or in
 	other sets.
 
@@ -456,10 +456,10 @@ class bag(basebag, MutableCollection):
 		self.remove(value)
 
 	def add(self, value):
-		self.__inc(value, 1)
+		self._inc(value, 1)
 	
 	def discard(self, value):
-		self.__inc(value, -1)
+		self._inc(value, -1)
 
 	def remove(self, value):
 		if value not in self:
@@ -467,17 +467,8 @@ class bag(basebag, MutableCollection):
 		self.discard(value)
 
 	def clear(self):
-		self.__dict = dict()
-		self.__size = 0
-
-	def pop(self):
-		it = iter(self)
-		try:
-			value = next(it)
-		except StopIteration:
-			raise KeyError
-		self.discard(value)
-		return value
+		self._dict = dict()
+		self._size = 0
 
 	## In-place operations
 
@@ -491,9 +482,10 @@ class bag(basebag, MutableCollection):
 			other = it
 		else:
 			other = self._from_iterable(it)
-		for elem, other_count in other.__dict.items():
+		for elem, other_count in other._dict.items():
 			self_count = self.multiplicity(elem)
-			self.__inc(elem, max(other_count, self_count) - self_count)
+			self._inc(elem, max(other_count, self_count) - self_count)
+		return self
 	
 	def __iand__(self, it: Iterable):
 		"""
@@ -505,9 +497,10 @@ class bag(basebag, MutableCollection):
 			other = it
 		else:
 			other = self._from_iterable(it)
-		for elem, other_count in other.__dict.items():
+		for elem, other_count in other._dict.items():
 			self_count = self.multiplicity(elem)
-			self.__inc(elem, min(other_count, self_count) - self_count)
+			self._inc(elem, min(other_count, self_count) - self_count)
+		return self
 	
 	def __ixor__(self, it: Iterable):
 		"""
@@ -525,6 +518,7 @@ class bag(basebag, MutableCollection):
 		other_minus_self = other - self
 		self -= other
 		self |= other_minus_self
+		return self
 	
 	def __isub__(self, it: Iterable):
 		"""
@@ -536,11 +530,12 @@ class bag(basebag, MutableCollection):
 		TODO write test cases
 		"""
 		if isinstance(it, basebag):
-			for elem, count in it.__dict.items():
-				self.__inc(value, -count)
+			for elem, count in it._dict.items():
+				self._inc(value, -count)
 		else:
 			for value in it:
-				self.__inc(value, -1)
+				self._inc(value, -1)
+		return self
 
 	def __iadd__(self, it: Iterable):
 		"""
@@ -552,11 +547,12 @@ class bag(basebag, MutableCollection):
 		TODO write test cases
 		"""
 		if isinstance(it, basebag):
-			for elem, count in it.__dict.items():
-				self.__inc(value, count)
+			for elem, count in it._dict.items():
+				self._inc(value, count)
 		else:
 			for value in it:
-				self.__inc(value, 1)
+				self._inc(value, 1)
+		return self
 	
 
 class frozenbag(basebag, Hashable):
@@ -590,15 +586,7 @@ def multichoose(iterable, k):
 	{frozenbag(('a', 'a'))}
 	>>> result = multichoose('ab', 3)
 
-	>>> len(result)
-	4
-	>>> frozenbag(('a', 'a', 'a')) in result
-	True
-	>>> frozenbag(('a', 'a', 'b')) in result
-	True
-	>>> frozenbag(('a', 'b', 'b')) in result
-	True
-	>>> frozenbag(('b', 'b', 'b')) in result
+	>>> len(result) == 4 and frozenbag(('a', 'a', 'a')) in result and frozenbag(('a', 'a', 'b')) in result and frozenbag(('a', 'b', 'b')) in result and frozenbag(('b', 'b', 'b')) in result
 	True
 	"""
 	# if iterable is empty there are no multisets
