@@ -8,7 +8,7 @@
 TODO write long-desc
 """
 
-_version = '0.1.0'
+_version = '0.1.1'
 
 from collections import MutableSet, Set, Hashable, Iterable, Sequence, MutableSequence
 import sys
@@ -22,7 +22,12 @@ class basesetlist(Collection, Sequence, Set):
 	def __init__(self, iterable: Iterable):
 		self._list = list()
 		self._dict = dict()
-		# TODO finish init from Iterable
+		if iterable:
+			for value in iterable:
+				if value not in self:
+					index = len(self)
+					self._list.insert(index, value)
+					self._dict[value] = index
 	
 	## Implement Collection
 	def __getitem__(self, index):
@@ -59,14 +64,22 @@ class basesetlist(Collection, Sequence, Set):
 		This runs in O(len(sub))
 		"""
 		index %= len(self)
+		# First assume that sub is an element in self
 		try:
 			index = self._dict[sub]
+			return index
 		except KeyError:
-			raise ValueError
-		for i in range(1, len(sub)):
-			if sub[i] != self[index+i]:
-				raise ValueError
-		return index
+			pass
+		# If we didn't find it as an element, maybe it's a sublist to find
+		try:
+			index = self._dict[sub[0]]
+			for i in range(1, len(sub)):
+				if sub[i] != self[index+i]:
+					raise ValueError
+			return index
+		except TypeError:
+			pass
+		raise ValueError
 
 	## Nothing needs to be done to implement Set
 
