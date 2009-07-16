@@ -3,39 +3,39 @@
 #
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
 #
-""" multiset - Also known as a bag or unordered tuple.
+""" bag - Also known as a bag or unordered tuple.
 
 This module provides three classes:
-	basemultiset - The superclass of multiset and frozen multiset.  It is both immutable
+	basebag - The superclass of bag and frozenbag.  It is both immutable
 		and unhashable.
-	multiset - A mutable (unhashable) multiset.
-	frozenmultiset - A hashable (immutable) multiset.
+	bag - A mutable (unhashable) multiset.
+	frozenbag - A hashable (immutable) multiset.
 """
 
-_version = '0.2.0'
+_version = '0.2.1'
 
 import heapq
 from collections import MutableSet, Set, Hashable, Iterable
 from operator import itemgetter
 
-class basemultiset(Set):
-	""" Base class for multiset and frozenmultiset.	Is not mutable and not hashable, so there's 
-	no reason to use this instead of either multiset or frozenmultiset.
+class basebag(Set):
+	""" Base class for bag and frozenbag.	Is not mutable and not hashable, so there's 
+	no reason to use this instead of either bag or frozenbag.
 	"""
 	## Basic object methods
 
 	def __init__(self, iterable=None):
-		""" Create a new basemultiset.  If iterable isn't given, is None or is empty then the 
+		""" Create a new basebag.  If iterable isn't given, is None or is empty then the 
 		set starts empty.  If iterable is a map, then it is assumed to be a map from elements
-		to the number of times they should appear in the multiset.  Otherwise each element 
-		from iterable will be added to the multiset however many times it appears.
+		to the number of times they should appear in the bag.  Otherwise each element 
+		from iterable will be added to the bag however many times it appears.
 
 		This runs in O(len(iterable))
 
-		>>> basemultiset()                     # create empty set
-		basemultiset()
-		>>> basemultiset('abracadabra')        # create from an Iterable
-		basemultiset(('a', 'a', 'a', 'a', 'a', 'r', 'r', 'b', 'b', 'c', 'd'))
+		>>> basebag()                     # create empty set
+		basebag()
+		>>> basebag('abracadabra')        # create from an Iterable
+		basebag(('a', 'a', 'a', 'a', 'a', 'r', 'r', 'b', 'b', 'c', 'd'))
 		"""
 		self.__dict = dict()
 		self.__size = 0
@@ -49,11 +49,11 @@ class basemultiset(Set):
 		
 		This runs in whatever tuple(self) does, I'm assuming O(len(self))
 
-		>>> ms = basemultiset()
+		>>> ms = basebag()
 
 		>>> ms == eval(ms.__repr__())
 		True
-		>>> ms = basemultiset('abracadabra')
+		>>> ms = basebag('abracadabra')
 
 		>>> ms == eval(ms.__repr__())
 		True
@@ -70,11 +70,11 @@ class basemultiset(Set):
 
 		This runs in O(self.num_unique_elements())
 
-		>>> print(basemultiset())
+		>>> print(basebag())
 		{}
-		>>> print(basemultiset('abracadabra'))
+		>>> print(basebag('abracadabra'))
 		{'a'^5, 'r'^2, 'b'^2, 'c', 'd'}
-		>>> basemultiset('abc').__str__() == set('abc').__str__()
+		>>> basebag('abc').__str__() == set('abc').__str__()
 		True
 		"""
 		if self.__size == 0:
@@ -123,7 +123,7 @@ class basemultiset(Set):
 		return len(self.__dict)
 
 	def unique_elements(self):
-		""" Returns a view of unique elements in this multiset. 
+		""" Returns a view of unique elements in this bag. 
 		
 		This runs in O(1) time
 		"""
@@ -135,7 +135,7 @@ class basemultiset(Set):
 		
 		This runs in O(1) time
 
-		>>> ms = basemultiset('abracadabra')
+		>>> ms = basebag('abracadabra')
 
 		>>> ms.multiplicity('a')
 		5
@@ -153,9 +153,9 @@ class basemultiset(Set):
 
 		Run time should be O(m log m) where m is len(self)
 
-		>>> basemultiset('abracadabra').nlargest()
+		>>> basebag('abracadabra').nlargest()
 		[('a', 5), ('r', 2), ('b', 2), ('c', 1), ('d', 1)]
-		>>> basemultiset('abracadabra').nlargest(2)
+		>>> basebag('abracadabra').nlargest(2)
 		[('a', 5), ('r', 2)]
 		"""
 		if n is None:
@@ -165,13 +165,13 @@ class basemultiset(Set):
 
 	@classmethod
 	def _from_map(cls, map):
-		""" Creates a multiset from a dict of elem->count.  Each key in the dict 
+		""" Creates a bag from a dict of elem->count.  Each key in the dict 
 		is added if the value is > 0.
 
 		This runs in O(len(map))
 		
-		>>> basemultiset._from_map({'a': 1, 'b': 2})
-		basemultiset(('a', 'b', 'b'))
+		>>> basebag._from_map({'a': 1, 'b': 2})
+		basebag(('a', 'b', 'b'))
 		"""
 		out = cls()
 		for elem, count in map.items():
@@ -183,9 +183,9 @@ class basemultiset(Set):
 
 		This runs in O(len(self.num_unique_elements()))
 		
-		>>> basemultiset().copy() == basemultiset()
+		>>> basebag().copy() == basebag()
 		True
-		>>> abc = basemultiset('abc')
+		>>> abc = basebag('abc')
 
 		>>> abc.copy() == abc
 		True
@@ -208,15 +208,15 @@ class basemultiset(Set):
 	## implementing Sized (inherited from Set) methods
 
 	def __len__(self):
-		""" Returns the cardinality of the multiset. 
+		""" Returns the cardinality of the bag. 
 
 		This runs in O(1)
 		
-		>>> len(basemultiset())
+		>>> len(basebag())
 		0
-		>>> len(basemultiset('abc'))
+		>>> len(basebag('abc'))
 		3
-		>>> len(basemultiset('aaba'))
+		>>> len(basebag('aaba'))
 		4
 		"""
 		return self.__size
@@ -228,11 +228,11 @@ class basemultiset(Set):
 
 		This runs in O(1)
 		
-		>>> 'a' in basemultiset('bbac')
+		>>> 'a' in basebag('bbac')
 		True
-		>>> 'a' in basemultiset()
+		>>> 'a' in basebag()
 		False
-		>>> 'a' in basemultiset('missing letter')
+		>>> 'a' in basebag('missing letter')
 		False
 		"""
 		return self.multiplicity(elem)
@@ -255,14 +255,14 @@ class basemultiset(Set):
 
 		This runs in O(l + n) where:
 			n is self.num_unique_elements()
-			if other is a multiset:
+			if other is a bag:
 				l = 1
 			else:
 				l = len(other)
 
 		TODO write test cases for __le__
 		"""
-		if not isinstance(other, basemultiset):
+		if not isinstance(other, basebag):
 			if not isinstance(other, Iterable):
 				return NotImplemented
 			other = self._from_iterable(other)
@@ -278,14 +278,14 @@ class basemultiset(Set):
 		
 		This runs in O(l + n) where:
 			n is self.num_unique_elements()
-			if other is a multiset:
+			if other is a bag:
 				l = 1
 			else:
 				l = len(other)
 
 		TODO write unit tests for and
 		"""
-		if not isinstance(other, basemultiset):
+		if not isinstance(other, basebag):
 			if not isinstance(other, Iterable):
 				return NotImplemented
 			other = self._from_iterable(other)
@@ -300,14 +300,14 @@ class basemultiset(Set):
 		This runs in O(l + m*n) where:
 			m is self.num_unique_elements()
 			n is other.num_unique_elements()
-			if other is a multiset:
+			if other is a bag:
 				l = 1
 			else:
 				l = len(other)
 
 		TODO write unit tests for isdisjoint
 		"""
-		if not isinstance(other, basemultiset):
+		if not isinstance(other, basebag):
 			if not isinstance(other, Iterable):
 				return NotImplemented
 			other = self._from_iterable(other)
@@ -318,14 +318,14 @@ class basemultiset(Set):
 		
 		This runs in O(m + n) where:
 			n is self.num_unique_elements()
-			if other is a multiset:
+			if other is a bag:
 				m = other.num_unique_elements()
 			else:
 				m = len(other)
 
 		TODO write unit tests for or
 		"""
-		if not isinstance(other, basemultiset):
+		if not isinstance(other, basebag):
 			if not isinstance(other, Iterable):
 				return NotImplemented
 			other = self._from_iterable(other)
@@ -356,7 +356,7 @@ class basemultiset(Set):
 		""" Difference between the sets.
 		other can be any iterable.
 		For normal sets this is all s.t. x in self and x not in other. 
-		For multisets this is multiplicity(x) = max(0, self.multiplicity(x)-other.multiplicity(x))
+		For bags this is multiplicity(x) = max(0, self.multiplicity(x)-other.multiplicity(x))
 
 		This runs in O(m + n) where:
 			n is self.num_unique_elements()
@@ -379,7 +379,7 @@ class basemultiset(Set):
 		This should run in O(m*n+l) where:
 			m is the number of unique elements in self
 			n is the number of unique elements in other
-			if other is a multiset:
+			if other is a bag:
 				l is 0
 			else:
 				l is the len(other)
@@ -387,14 +387,14 @@ class basemultiset(Set):
 		For example: {'a'^2} * 'bbbbbbbbbbbbbbbbbbbbbbbbbb'
 		The algorithm will be dominated by counting the 'b's
 
-		>>> ms = basemultiset('aab')
+		>>> ms = basebag('aab')
 
 		>>> ms * set('a')
-		basemultiset(('aa', 'aa', 'ba'))
+		basebag(('aa', 'aa', 'ba'))
 		>>> ms * set()
-		basemultiset()
+		basebag()
 		"""
-		if not isinstance(other, basemultiset):
+		if not isinstance(other, basebag):
 			if not isinstance(other, Iterable):
 				return NotImplemented
 			other = self._from_iterable(other)
@@ -418,11 +418,11 @@ class basemultiset(Set):
 		"""
 		return (self - other) | (other - self)
 
-class multiset(basemultiset, MutableSet):
-	""" multiset is a Mutable basemultiset, thus not hashable and unusable for dict keys or in
+class bag(basebag, MutableSet):
+	""" bag is a Mutable basebag, thus not hashable and unusable for dict keys or in
 	other sets.
 
-	TODO write multiset add, discard and clear unit tests
+	TODO write bag add, discard and clear unit tests
 	"""
 	def add(self, elem):
 		self.__inc(elem, 1)
@@ -434,8 +434,8 @@ class multiset(basemultiset, MutableSet):
 		self.__dict = dict()
 		self.__size = 0
 
-class frozenmultiset(basemultiset, Hashable):
-	""" frozenmultiset is a Hashable basemultiset, thus it is immutable and usable for dict keys
+class frozenbag(basebag, Hashable):
+	""" frozenbag is a Hashable basebag, thus it is immutable and usable for dict keys
 	"""
 	def __hash__(self):
 		""" Use the hash funtion inherited from somewhere.  For now this is from Set,
@@ -460,20 +460,20 @@ def multichoose(iterable, k):
 	>>> multichoose((), 1)
 	set()
 	>>> multichoose('a', 1)
-	{frozenmultiset(('a',))}
+	{frozenbag(('a',))}
 	>>> multichoose('a', 2)
-	{frozenmultiset(('a', 'a'))}
+	{frozenbag(('a', 'a'))}
 	>>> result = multichoose('ab', 3)
 
 	>>> len(result)
 	4
-	>>> frozenmultiset(('a', 'a', 'a')) in result
+	>>> frozenbag(('a', 'a', 'a')) in result
 	True
-	>>> frozenmultiset(('a', 'a', 'b')) in result
+	>>> frozenbag(('a', 'a', 'b')) in result
 	True
-	>>> frozenmultiset(('a', 'b', 'b')) in result
+	>>> frozenbag(('a', 'b', 'b')) in result
 	True
-	>>> frozenmultiset(('b', 'b', 'b')) in result
+	>>> frozenbag(('b', 'b', 'b')) in result
 	True
 	"""
 	# if iterable is empty there are no multisets
@@ -485,10 +485,10 @@ def multichoose(iterable, k):
 	symbol = symbols.pop()
 	result = set()
 	if len(symbols) == 0:
-		result.add(frozenmultiset._from_map({symbol : k}))
+		result.add(frozenbag._from_map({symbol : k}))
 	else:
 		for symbol_multiplicity in range(k+1):
-			symbol_set = frozenmultiset._from_map({symbol : symbol_multiplicity})
+			symbol_set = frozenbag._from_map({symbol : symbol_multiplicity})
 			for others in multichoose(symbols, k-symbol_multiplicity):
 				result.add(symbol_set + others)
 	return result
