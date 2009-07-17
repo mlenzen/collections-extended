@@ -3,14 +3,17 @@
 #
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
 #
-
 _version = '0.1.0'
+
+__all__ = ['collection', 'Collection', 'Mutable', 'set', 'frozenset', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
 
 import heapq
 import sys
 from abc import ABCMeta, abstractmethod
-from collections import Sized, Iterable, Container, Set, Hashable, MutableSet, MutableSequence, Sequence
 from operator import itemgetter
+from collections import *
+import collections
+__all__ += collections.__all__
 
 def collection(it: Iterable=None, mutable=False, ordered=False, unique=False):
 	""" Return a Collection with the specified properties. """
@@ -22,9 +25,9 @@ def collection(it: Iterable=None, mutable=False, ordered=False, unique=False):
 				return frozensetlist(it)
 		else:
 			if mutable:
-				return set_(it)
+				return set(it)
 			else:
-				return frozenset_(it)
+				return frozenset(it)
 	else:
 		if ordered:
 			if mutable:
@@ -77,16 +80,16 @@ Mutable.register(list)
 ## Extending sets
 #####################################################################
 
-class set_(set, Collection, Mutable):
-	""" set_ extends set and implements Collection and Mutable.
-	set_[item]
-		returns if the item is in the set_
-	set_[item] = value
-		sets whether or not item is in set_ based on what value evaluates to
-	del set_[item]
-		removes item from set_
+class set(set, Collection, Mutable):
+	""" set extends set and implements Collection and Mutable.
+	set[item]
+		returns if the item is in the set
+	set[item] = value
+		sets whether or not item is in set based on what value evaluates to
+	del set[item]
+		removes item from set
 	
-	>>> s = set_('abc')
+	>>> s = set('abc')
 	>>> s['a']
 	True
 	>>> s['d']
@@ -103,7 +106,7 @@ class set_(set, Collection, Mutable):
 		return item in self
 
 	def __setitem__(self, elem, value):
-		""" Set whether or not elem is in set_ based on what value evaluates to. """
+		""" Set whether or not elem is in set based on what value evaluates to. """
 		if value:
 			self.add(elem)
 		else:
@@ -112,8 +115,8 @@ class set_(set, Collection, Mutable):
 	def __delitem__(self, item):
 		self.remove(item)
 
-class frozenset_(frozenset, Collection):
-	""" frozenset_ extends frozenset and implements Collection """
+class frozenset(frozenset, Collection):
+	""" frozenset extends frozenset and implements Collection """
 	def __getitem__(self, item):
 		return item in self
 
@@ -336,14 +339,16 @@ class basebag(Collection):
 		This runs in O(self.num_unique_elements())
 
 		>>> print(basebag())
-		{}
+		set()
 		>>> print(basebag('abracadabra'))
-		{'a'^5, 'r'^2, 'b'^2, 'c', 'd'}
+		set({'a'^5, 'r'^2, 'b'^2, 'c', 'd'})
+		>>> basebag().__str__() == set().__str__()
+		True
 		>>> basebag('abc').__str__() == set('abc').__str__()
 		True
 		"""
 		if self._size == 0:
-			return '{}'
+			return 'set()'
 		else:
 			format_single = '{elem!r}'
 			format_mult = '{elem!r}^{mult}'
@@ -357,7 +362,7 @@ class basebag(Collection):
 			string = '{first}'.format(first=strings[0])
 			for i in range(1,len(strings)):
 				string = '{prev}, {next}'.format(prev=string, next=strings[i])
-			string = '{{{0}}}'.format(string)
+			string = 'set({{{0}}})'.format(string)
 			return string
 
 	def __getitem__(self, value):
@@ -725,9 +730,9 @@ class basebag(Collection):
 		>>> basebag.multichoose((), 1)
 		set()
 		>>> basebag.multichoose('a', 1)
-		{frozenbag(('a',))}
+		set({frozenbag(('a',))})
 		>>> basebag.multichoose('a', 2)
-		{frozenbag(('a', 'a'))}
+		set({frozenbag(('a', 'a'))})
 		>>> result = basebag.multichoose('ab', 3)
 		>>> len(result) == 4 and \
 			 	frozenbag(('a', 'a', 'a')) in result and \
