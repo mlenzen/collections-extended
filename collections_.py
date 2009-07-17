@@ -4,7 +4,7 @@
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
 #
 
-_version = '0.4.1'
+_version = '0.1.0'
 
 import heapq
 import sys
