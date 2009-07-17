@@ -45,6 +45,18 @@ def collection(it: Iterable=None, mutable=False, ordered=False, unique=False):
 #####################################################################
 
 class Collection(Sized, Iterable, Container):
+	""" An ABC for all collections.
+	>>> isinstance(list(), Collection)
+	True
+	>>> isinstance(set(), Collection)
+	True
+	>>> isinstance(bag(), Collection)
+	True
+	>>> isinstance(setlist(), Collection)
+	True
+	>>> isinstance(dict(), Collection)
+	True
+	"""
 	@classmethod
 	def _from_iterable(cls, it):
 		""" Construct an instance of the class from any iterable input.
@@ -58,10 +70,24 @@ class Collection(Sized, Iterable, Container):
 	def __getitem__(self, key):
 		raise KeyError
 
-Collection.register(list)
-Collection.register(tuple)
+Collection.register(Sequence)
+Collection.register(Set)
+Collection.register(Mapping)
 
 class Mutable(metaclass=ABCMeta):
+	""" A metaclass for all Mutable objects.
+	
+	>>> isinstance(list(), Mutable)
+	True
+	>>> isinstance(set(), Mutable)
+	True
+	>>> isinstance(bag(), Mutable)
+	True
+	>>> isinstance(setlist(), Mutable)
+	True
+	>>> isinstance(dict(), Mutable)
+	True
+	"""
 	@abstractmethod
 	def __setitem__(self, key, value):
 		raise KeyError
@@ -74,7 +100,9 @@ class Mutable(metaclass=ABCMeta):
 	def pop(self):
 		raise KeyError
 
-Mutable.register(list)
+Mutable.register(MutableSequence)
+Mutable.register(MutableSet)
+Mutable.register(MutableMapping)
 
 #####################################################################
 ## Extending sets
@@ -101,6 +129,19 @@ class set(set, Collection, Mutable):
 	>>> 'b' in s
 	False
 	"""
+	def __str__(self):
+		""" For some reason this gets a little broken.
+		
+		>>> set().__str__()
+		'set()'
+		>>> set('abc').__str__()
+		"{'a', 'c', 'b'}"
+		"""
+		result = super.__str__(self)
+		if result != 'set()':
+			result = result[4:-1]
+		return result
+
 	def __getitem__(self, item):
 		""" Equal to `item in self` """
 		return item in self
@@ -130,7 +171,7 @@ class basesetlist(Collection, Sequence, Set):
 	and unhashable.
 	"""
 
-	def __init__(self, iterable: Iterable):
+	def __init__(self, iterable=None):
 		self._list = list()
 		self._dict = dict()
 		if iterable:
@@ -339,16 +380,14 @@ class basebag(Collection):
 		This runs in O(self.num_unique_elements())
 
 		>>> print(basebag())
-		set()
+		bag()
 		>>> print(basebag('abracadabra'))
-		set({'a'^5, 'r'^2, 'b'^2, 'c', 'd'})
-		>>> basebag().__str__() == set().__str__()
-		True
+		{'a'^5, 'r'^2, 'b'^2, 'c', 'd'}
 		>>> basebag('abc').__str__() == set('abc').__str__()
 		True
 		"""
 		if self._size == 0:
-			return 'set()'
+			return 'bag()'
 		else:
 			format_single = '{elem!r}'
 			format_mult = '{elem!r}^{mult}'
@@ -362,7 +401,7 @@ class basebag(Collection):
 			string = '{first}'.format(first=strings[0])
 			for i in range(1,len(strings)):
 				string = '{prev}, {next}'.format(prev=string, next=strings[i])
-			string = 'set({{{0}}})'.format(string)
+			string = '{{{0}}}'.format(string)
 			return string
 
 	def __getitem__(self, value):
@@ -707,7 +746,7 @@ class basebag(Collection):
 		""" Symmetric difference between the sets. 
 		other can be any iterable.
 
-		This runs in < O(m+n) where:
+		This runs in O(m + n) where:
 			m = len(self)
 			n = len(other)
 
@@ -808,55 +847,77 @@ class bag(basebag, Mutable):
 
 	## In-place operations
 
-	def __ior__(self, it: Iterable):
+	def __ior__(self, other: Iterable):
 		"""
-		This runs in O(len(it))
-
-		TODO write test cases
-		"""
-		if isinstance(it, basebag):
-			other = it
+		if isinstance(other, basebag):
+			This runs in O(other.num_unique_elements())
 		else:
-			other = self._from_iterable(it)
+			This runs in O(len(other))
+
+		>>> b = bag()
+		>>> b |= bag()
+		>>> print(b)
+		bag()
+		>>> b = bag('aab')
+		>>> b |= bag()
+		>>> print(b)
+		{'a'^2, 'b'}
+		>>> b = bag('aab')
+		>>> b |= bag('ac')
+		>>> print(b)
+		{'a'^2, 'c', 'b'}
+		"""
+		if not isinstance(other, basebag):
+			other = self._from_iterable(other)
 		for elem, other_count in other._dict.items():
 			self_count = self.multiplicity(elem)
 			self._set(elem, max(other_count, self_count))
 		return self
 	
-	def __iand__(self, it: Iterable):
+	def __iand__(self, other: Iterable):
 		"""
-		This runs in O(len(it))
-
-		TODO write test cases
-		"""
-		if isinstance(it, basebag):
-			other = it
+		if isinstance(other, basebag):
+			This runs in O(other.num_unique_elements())
 		else:
-			other = self._from_iterable(it)
-		for elem, other_count in other._dict.items():
-			self_count = self.multiplicity(elem)
+			This runs in O(len(other))
+
+		>>> b = bag()
+		>>> b &= bag()
+		>>> print(b)
+		bag()
+		>>> b = bag('aab')
+		>>> b &= bag()
+		>>> print(b)
+		bag()
+		>>> b = bag('aab')
+		>>> b &= bag('ac')
+		>>> print(b)
+		{'a'}
+		"""
+		if not isinstance(other, basebag):
+			other = self._from_iterable(other)
+		for elem, self_count in set(self._dict.items()):
+			other_count = other.multiplicity(elem)
 			self._set(elem, min(other_count, self_count))
 		return self
 	
-	def __ixor__(self, it: Iterable):
+	def __ixor__(self, other: Iterable):
 		"""
-		if isinstance(it, basebag):
-			This runs in O(it.num_unique_elements())
+		if isinstance(other, basebag):
+			This runs in O(other.num_unique_elements())
 		else:
-			This runs in O(len(it))
+			This runs in O(len(other))
 
 		TODO write test cases
 		"""
-		if isinstance(it, basebag):
-			other = it
-		else:
-			other = self._from_iterable(it)
+		if not isinstance(other, basebag):
+			other = self._from_iterable(other)
 		other_minus_self = other - self
 		self -= other
 		self |= other_minus_self
 		return self
 	
-	def __isub__(self, it: Iterable):
+	def __isub__(self, other: Iterable):
 		"""
 		if isinstance(it, basebag):
 			This runs in O(it.num_unique_elements())
@@ -865,15 +926,13 @@ class bag(basebag, Mutable):
 
 		TODO write test cases
 		"""
-		if isinstance(it, basebag):
-			for elem, count in it._dict.items():
-				self._inc(value, -count)
-		else:
-			for value in it:
-				self._inc(value, -1)
+		if not isinstance(other, basebag):
+			other = self._from_iterable(other)
+		for elem, count in other._dict.items():
+			self._inc(value, -count)
 		return self
 
-	def __iadd__(self, it: Iterable):
+	def __iadd__(self, other: Iterable):
 		"""
 		if isinstance(it, basebag):
 			This runs in O(it.num_unique_elements())
@@ -882,12 +941,10 @@ class bag(basebag, Mutable):
 
 		TODO write test cases
 		"""
-		if isinstance(it, basebag):
-			for elem, count in it._dict.items():
-				self._inc(value, count)
-		else:
-			for value in it:
-				self._inc(value, 1)
+		if not isinstance(other, basebag):
+			other = self._from_iterable(other)
+		for elem, count in other._dict.items():
+			self._inc(value, count)
 		return self
 	
 
@@ -898,7 +955,20 @@ class frozenbag(basebag, Hashable):
 		""" Use the hash funtion from Set,
 		I'm not sure that it works for collections with multiple elements.
 
-		XXX find out if Set._hash works for bags
+		>>> hash(frozenbag()) == hash(frozenbag((0,)))
+		False
+		>>> hash(frozenbag('a')) == hash(frozenbag(('aa')))
+		False
+		>>> hash(frozenbag('a')) == hash(frozenbag(('aaa')))
+		False
+		>>> hash(frozenbag('a')) == hash(frozenbag(('aaaa')))
+		False
+		>>> hash(frozenbag('a')) == hash(frozenbag(('aaaaa')))
+		False
+		>>> hash(frozenbag('ba')) == hash(frozenbag(('ab')))
+		True
+		>>> hash(frozenbag('badce')) == hash(frozenbag(('dbeac')))
+		True
 		"""
 		return Set._hash(self)
 
