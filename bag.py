@@ -3,7 +3,7 @@
 #
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
 #
-""" bag - Also known as a bag or unordered tuple.
+""" bag - Also known as a multiset or unordered tuple.
 
 This module provides three classes:
 	basebag - The superclass of bag and frozenbag.  It is both immutable
@@ -16,7 +16,7 @@ _version = '0.3.1'
 
 import heapq
 from collections import Set, Hashable, Iterable
-from collection import Collection, Mutable
+from collections_ import Collection, Mutable
 from operator import itemgetter
 
 class basebag(Collection):
@@ -100,25 +100,27 @@ class basebag(Collection):
 			return string
 
 	def __getitem__(self, value):
-		return self.multiplicity(value)
+		return self._dict[value]
 
 	## Internal methods
 
-	def _inc(self, value, count=1):
-		""" Increment the multiplicity of value by count (if count <0 then decrement). 
+	def _set(self, elem, value):
+		""" Set the multiplicity of elem to count. 
 		
 		This runs in O(1) time
 		"""
-		old_count = self.multiplicity(value)
-		new_count = max(0, old_count + count)
-		if new_count == 0:
-			try:
-				del self._dict[value]
-			except KeyError:
-				pass
+		if value < 0:
+			raise Error
+		old_count = self.multiplicity(elem)
+		if value == 0:
+			del self._dict[elem]
 		else:
-			self._dict[value] = new_count
-		self._size += new_count - old_count
+			self._dict[elem] = value
+		self._size += value - old_count
+
+	def _inc(self, elem, count=1):
+		""" Increment the multiplicity of value by count (if count <0 then decrement). """
+		self._set(elem, self.multiplicity(elem) + count)
 
 	## New public methods (not overriding/implementing anything)
 
@@ -150,7 +152,7 @@ class basebag(Collection):
 		0
 		"""
 		try:
-			return self._dict[value]
+			return self[value]
 		except KeyError:
 			return 0
 	
@@ -265,7 +267,18 @@ class basebag(Collection):
 			else:
 				l = len(other)
 
-		TODO write test cases for __le__
+		>>> basebag() <= basebag()
+		True
+		>>> basebag() <= basebag('a')
+		True
+		>>> basebag('abc') <= basebag('aabbbc')
+		True
+		>>> basebag('abbc') <= basebag('abc')
+		False
+		>>> basebag('abc') <= set('abc')
+		True
+		>>> basebag('abbc') <= set('abc')
+		False
 		"""
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
@@ -303,7 +316,7 @@ class basebag(Collection):
 
 	## Operations - &, |, +, -, ^, * and isdisjoint
 
-	def __and__(self, other):
+	def __and__(self, other: Iterable):
 		""" Intersection is the minimum of corresponding counts. 
 		
 		This runs in O(l + n) where:
@@ -324,7 +337,7 @@ class basebag(Collection):
 			values[elem] = min(other.multiplicity(elem), self.multiplicity(elem))
 		return self._from_map(values)
 
-	def isdisjoint(self, other):
+	def isdisjoint(self, other: Iterable):
 		"""
 
 		This runs in O(n) where:
@@ -333,14 +346,12 @@ class basebag(Collection):
 		TODO write unit tests for isdisjoint
 		TODO move isdisjoint somewhere more appropriate
 		"""
-		if not isinstance(other, Iterable):
-			return NotImplemented
 		for value in other:
 			if value in self:
 				return False
 		return True
 
-	def __or__(self, other):
+	def __or__(self, other: Iterable):
 		""" Union is the maximum of all elements. 
 		
 		This runs in O(m + n) where:
@@ -353,15 +364,13 @@ class basebag(Collection):
 		TODO write unit tests for or
 		"""
 		if not isinstance(other, basebag):
-			if not isinstance(other, Iterable):
-				return NotImplemented
 			other = self._from_iterable(other)
 		values = dict()
 		for elem in self.unique_elements() | other.unique_elements():
 			values[elem] = max(self.multiplicity(elem), other.multiplicity(elem))
 		return self._from_map(values)
 
-	def __add__(self, other):
+	def __add__(self, other: Iterable):
 		"""
 		other can be any iterable.
 		self + other = self & other + self | other 
@@ -372,14 +381,12 @@ class basebag(Collection):
 		
 		TODO write unit tests for add
 		"""
-		if not isinstance(other, Iterable):
-			return NotImplemented
 		out = self.copy()
 		for value in other:
 			out._inc(value)
 		return out
 	
-	def __sub__(self, other):
+	def __sub__(self, other: Iterable):
 		""" Difference between the sets.
 		other can be any iterable.
 		For normal sets this is all s.t. x in self and x not in other. 
@@ -391,14 +398,12 @@ class basebag(Collection):
 
 		TODO write tests for sub
 		"""
-		if not isinstance(other, Iterable):
-			return NotImplemented
 		out = self.copy()
 		for value in other:
 			out._inc(value, -1)
 		return out
 
-	def __mul__(self, other):
+	def __mul__(self, other: Iterable):
 		""" Cartesian product of the two sets.
 		other can be any iterable.
 		Both self and other must contain elements that can be added together.
@@ -422,8 +427,6 @@ class basebag(Collection):
 		basebag()
 		"""
 		if not isinstance(other, basebag):
-			if not isinstance(other, Iterable):
-				return NotImplemented
 			other = self._from_iterable(other)
 		values = dict()
 		for elem, count in self._dict.items():
@@ -445,6 +448,45 @@ class basebag(Collection):
 		"""
 		return (self - other) | (other - self)
 
+	def multichoose(iterable: Iterable, k):
+		""" Returns a set of all possible multisets of length k on unique elements from iterable.
+		The number of sets returned is C(n+k-1, k) where:
+			C is the binomial coefficient function
+			n is the number of unique elements in iterable
+			k is the cardinality of the resulting multisets
+
+		The run time is O((n+k-1)!/((n-1)!*k!)) which is O((n+k)^min(k,n))
+		DO NOT run this on big inputs.
+
+		see http://en.wikipedia.org/wiki/Multiset#Multiset_coefficients
+
+		>>> basebag.multichoose((), 1)
+		set()
+		>>> basebag.multichoose('a', 1)
+		{frozenbag(('a',))}
+		>>> basebag.multichoose('a', 2)
+		{frozenbag(('a', 'a'))}
+		>>> result = basebag.multichoose('ab', 3)
+		>>> len(result) == 4 and frozenbag(('a', 'a', 'a')) in result and frozenbag(('a', 'a', 'b')) in result and frozenbag(('a', 'b', 'b')) in result and frozenbag(('b', 'b', 'b')) in result
+		True
+		"""
+		# if iterable is empty there are no multisets
+		if not iterable:
+			return set()
+
+		symbols = set(iterable)
+		
+		symbol = symbols.pop()
+		result = set()
+		if len(symbols) == 0:
+			result.add(frozenbag._from_map({symbol : k}))
+		else:
+			for symbol_multiplicity in range(k+1):
+				symbol_set = frozenbag._from_map({symbol : symbol_multiplicity})
+				for others in basebag.multichoose(symbols, k-symbol_multiplicity):
+					result.add(symbol_set + others)
+		return result
+
 class bag(basebag, Mutable):
 	""" bag is a Mutable basebag, thus not hashable and unusable for dict keys or in
 	other sets.
@@ -452,18 +494,32 @@ class bag(basebag, Mutable):
 	TODO write bag add, discard and clear unit tests
 	"""
 
-	def __setitem__(self, elem, value=True):
-		if value:
-			add(elem)
-	
-	def __delitem__(self, value):
-		self.remove(value)
+	def __setitem__(self, elem, value):
+		""" This sets the number of times that value appears in the bag.
 
-	def add(self, value):
-		self._inc(value, 1)
+		>>> b = bag('abc')
+		>>> b['a'] = 2
+		>>> b['a']
+		2
+		>>> b['d'] = 5
+		>>> b['d']
+		5
+		>>> b['d'] = 0
+		>>> 'd' in b
+		False
+		"""
+		if value < 0:
+			raise ValueError
+		self._set(elem, value)
 	
-	def discard(self, value):
-		self._inc(value, -1)
+	def __delitem__(self, elem):
+		self.remove(elem)
+
+	def add(self, elem):
+		self._inc(elem, 1)
+	
+	def discard(self, elem):
+		self._inc(elem, -1)
 
 	def remove(self, value):
 		if value not in self:
@@ -488,7 +544,7 @@ class bag(basebag, Mutable):
 			other = self._from_iterable(it)
 		for elem, other_count in other._dict.items():
 			self_count = self.multiplicity(elem)
-			self._inc(elem, max(other_count, self_count) - self_count)
+			self._set(elem, max(other_count, self_count))
 		return self
 	
 	def __iand__(self, it: Iterable):
@@ -503,7 +559,7 @@ class bag(basebag, Mutable):
 			other = self._from_iterable(it)
 		for elem, other_count in other._dict.items():
 			self_count = self.multiplicity(elem)
-			self._inc(elem, min(other_count, self_count) - self_count)
+			self._set(elem, min(other_count, self_count))
 		return self
 	
 	def __ixor__(self, it: Iterable):
@@ -569,44 +625,7 @@ class frozenbag(basebag, Hashable):
 		TODO write unit tests for hash
 		"""
 		return Set._hash(self)
-	
-def multichoose(iterable, k):
-	""" Returns a set of all possible multisets of length k on unique elements from iterable.
-	The number of sets returned is C(n+k-1, k) where:
-		C is the binomial coefficient function
-		n is the number of unique elements in iterable
-		k is the cardinality of the resulting multisets
 
-	The run time is O((n+k)!/(n!*k!)) which is O((n+k)^min(k,n))
-	DO NOT run this on big inputs.
-
-	see http://en.wikipedia.org/wiki/Multiset#Multiset_coefficients
-
-	>>> multichoose((), 1)
-	set()
-	>>> multichoose('a', 1)
-	{frozenbag(('a',))}
-	>>> multichoose('a', 2)
-	{frozenbag(('a', 'a'))}
-	>>> result = multichoose('ab', 3)
-
-	>>> len(result) == 4 and frozenbag(('a', 'a', 'a')) in result and frozenbag(('a', 'a', 'b')) in result and frozenbag(('a', 'b', 'b')) in result and frozenbag(('b', 'b', 'b')) in result
-	True
-	"""
-	# if iterable is empty there are no multisets
-	if not iterable:
-		return set()
-
-	symbols = set(iterable)
-	
-	symbol = symbols.pop()
-	result = set()
-	if len(symbols) == 0:
-		result.add(frozenbag._from_map({symbol : k}))
-	else:
-		for symbol_multiplicity in range(k+1):
-			symbol_set = frozenbag._from_map({symbol : symbol_multiplicity})
-			for others in multichoose(symbols, k-symbol_multiplicity):
-				result.add(symbol_set + others)
-	return result
-
+class Error(Exception):
+	""" Base class for Errors in this module. """
+	pass
