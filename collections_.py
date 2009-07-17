@@ -524,8 +524,8 @@ class basebag(Collection):
 	## Comparison methods
 	## A bag can be compared to any iterable
 	
-	def __le__(self, other: Iterable):
-		""" Tests if self <= other where other is any Iterable
+	def __le__(self, other: Collection):
+		""" Tests if self <= other where other is any Collection
 
 		This runs in O(l + n) where:
 			n is self.num_unique_elements()
@@ -556,27 +556,27 @@ class basebag(Collection):
 				return False
 		return True
 
-	def __lt__(self, other: Iterable):
+	def __lt__(self, other: Collection):
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
 		return len(self) < len(other) and self <= other
 
-	def __gt__(self, other: Iterable):
+	def __gt__(self, other: Collection):
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
 		return other < self
 
-	def __ge__(self, other: Iterable):
+	def __ge__(self, other: Collection):
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
 		return other <= self
 
-	def __eq__(self, other: Iterable):
+	def __eq__(self, other: Collection):
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
 		return len(self) == len(other) and self <= other 
 
-	def __ne__(self, other: Iterable):
+	def __ne__(self, other: Collection):
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
 		return not (self == other)
