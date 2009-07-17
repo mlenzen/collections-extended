@@ -4,11 +4,11 @@
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
 #
 
-_version = '0.4.0'
+_version = '0.4.1'
 
 import heapq
 import sys
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 from collections import Sized, Iterable, Container, Set, Hashable, MutableSet, MutableSequence, Sequence
 from operator import itemgetter
 
@@ -25,13 +25,13 @@ def getCollection(it: Iterable=None, mutable=False, ordered=False, unique=False)
 			if mutable:
 				return set_(it)
 			else:
-				return frozenset_(it)
+				return frozenset(it)
 	else:
 		if ordered:
 			if mutable:
-				return list_(it)
+				return list(it)
 			else:
-				return tuple_(it)
+				return tuple(it)
 		else:
 			if mutable:
 				return bag(it)
@@ -56,7 +56,11 @@ class Collection(Sized, Iterable, Container):
 	def __getitem__(self, key):
 		raise KeyError
 
-class Mutable():
+Collection.register(list)
+Collection.register(tuple)
+Collection.register(frozenset)
+
+class Mutable(metaclass=ABCMeta):
 	@abstractmethod
 	def __setitem__(self, key, value):
 		raise KeyError
@@ -65,26 +69,15 @@ class Mutable():
 	def __delitem__(self, key):
 		raise KeyError
 
+	@abstractmethod
 	def pop(self):
-		it = iter(self)
-		try:
-			value = next(it)
-		except StopIteration:
-			raise KeyError
-		self.discard(value)
-		return value
+		raise KeyError
+
+Mutable.register(list)
 
 #####################################################################
 ## Extending built in collections
 #####################################################################
-
-class list_(list, Collection, Mutable):
-	""" Extends list and implements Mutable and Collection """
-	pass
-
-class tuple_(tuple, Collection):
-	""" Extends tuple and implements Collection """
-	pass
 
 class set_(set, Collection, Mutable):
 	""" set_ extends set and implements Collection and Mutable.
@@ -126,10 +119,6 @@ class set_(set, Collection, Mutable):
 
 	def __delitem__(self, item):
 		self.remove(item)
-
-class frozenset_(frozenset_, Collection):
-	""" Extends frozenset and implements Collection """
-	pass
 
 #####################################################################
 ## setlists
@@ -385,7 +374,7 @@ class basebag(Collection):
 		This runs in O(1) time
 		"""
 		if value < 0:
-			raise Error
+			raise ValueError
 		old_count = self.multiplicity(elem)
 		if value == 0:
 			if elem in self:
@@ -786,12 +775,19 @@ class bag(basebag, Mutable):
 		>>> 'd' in b
 		False
 		"""
-		if value < 0:
-			raise ValueError
 		self._set(elem, value)
 	
 	def __delitem__(self, elem):
 		self.remove(elem)
+
+	def pop(self):
+		it = iter(self)
+		try:
+			value = next(it)
+		except StopIteration:
+			raise KeyError
+		self.discard(value)
+		return value
 
 	def add(self, elem):
 		self._inc(elem, 1)
@@ -903,12 +899,4 @@ class frozenbag(basebag, Hashable):
 		XXX find out if Set._hash works for bags
 		"""
 		return Set._hash(self)
-
-#####################################################################
-
-#####################################################################
-
-class Error(Exception):
-	""" Base class for Errors in this module. """
-	pass
 
