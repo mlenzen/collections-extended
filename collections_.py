@@ -12,9 +12,8 @@ from abc import ABCMeta, abstractmethod
 from collections import Sized, Iterable, Container, Set, Hashable, MutableSet, MutableSequence, Sequence
 from operator import itemgetter
 
-def getCollection(it: Iterable=None, mutable=False, ordered=False, unique=False):
-	""" Return a Collection with the specified properties.  I had this function name
-	use camelCase because I thought Collection should be capitalized. """
+def collection(it: Iterable=None, mutable=False, ordered=False, unique=False):
+	""" Return a Collection with the specified properties. """
 	if unique:
 		if ordered:
 			if mutable:
@@ -25,7 +24,7 @@ def getCollection(it: Iterable=None, mutable=False, ordered=False, unique=False)
 			if mutable:
 				return set_(it)
 			else:
-				return frozenset(it)
+				return frozenset_(it)
 	else:
 		if ordered:
 			if mutable:
@@ -58,7 +57,6 @@ class Collection(Sized, Iterable, Container):
 
 Collection.register(list)
 Collection.register(tuple)
-Collection.register(frozenset)
 
 class Mutable(metaclass=ABCMeta):
 	@abstractmethod
@@ -76,7 +74,7 @@ class Mutable(metaclass=ABCMeta):
 Mutable.register(list)
 
 #####################################################################
-## Extending built in collections
+## Extending sets
 #####################################################################
 
 class set_(set, Collection, Mutable):
@@ -90,12 +88,9 @@ class set_(set, Collection, Mutable):
 	
 	>>> s = set_('abc')
 	>>> s['a']
-	'a'
-	>>> try:
-	...	s['d']
-	... except KeyError:
-	...	print(True)
 	True
+	>>> s['d']
+	False
 	>>> s['a'] = False
 	>>> 'a' in s
 	False
@@ -104,11 +99,8 @@ class set_(set, Collection, Mutable):
 	False
 	"""
 	def __getitem__(self, item):
-		""" Returns item if it is here, otherwise raises a KeyError. """
-		if item in self:
-			return item
-		else:
-			raise KeyError
+		""" Equal to `item in self` """
+		return item in self
 
 	def __setitem__(self, elem, value):
 		""" Set whether or not elem is in set_ based on what value evaluates to. """
@@ -119,6 +111,11 @@ class set_(set, Collection, Mutable):
 
 	def __delitem__(self, item):
 		self.remove(item)
+
+class frozenset_(frozenset, Collection):
+	""" frozenset_ extends frozenset and implements Collection """
+	def __getitem__(self, item):
+		return item in self
 
 #####################################################################
 ## setlists
