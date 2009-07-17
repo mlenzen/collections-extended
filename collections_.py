@@ -42,3 +42,27 @@ class Mutable():
 		self.discard(value)
 		return value
 
+class set_(set, Collection, Mutable):
+	""" 
+	TODO document set_
+	TODO write unit tests for set_
+	"""
+	def __getitem__(self, item):
+		""" Returns `item in self` """
+		return item in self
+
+	def __setitem__(self, elem1, elem2):
+		""" Replaces elem1 with elem2.  
+		If elem1 not in self raise KeyError.  
+		If elem2 in self, raise ValueError.
+		"""
+		if elem2 in self:
+			raise ValueError
+		if elem1 not in self:
+			raise KeyError
+		self.discard(item)
+		self.add(value)
+
+	def __delitem__(self, item):
+		""" Deletes item from self.  Raises KeyError if item is not in self. """
+		self.delete(item)
