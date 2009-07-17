@@ -5,10 +5,14 @@
 #
 """ setlist - an ordered collection of unique elements
 
-TODO write long-desc
+This module provides three classes:
+	basesetlist - The superclass of setlist and frozensetlist.  It is both
+		immutable and unhashable.
+	setlist - A mutable (unhashable) setlist
+	frozensetlist - An immutable hashable setlist
 """
 
-_version = '0.1.1'
+_version = '0.1.2'
 
 from collections import MutableSet, Set, Hashable, Iterable, Sequence, MutableSequence
 import sys
@@ -28,6 +32,16 @@ class basesetlist(Collection, Sequence, Set):
 					index = len(self)
 					self._list.insert(index, value)
 					self._dict[value] = index
+	
+	def __str__(self):
+		return self._list.__str__()
+
+	def __repr__(self):
+		if len(self) == 0:
+			return '{0}()'.format(self.__class__.__name__)
+		else:
+			format = '{class_name}({tuple!r})'
+			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
 	
 	## Implement Collection
 	def __getitem__(self, index):
@@ -109,7 +123,7 @@ class setlist(basesetlist, Mutable, MutableSequence, MutableSet):
 	def pop(self, index=-1):
 		index %= len(self)
 		value = self._list.pop(index)
-		del self._dict.pop(index)
+		del self._dict[value]
 		return value
 
 	## Implement MutableSequence
