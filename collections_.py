@@ -15,7 +15,7 @@ from collections import *
 import collections
 __all__ += collections.__all__
 
-def collection(it: Iterable=None, mutable=False, ordered=False, unique=False):
+def collection(it=None, mutable=False, ordered=False, unique=False):
 	""" Return a Collection with the specified properties. """
 	if unique:
 		if ordered:
@@ -636,8 +636,6 @@ class basebag(Collection):
 		TODO write unit tests for and
 		"""
 		if not isinstance(other, basebag):
-			if not isinstance(other, Iterable):
-				return NotImplemented
 			other = self._from_iterable(other)
 		values = dict()
 		for elem in self._dict:
