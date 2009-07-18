@@ -15,7 +15,7 @@ from collections import *
 import collections
 __all__ += collections.__all__
 
-def collection(it=(), mutable=True, ordered=False, unique=False):
+def collection(it : Iterable = (), mutable=True, ordered=False, unique=False):
 	""" Return a Collection with the specified properties. 
 	
 	>>> isinstance(collection(), bag)
@@ -198,7 +198,7 @@ class basesetlist(Collection, Sequence, Set):
 	and unhashable.
 	"""
 
-	def __init__(self, iterable=None):
+	def __init__(self, iterable : Iterable = None):
 		self._list = list()
 		self._dict = dict()
 		if iterable:
@@ -357,7 +357,7 @@ class basebag(Collection):
 	"""
 	## Basic object methods
 
-	def __init__(self, iterable=None):
+	def __init__(self, iterable : Iterable = None):
 		""" Create a new basebag.  If iterable isn't given, is None or is empty then the 
 		bag starts empty.  Otherwise each element from iterable will be added to the bag 
 		however many times it appears.
@@ -651,7 +651,10 @@ class basebag(Collection):
 			else:
 				l = len(other)
 
-		TODO write unit tests for and
+		>>> bag('aabc') & bag('aacd') == bag('aac')
+		True
+		>>> bag() & bag('safgsd') == bag()
+		True
 		"""
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
@@ -720,7 +723,10 @@ class basebag(Collection):
 		"""
 		out = self.copy()
 		for value in other:
-			out._inc(value, -1)
+			try:
+				out._inc(value, -1)
+			except ValueError:
+				pass
 		return out
 
 	def __mul__(self, other: Iterable):
@@ -848,12 +854,13 @@ class bag(basebag, Mutable):
 		self._inc(elem, 1)
 	
 	def discard(self, elem):
-		self._inc(elem, -1)
+		try:
+			self.remove(elem)
+		except ValueError:
+			pass
 
-	def remove(self, value):
-		if value not in self:
-			raise KeyError(value)
-		self.discard(value)
+	def remove(self, elem):
+		self._inc(elem, -1)
 
 	def clear(self):
 		self._dict = dict()
@@ -922,7 +929,10 @@ class bag(basebag, Mutable):
 		else:
 			This runs in O(len(other))
 
-		TODO write test cases
+		>>> b = bag('abbc')
+		>>> b ^= bag('bg')
+		>>> b == bag('abcg')
+		True
 		"""
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
@@ -938,7 +948,10 @@ class bag(basebag, Mutable):
 		else:
 			This runs in O(len(it))
 
-		TODO write test cases
+		>>> b = bag('aabbc')
+		>>> b -= bag('bd')
+		>>> b == bag('aabc')
+		True
 		"""
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
@@ -956,7 +969,10 @@ class bag(basebag, Mutable):
 		else:
 			This runs in O(len(it))
 
-		TODO write test cases
+		>>> b = bag('abc')
+		>>> b += bag('cde')
+		>>> b == bag('abccde')
+		True
 		"""
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
