@@ -5,7 +5,7 @@
 #
 _version = '0.2.0'
 
-__all__ = ['collection', 'Collection', 'Mutable', 'set', 'frozenset', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
+__all__ = ['collection', 'Collection', 'MutableCollection', 'set', 'frozenset', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
 
 import heapq
 import sys
@@ -92,18 +92,18 @@ Collection.register(Sequence)
 Collection.register(Set)
 Collection.register(Mapping)
 
-class Mutable(metaclass=ABCMeta):
-	""" A metaclass for all Mutable objects.
+class MutableCollection(metaclass=ABCMeta):
+	""" A metaclass for all MutableCollection objects.
 	
-	>>> isinstance(list(), Mutable)
+	>>> isinstance(list(), MutableCollection)
 	True
-	>>> isinstance(set(), Mutable)
+	>>> isinstance(set(), MutableCollection)
 	True
-	>>> isinstance(bag(), Mutable)
+	>>> isinstance(bag(), MutableCollection)
 	True
-	>>> isinstance(setlist(), Mutable)
+	>>> isinstance(setlist(), MutableCollection)
 	True
-	>>> isinstance(dict(), Mutable)
+	>>> isinstance(dict(), MutableCollection)
 	True
 	"""
 	@abstractmethod
@@ -118,16 +118,16 @@ class Mutable(metaclass=ABCMeta):
 	def pop(self):
 		raise KeyError
 
-Mutable.register(MutableSequence)
-Mutable.register(MutableSet)
-Mutable.register(MutableMapping)
+MutableCollection.register(MutableSequence)
+MutableCollection.register(MutableSet)
+MutableCollection.register(MutableMapping)
 
 #####################################################################
 ## Extending sets
 #####################################################################
 
-class set(set, Collection, Mutable):
-	""" set extends set and implements Collection and Mutable.
+class set(set, Collection, MutableCollection):
+	""" set extends set and implements Collection and MutableCollection.
 	set[item]
 		returns if the item is in the set
 	set[item] = value
@@ -175,6 +175,10 @@ class set(set, Collection, Mutable):
 
 	def __setitem__(self, elem, value):
 		""" Set whether or not elem is in set based on what value evaluates to. """
+		if not isinstance(value, int):
+			raise TypeError
+		if value != 0 and value != 1:
+			raise ValueError
 		if value:
 			self.add(elem)
 		else:
@@ -299,7 +303,7 @@ class basesetlist(Collection, Sequence, Set):
 
 	## Nothing needs to be done to implement Set
 
-class setlist(basesetlist, Mutable, MutableSequence, MutableSet):
+class setlist(basesetlist, MutableCollection, MutableSequence, MutableSet):
 	""" A mutable (unhashable) setlist that inherits from basesetlist. 
 	
 	>>> sl = setlist('abcde')
@@ -338,7 +342,7 @@ class setlist(basesetlist, Mutable, MutableSequence, MutableSet):
 	setlist(('a', 'c', 'e', 'f', 'g', 'h'))
 	"""
 
-	## Implement Mutable
+	## Implement MutableCollection
 	def __setitem__(self, index, value):
 		index = self._fix_neg_index(index)
 		if value in self:
@@ -934,8 +938,8 @@ class basebag(Collection):
 					result.add(symbol_set + others)
 		return result
 
-class bag(basebag, Mutable):
-	""" bag is a Mutable basebag, thus not hashable and unusable for dict keys or in
+class bag(basebag, MutableCollection):
+	""" bag is a MutableCollection basebag, thus not hashable and unusable for dict keys or in
 	other sets.
 	"""
 
