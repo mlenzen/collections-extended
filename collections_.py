@@ -129,18 +129,27 @@ class set(set, Collection, Mutable):
 	>>> 'b' in s
 	False
 	"""
-	def __str__(self):
+	def __repr__(self):
 		""" For some reason this gets a little broken.
 		
-		>>> set().__str__()
+		>>> set().__repr__()
 		'set()'
-		>>> set('abc').__str__()
+		>>> set('abc').__repr__()
 		"{'a', 'c', 'b'}"
 		"""
-		result = super.__str__(self)
-		if result != 'set()':
-			result = result[4:-1]
-		return result
+		if len(self) == 0:
+			return 'set()'
+		else:
+			format = '{elem!r}'
+			strings = []
+			for elem in self:
+				strings.append(format.format(elem=elem))
+			strings = tuple(strings)
+			string = '{first}'.format(first=strings[0])
+			for i in range(1,len(strings)):
+				string = '{prev}, {next}'.format(prev=string, next=strings[i])
+			string = '{{{0}}}'.format(string)
+			return string
 
 	def __getitem__(self, item):
 		""" Equal to `item in self` """
@@ -442,7 +451,7 @@ class basebag(Collection):
 		
 		This runs in O(1) time
 		"""
-		return self._dict.keys()
+		return set(self._dict.keys())
 
 	def multiplicity(self, value):
 		""" Return the multiplicity of value.  If value is not in the bag no Error is
@@ -510,15 +519,7 @@ class basebag(Collection):
 	## Alias methods - these methods are just names for other operations
 
 	def cardinality(self): return len(self)
-	def underlying_set(self): return unique_elements()
-	def cartesian_product(self, other): return self * other
-	def join(self, other): return self + other
-	def sum(self, other): return self + other
-	def difference(self, other): return self - other
-	def symmetric_difference(self, other): return self ^ other
-	def xor(self, other): return self ^ other
-	def intersect(self, other): return self & other
-	def union(self, other): return self | other
+	def underlying_set(self): return self.unique_elements()
 	
 	## implementing Sized methods
 
@@ -769,9 +770,9 @@ class basebag(Collection):
 		>>> basebag.multichoose((), 1)
 		set()
 		>>> basebag.multichoose('a', 1)
-		set({frozenbag(('a',))})
+		{frozenbag(('a',))}
 		>>> basebag.multichoose('a', 2)
-		set({frozenbag(('a', 'a'))})
+		{frozenbag(('a', 'a'))}
 		>>> result = basebag.multichoose('ab', 3)
 		>>> len(result) == 4 and \
 			 	frozenbag(('a', 'a', 'a')) in result and \
