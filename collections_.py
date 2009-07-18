@@ -957,6 +957,8 @@ class bag(basebag, MutableCollection):
 		>>> 'd' in b
 		False
 		"""
+		if not isinstance(value, int):
+			raise ValueError
 		self._set(elem, value)
 	
 	def __delitem__(self, elem):
