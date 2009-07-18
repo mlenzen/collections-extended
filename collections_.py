@@ -15,8 +15,26 @@ from collections import *
 import collections
 __all__ += collections.__all__
 
-def collection(it=None, mutable=False, ordered=False, unique=False):
-	""" Return a Collection with the specified properties. """
+def collection(it=(), mutable=True, ordered=False, unique=False):
+	""" Return a Collection with the specified properties. 
+	
+	>>> isinstance(collection(), bag)
+	True
+	>>> isinstance(collection(ordered=True), list)
+	True
+	>>> isinstance(collection(unique=True), set)
+	True
+	>>> isinstance(collection(unique=True, ordered=True), setlist)
+	True
+	>>> isinstance(collection(mutable=False), frozenbag)
+	True
+	>>> isinstance(collection(mutable=False, ordered=True), tuple)
+	True
+	>>> isinstance(collection(mutable=False, unique=True), frozenset)
+	True
+	>>> isinstance(collection(mutable=False, ordered=True, unique=True), frozensetlist)
+	True
+	"""
 	if unique:
 		if ordered:
 			if mutable:
@@ -643,10 +661,7 @@ class basebag(Collection):
 		return self._from_map(values)
 
 	def isdisjoint(self, other: Iterable):
-		"""
-
-		This runs in O(n) where:
-			n is len(other)
+		""" This runs in O(len(other))
 
 		TODO write unit tests for isdisjoint
 		TODO move isdisjoint somewhere more appropriate
@@ -928,7 +943,10 @@ class bag(basebag, Mutable):
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
 		for elem, count in other._dict.items():
-			self._inc(value, -count)
+			try:
+				self._inc(elem, -count)
+			except ValueError:
+				pass
 		return self
 
 	def __iadd__(self, other: Iterable):
@@ -943,7 +961,7 @@ class bag(basebag, Mutable):
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
 		for elem, count in other._dict.items():
-			self._inc(value, count)
+			self._inc(elem, count)
 		return self
 	
 
