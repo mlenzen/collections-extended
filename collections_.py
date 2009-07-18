@@ -221,7 +221,7 @@ class basesetlist(Collection, Sequence, Set):
 	## Convenience methods
 	def _fix_neg_index(self, index):
 		if index < 0:
-			index += len(self) + 1
+			index += len(self)
 		if index < 0:
 			index = 0
 		return index
@@ -249,7 +249,13 @@ class basesetlist(Collection, Sequence, Set):
 		"""
 		This runs in O(len(sub))
 
-		TODO unit tests
+		>>> sl = setlist('abcdea')
+		>>> sl.count('a')
+		1
+		>>> sl.count('f')
+		0
+		>>> sl.count('bc')
+		1
 		"""
 		try:
 			self.index(sub, start, end)
@@ -261,7 +267,17 @@ class basesetlist(Collection, Sequence, Set):
 		"""
 		This runs in O(len(sub))
 
-		TODO unit tests
+		>>> sl = setlist('abcdef')
+		>>> sl.index('a')
+		0
+		>>> sl.index('ef')
+		4
+		>>> try:
+		...   sl.index('cb')
+		...   False
+		... except ValueError:
+		...   True
+		True
 		"""
 		# First assume that sub is an element in self
 		try:
@@ -270,39 +286,69 @@ class basesetlist(Collection, Sequence, Set):
 		except KeyError:
 			pass
 		# If we didn't find it as an element, maybe it's a sublist to find
-		try:
-			index = self._dict[sub[0]]
-			for i in range(1, len(sub)):
-				if sub[i] != self[index+i]:
-					raise ValueError
-			return index
-		except TypeError:
-			pass
+		if sub[0] in self:
+			try:
+				index = self._dict[sub[0]]
+				for i in range(1, len(sub)):
+					if sub[i] != self[index+i]:
+						raise ValueError
+				return index
+			except TypeError:
+				pass
 		raise ValueError
 
 	## Nothing needs to be done to implement Set
 
 class setlist(basesetlist, Mutable, MutableSequence, MutableSet):
-	""" A mutable (unhashable) setlist that inherits from basesetlist. """
+	""" A mutable (unhashable) setlist that inherits from basesetlist. 
+	
+	>>> sl = setlist('abcde')
+	>>> sl[0] = 5
+	>>> sl
+	setlist((5, 'b', 'c', 'd', 'e'))
+	>>> sl[-1] = 0
+	>>> sl
+	setlist((5, 'b', 'c', 'd', 0))
+	>>> sl[1] = 'c'
+	>>> sl
+	setlist((5, 'b', 'c', 'd', 0))
+	>>> del sl[0]
+	>>> sl
+	setlist(('b', 'c', 'd', 0))
+	>>> del sl[-1]
+	>>> sl
+	setlist(('b', 'c', 'd'))
+	>>> sl.pop()
+	'd'
+	>>> sl.pop(0)
+	'b'
+	>>> sl
+	setlist(('c',))
+	>>> sl.insert(0, 'a')
+	>>> sl
+	setlist(('a', 'c'))
+	>>> sl.insert(len(sl), 'e')
+	>>> sl
+	setlist(('a', 'c', 'e'))
+	>>> sl.append('f')
+	>>> sl
+	setlist(('a', 'c', 'e', 'f'))
+	>>> sl += ('g', 'h')
+	>>> sl
+	setlist(('a', 'c', 'e', 'f', 'g', 'h'))
+	"""
 
 	## Implement Mutable
 	def __setitem__(self, index, value):
-		"""
-
-		TODO unit tests
-		"""
 		index = self._fix_neg_index(index)
 		if value in self:
 			return
 		old_value = self._list[index]
+		del self._dict[old_value]
 		self._list[index] = value
 		self._dict[value] = index
 
 	def __delitem__(self, index):
-		"""
-
-		TODO unit tests
-		"""
 		index = self._fix_neg_index(index)
 		del self._dict[self._list[index]]
 		for i in range(index + 1, len(self._list)):
@@ -311,10 +357,6 @@ class setlist(basesetlist, Mutable, MutableSequence, MutableSet):
 		del self._list[index]
 	
 	def pop(self, index=-1):
-		"""
-
-		TODO unit tests
-		"""
 		index = self._fix_neg_index(index)
 		value = self[index]
 		del self[index]
@@ -322,10 +364,6 @@ class setlist(basesetlist, Mutable, MutableSequence, MutableSet):
 
 	## Implement MutableSequence
 	def insert(self, index, value):
-		"""
-
-		TODO unit tests
-		"""
 		if value in self:
 			return
 		index = self._fix_neg_index(index)
@@ -348,8 +386,9 @@ class setlist(basesetlist, Mutable, MutableSequence, MutableSet):
 		return self
 
 	def remove(self, value):
-		index = self._dict[value]
-		del self[index]
+		if value not in self:
+			raise ValueError
+		del self._dict[self._dict[value]]
 	
 	def remove_all(self, elems_to_delete: Set):
 		""" Remove all the elements from iterable. 
@@ -390,9 +429,7 @@ class setlist(basesetlist, Mutable, MutableSequence, MutableSet):
 	def discard(self, value):
 		if value not in self:
 			return
-		index = self._dict[value]
-		del self._list[index]
-		del self._dict[value]
+		del self._dict[self._dict[value]]
 
 	def clear(self):
 		self._dict = dict()
