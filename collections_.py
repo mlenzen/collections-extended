@@ -3,7 +3,7 @@
 #
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
 #
-_version = '0.2.0'
+_version = '0.2.1'
 
 __all__ = ['collection', 'Collection', 'MutableCollection', 'set', 'frozenset', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
 
