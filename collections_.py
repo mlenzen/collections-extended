@@ -218,41 +218,51 @@ class basesetlist(Collection, Sequence, Set):
 			format = '{class_name}({tuple!r})'
 			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
 	
+	## Convenience methods
+	def _fix_neg_index(self, index):
+		if index < 0:
+			index += len(self) + 1
+		if index < 0:
+			index = 0
+		return index
+
 	## Implement Collection
 	def __getitem__(self, index):
-		return self._list.__getitem__(index)
+		return self._list[index]
 
 	## Implement Container from Collection
 	def __contains__(self, elem): 
-		return self._dict.__contains__(elem)
+		return elem in self._dict
 
 	## Implement Iterable from Collection
-	def __iter__(self):
-		self._list.__iter__()
+	__iter__ = list.__iter__
 
 	## Implement Sized from Collection
 	def __len__(self):
-		return self._list.__len__()
+		return len(self._list)
 
 	## Implement Sequence
 	def __reversed__(self):
 		return self._list.__reversed__()
 
-	def count(sub, start=0, end=-1):
+	def count(self, sub, start=0, end=-1):
 		"""
 		This runs in O(len(sub))
+
+		TODO unit tests
 		"""
 		try:
-			index(sub, start, end)
+			self.index(sub, start, end)
 			return 1
 		except ValueError:
 			return 0
 
-	def index(sub, start=0, end=-1):
+	def index(self, sub, start=0, end=-1):
 		"""
 		This runs in O(len(sub))
+
+		TODO unit tests
 		"""
-		index %= len(self)
 		# First assume that sub is an element in self
 		try:
 			index = self._dict[sub]
@@ -274,45 +284,59 @@ class basesetlist(Collection, Sequence, Set):
 
 class setlist(basesetlist, Mutable, MutableSequence, MutableSet):
 	""" A mutable (unhashable) setlist that inherits from basesetlist. """
+
 	## Implement Mutable
 	def __setitem__(self, index, value):
-		index %= len(self)
-		if index >= len(self):
-			raise IndexError
+		"""
+
+		TODO unit tests
+		"""
+		index = self._fix_neg_index(index)
 		if value in self:
 			return
 		old_value = self._list[index]
 		self._list[index] = value
-		del self._dict[value]
 		self._dict[value] = index
 
 	def __delitem__(self, index):
-		index %= len(self)
-		if index >= len(self):
-			raise IndexError
-		old_value = self._list[index]
+		"""
+
+		TODO unit tests
+		"""
+		index = self._fix_neg_index(index)
+		del self._dict[self._list[index]]
+		for i in range(index + 1, len(self._list)):
+			elem = self._list[i]
+			self._dict[elem] = self._dict[elem] - 1
 		del self._list[index]
-		del self._dict[old_value]
 	
 	def pop(self, index=-1):
-		index %= len(self)
-		value = self._list.pop(index)
-		del self._dict[value]
+		"""
+
+		TODO unit tests
+		"""
+		index = self._fix_neg_index(index)
+		value = self[index]
+		del self[index]
 		return value
 
 	## Implement MutableSequence
 	def insert(self, index, value):
-		index %= len(self)
-		if index > len(self):
-			raise IndexError
+		"""
+
+		TODO unit tests
+		"""
 		if value in self:
 			return
-		index %= len(self)
-		self._list.insert(index, value)
+		index = self._fix_neg_index(index)
 		self._dict[value] = index
+		for i in range(index, len(self._list)):
+			elem = self._list[i]
+			self._dict[elem] = self._dict[elem] + 1
+		self._list.insert(index, value)
 	
 	def append(self, value):
-		insert(self, len(self), value)
+		self.insert(len(self), value)
 	
 	def extend(self, values):
 		for value in values:
@@ -324,7 +348,40 @@ class setlist(basesetlist, Mutable, MutableSequence, MutableSet):
 		return self
 
 	def remove(self, value):
-		del self[self._dict[value]]
+		index = self._dict[value]
+		del self[index]
+	
+	def remove_all(self, elems_to_delete: Set):
+		""" Remove all the elements from iterable. 
+		This is much faster than removing them one by one.
+		This runs in O(len(self))
+
+		>>> sl = setlist('abcdefgh')
+		>>> sl.remove_all(set('acdh'))
+		>>> sl
+		setlist(('b', 'e', 'f', 'g'))
+		"""
+		## First go through and mark all of the items to delete, also remove them from the dict
+		marked_to_delete = object()
+		num_to_delete = 0
+		for i in range(len(self)):
+			elem = self[i]
+			if elem in elems_to_delete:
+				del self._dict[elem]
+				self._list[i] = marked_to_delete
+				num_to_delete += 1
+		## Now go through and shift elements backwards
+		deleted_count = 0
+		for i in range(len(self._list)):
+			elem = self._list[i]
+			if elem == marked_to_delete:
+				deleted_count += 1
+			else:
+				self._list[i - deleted_count] = elem
+				self._dict[elem] = i - deleted_count
+		## Now remove deleted_count items from the end of the list
+		for i in range(deleted_count):
+			del self._list[len(self._list)-1]
 
 	## Implement MutableSet
 	def add(self, item):
