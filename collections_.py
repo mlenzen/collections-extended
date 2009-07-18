@@ -760,8 +760,15 @@ class basebag(Collection):
 	def isdisjoint(self, other: Iterable):
 		""" This runs in O(len(other))
 
-		TODO write unit tests for isdisjoint
 		TODO move isdisjoint somewhere more appropriate
+		>>> bag().isdisjoint(bag())
+		True
+		>>> bag().isdisjoint(bag('abc'))
+		True
+		>>> bag('ab').isdisjoint(bag('ac'))
+		False
+		>>> bag('ab').isdisjoint(bag('cd'))
+		True
 		"""
 		for value in other:
 			if value in self:
@@ -778,7 +785,12 @@ class basebag(Collection):
 			else:
 				m = len(other)
 
-		TODO write unit tests for or
+		>>> bag('abcc') | bag() == bag('abcc')
+		True
+		>>> bag('abcc') | bag('aabd') == bag('aabccd')
+		True
+		>>> bag('aabc') | set('abdd') == bag('aabcd')
+		True
 		"""
 		if not isinstance(other, basebag):
 			other = self._from_iterable(other)
@@ -796,7 +808,12 @@ class basebag(Collection):
 			n is self.num_unique_elements()
 			m is len(other)
 		
-		TODO write unit tests for add
+		>>> bag('abcc') & bag() == bag()
+		True
+		>>> bag('abcc') & bag('aabd') == bag('ab')
+		True
+		>>> bag('aabc') & set('abdd') == bag('ab')
+		True
 		"""
 		out = self.copy()
 		for value in other:
@@ -813,7 +830,10 @@ class basebag(Collection):
 			n is self.num_unique_elements()
 			m is len(other)
 
-		TODO write tests for sub
+		>>> bag('abc') - bag() == bag('abc')
+		True
+		>>> bag('abbc') - bag('bd') == bag('abc')
+		True
 		"""
 		out = self.copy()
 		for value in other:
@@ -864,7 +884,12 @@ class basebag(Collection):
 			m = len(self)
 			n = len(other)
 
-		TODO write unit tests for xor
+		>>> bag('abc') ^ bag() == bag('abc')
+		True
+		>>> bag('aabc') ^ bag('ab') == bag('ac')
+		True
+		>>> bag('aabcc') ^ bag('abcde') == bag('acde')
+		True
 		"""
 		return (self - other) | (other - self)
 
@@ -912,8 +937,6 @@ class basebag(Collection):
 class bag(basebag, Mutable):
 	""" bag is a Mutable basebag, thus not hashable and unusable for dict keys or in
 	other sets.
-
-	TODO write bag add, discard and clear unit tests
 	"""
 
 	def __setitem__(self, elem, value):
