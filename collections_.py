@@ -92,7 +92,7 @@ Collection.register(Sequence)
 Collection.register(Set)
 Collection.register(Mapping)
 
-class MutableCollection(metaclass=ABCMeta):
+class MutableCollection(Collection):
 	""" A metaclass for all MutableCollection objects.
 	
 	>>> isinstance(list(), MutableCollection)
@@ -126,7 +126,7 @@ MutableCollection.register(MutableMapping)
 ## Extending sets
 #####################################################################
 
-class set(set, Collection, MutableCollection):
+class set(set, MutableCollection):
 	""" set extends set and implements Collection and MutableCollection.
 	set[item]
 		returns if the item is in the set
@@ -484,11 +484,9 @@ class _basebag(Collection):
 		This runs in whatever tuple(self) does, I'm assuming O(len(self))
 
 		>>> ms = _basebag()
-
 		>>> ms == eval(ms.__repr__())
 		True
 		>>> ms = _basebag('abracadabra')
-
 		>>> ms == eval(ms.__repr__())
 		True
 		"""
