@@ -3,9 +3,14 @@
 #
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
 #
-_version = '0.2.1'
+""" collections_ - An extension of the built-in collections to include bags and setlists.
 
-__all__ = ['collection', 'Collection', 'MutableCollection', 'set', 'frozenset', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
+This module is an extension of the built-in collections module that contains
+implementations of bags, AKA multisets, and setlists, AKA ordered sets or unique lists.
+"""
+_version = '0.3.0'
+
+__all__ = ['setlist', 'frozensetlist', 'bag', 'frozenbag']
 
 import heapq
 import sys
@@ -15,188 +20,11 @@ from collections import *
 import collections
 __all__ += collections.__all__
 
-def collection(it : Iterable = (), mutable=True, ordered=False, unique=False):
-	""" Return a Collection with the specified properties. 
-	
-	>>> isinstance(collection(), bag)
-	True
-	>>> isinstance(collection(ordered=True), list)
-	True
-	>>> isinstance(collection(unique=True), set)
-	True
-	>>> isinstance(collection(unique=True, ordered=True), setlist)
-	True
-	>>> isinstance(collection(mutable=False), frozenbag)
-	True
-	>>> isinstance(collection(mutable=False, ordered=True), tuple)
-	True
-	>>> isinstance(collection(mutable=False, unique=True), frozenset)
-	True
-	>>> isinstance(collection(mutable=False, ordered=True, unique=True), frozensetlist)
-	True
-	"""
-	if unique:
-		if ordered:
-			if mutable:
-				return setlist(it)
-			else:
-				return frozensetlist(it)
-		else:
-			if mutable:
-				return set(it)
-			else:
-				return frozenset(it)
-	else:
-		if ordered:
-			if mutable:
-				return list(it)
-			else:
-				return tuple(it)
-		else:
-			if mutable:
-				return bag(it)
-			else:
-				return frozenbag(it)
-
-#####################################################################
-## ABCs
-#####################################################################
-
-class Collection(Sized, Iterable, Container):
-	""" An ABC for all collections.
-	>>> isinstance(list(), Collection)
-	True
-	>>> isinstance(set(), Collection)
-	True
-	>>> isinstance(bag(), Collection)
-	True
-	>>> isinstance(setlist(), Collection)
-	True
-	>>> isinstance(dict(), Collection)
-	True
-	"""
-	@classmethod
-	def _from_iterable(cls, it):
-		""" Construct an instance of the class from any iterable input.
-
-		Must override this method if the class constructor signature
-		does not accept an iterable for an input.
-		"""
-		return cls(it)
-
-	@abstractmethod
-	def __getitem__(self, key):
-		raise KeyError
-
-Collection.register(Sequence)
-Collection.register(Set)
-Collection.register(Mapping)
-
-class MutableCollection(Collection):
-	""" A metaclass for all MutableCollection objects.
-	
-	>>> isinstance(list(), MutableCollection)
-	True
-	>>> isinstance(set(), MutableCollection)
-	True
-	>>> isinstance(bag(), MutableCollection)
-	True
-	>>> isinstance(setlist(), MutableCollection)
-	True
-	>>> isinstance(dict(), MutableCollection)
-	True
-	"""
-	@abstractmethod
-	def __setitem__(self, key, value):
-		raise KeyError
-
-	@abstractmethod
-	def __delitem__(self, key):
-		raise KeyError
-
-	@abstractmethod
-	def pop(self):
-		raise KeyError
-
-MutableCollection.register(MutableSequence)
-MutableCollection.register(MutableSet)
-MutableCollection.register(MutableMapping)
-
-#####################################################################
-## Extending sets
-#####################################################################
-
-class set(set, MutableCollection):
-	""" set extends set and implements Collection and MutableCollection.
-	set[item]
-		returns if the item is in the set
-	set[item] = value
-		sets whether or not item is in set based on what value evaluates to
-	del set[item]
-		removes item from set
-	
-	>>> s = set('abc')
-	>>> s['a']
-	True
-	>>> s['d']
-	False
-	>>> s['a'] = False
-	>>> 'a' in s
-	False
-	>>> del s['b']
-	>>> 'b' in s
-	False
-	"""
-	def __repr__(self):
-		""" For some reason this gets a little broken.
-		
-		>>> set().__repr__()
-		'set()'
-		>>> set('abc').__repr__()
-		"{'a', 'c', 'b'}"
-		"""
-		if len(self) == 0:
-			return 'set()'
-		else:
-			format = '{elem!r}'
-			strings = []
-			for elem in self:
-				strings.append(format.format(elem=elem))
-			strings = tuple(strings)
-			string = '{first}'.format(first=strings[0])
-			for i in range(1,len(strings)):
-				string = '{prev}, {next}'.format(prev=string, next=strings[i])
-			string = '{{{0}}}'.format(string)
-			return string
-
-	def __getitem__(self, item):
-		""" Equal to `item in self` """
-		return item in self
-
-	def __setitem__(self, elem, value):
-		""" Set whether or not elem is in set based on what value evaluates to. """
-		if not isinstance(value, int):
-			raise TypeError
-		if value != 0 and value != 1:
-			raise ValueError
-		if value:
-			self.add(elem)
-		else:
-			self.remove(elem)
-
-	def __delitem__(self, item):
-		self.remove(item)
-
-class frozenset(frozenset, Collection):
-	""" frozenset extends frozenset and implements Collection """
-	def __getitem__(self, item):
-		return item in self
-
 #####################################################################
 ## setlists
 #####################################################################
 
-class _basesetlist(Collection, Sequence, Set):
+class _basesetlist(Sequence, Set):
 	""" A setlist is an ordered Collection of unique elements.
 	_basesetlist is the superclass of setlist and frozensetlist.  It is immutable
 	and unhashable.
@@ -213,7 +41,7 @@ class _basesetlist(Collection, Sequence, Set):
 					self._dict[value] = index
 	
 	def __str__(self):
-		return self._list.__str__()
+		return self._list.__repr__()
 
 	def __repr__(self):
 		if len(self) == 0:
@@ -230,22 +58,21 @@ class _basesetlist(Collection, Sequence, Set):
 			index = 0
 		return index
 
-	## Implement Collection
-	def __getitem__(self, index):
-		return self._list[index]
-
-	## Implement Container from Collection
+	## Implement Container
 	def __contains__(self, elem): 
 		return elem in self._dict
 
-	## Implement Iterable from Collection
+	## Implement Iterable
 	__iter__ = list.__iter__
 
-	## Implement Sized from Collection
+	## Implement Sized
 	def __len__(self):
 		return len(self._list)
 
 	## Implement Sequence
+	def __getitem__(self, index):
+		return self._list[index]
+
 	def __reversed__(self):
 		return self._list.__reversed__()
 
@@ -303,7 +130,7 @@ class _basesetlist(Collection, Sequence, Set):
 
 	## Nothing needs to be done to implement Set
 
-class setlist(_basesetlist, MutableCollection, MutableSequence, MutableSet):
+class setlist(_basesetlist, MutableSequence, MutableSet):
 	""" A mutable (unhashable) setlist that inherits from _basesetlist. 
 	
 	>>> sl = setlist('abcde')
@@ -342,7 +169,6 @@ class setlist(_basesetlist, MutableCollection, MutableSequence, MutableSet):
 	setlist(('a', 'c', 'e', 'f', 'g', 'h'))
 	"""
 
-	## Implement MutableCollection
 	def __setitem__(self, index, value):
 		index = self._fix_neg_index(index)
 		if value in self:
@@ -366,7 +192,6 @@ class setlist(_basesetlist, MutableCollection, MutableSequence, MutableSet):
 		del self[index]
 		return value
 
-	## Implement MutableSequence
 	def insert(self, index, value):
 		if value in self:
 			return
@@ -449,7 +274,7 @@ class frozensetlist(_basesetlist, Hashable):
 ## bags
 #####################################################################
 
-class _basebag(Collection):
+class _basebag(Sized, Iterable, Container):
 	""" Base class for bag and frozenbag.	Is not mutable and not hashable, so there's 
 	no reason to use this instead of either bag or frozenbag.
 	"""
@@ -477,6 +302,15 @@ class _basebag(Collection):
 				for value in iterable:
 					self._inc(value)
 	
+	@classmethod
+	def _from_iterable(cls, it):
+		""" Construct an instance of the class from any iterable input.
+
+		Must override this method if the class constructor signature
+		does not accept an iterable for an input.
+		"""
+		return cls(it)
+
 	def __repr__(self):
 		""" The string representation is a call to the constructor given a tuple 
 		containing all of the elements.
@@ -526,9 +360,6 @@ class _basebag(Collection):
 				string = '{prev}, {next}'.format(prev=string, next=strings[i])
 			string = '{{{0}}}'.format(string)
 			return string
-
-	def __getitem__(self, value):
-		return self._dict[value]
 
 	## Internal methods
 
@@ -581,7 +412,7 @@ class _basebag(Collection):
 		0
 		"""
 		try:
-			return self[value]
+			return self._dict[value]
 		except KeyError:
 			return 0
 	
@@ -678,8 +509,8 @@ class _basebag(Collection):
 	## Comparison methods
 	## A bag can be compared to any iterable
 	
-	def __le__(self, other: Collection):
-		""" Tests if self <= other where other is any Collection
+	def __le__(self, other: Iterable):
+		""" Tests if self <= other where other is any Iterable
 
 		This runs in O(l + n) where:
 			n is self.num_unique_elements()
@@ -710,27 +541,27 @@ class _basebag(Collection):
 				return False
 		return True
 
-	def __lt__(self, other: Collection):
+	def __lt__(self, other: Iterable):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		return len(self) < len(other) and self <= other
 
-	def __gt__(self, other: Collection):
+	def __gt__(self, other: Iterable):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		return other < self
 
-	def __ge__(self, other: Collection):
+	def __ge__(self, other: Iterable):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		return other <= self
 
-	def __eq__(self, other: Collection):
+	def __eq__(self, other: Iterable):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		return len(self) == len(other) and self <= other 
 
-	def __ne__(self, other: Collection):
+	def __ne__(self, other: Iterable):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		return not (self == other)
@@ -936,31 +767,10 @@ class _basebag(Collection):
 					result.add(symbol_set + others)
 		return result
 
-class bag(_basebag, MutableCollection):
+class bag(_basebag):
 	""" bag is a MutableCollection _basebag, thus not hashable and unusable for dict keys or in
 	other sets.
 	"""
-
-	def __setitem__(self, elem, value):
-		""" This sets the number of times that value appears in the bag.
-
-		>>> b = bag('abc')
-		>>> b['a'] = 2
-		>>> b['a']
-		2
-		>>> b['d'] = 5
-		>>> b['d']
-		5
-		>>> b['d'] = 0
-		>>> 'd' in b
-		False
-		"""
-		if not isinstance(value, int):
-			raise ValueError
-		self._set(elem, value)
-	
-	def __delitem__(self, elem):
-		self.remove(elem)
 
 	def pop(self):
 		it = iter(self)

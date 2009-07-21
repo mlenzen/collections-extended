@@ -213,7 +213,7 @@ class _basesetlist(Collection, Sequence, Set):
 					self._dict[value] = index
 	
 	def __str__(self):
-		return self._list.__str__()
+		return self._list.__repr__()
 
 	def __repr__(self):
 		if len(self) == 0:
