@@ -21,9 +21,9 @@ from collections_ import *
 
 _marked_to_delete = object()
 
-class QuickList(MutableSequence):
+class HoleyList(MutableSequence):
 	"""
-	>>> ql = QuickList('0123456789abcdef')
+	>>> ql = HoleyList('0123456789abcdef')
 	"""
 	def __init__(self, iterable: Iterable = (), threshold=.5):
 		self._list = list(iterable)
@@ -40,10 +40,10 @@ class QuickList(MutableSequence):
 	
 	def __repr__(self):
 		"""
-		>>> ql = QuickList()
+		>>> ql = HoleyList()
 		>>> ql == eval(ql.__repr__())
 		True
-		>>> ql = QuickList('abracadabra')
+		>>> ql = HoleyList('abracadabra')
 		>>> ql == eval(ql.__repr__())
 		True
 		"""
@@ -98,7 +98,7 @@ class QuickList(MutableSequence):
 	def clean(self):
 		"""
 		O(n)
-		>>> ql = QuickList('abcdefgh', 1)
+		>>> ql = HoleyList('abcdefgh', 1)
 		>>> len(ql._list)
 		8
 		>>> ql.clean()
@@ -128,7 +128,7 @@ class QuickList(MutableSequence):
 	def _offset_index(self, index):
 		"""
 		O(log(d)^2))
-		>>> ql = QuickList('abcdefgh', 1)
+		>>> ql = HoleyList('abcdefgh', 1)
 		>>> ql._offset_index(5)
 		5
 		>>> del ql[0]

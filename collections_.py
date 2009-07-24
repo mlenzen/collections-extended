@@ -14,6 +14,7 @@ __all__ = ['setlist', 'frozensetlist', 'bag', 'frozenbag']
 
 import heapq
 import sys
+import random
 from abc import ABCMeta, abstractmethod
 from operator import itemgetter
 from collections import *
@@ -120,6 +121,7 @@ class _basesetlist(Sequence, Set):
 		if sub[0] in self:
 			try:
 				index = self._dict[sub[0]]
+				# TODO handle sublist going off the end of list
 				for i in range(1, len(sub)):
 					if sub[i] != self[index+i]:
 						raise ValueError
@@ -217,7 +219,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 	def remove(self, value):
 		if value not in self:
 			raise ValueError
-		del self._dict[self._dict[value]]
+		del self._list[self._dict[value]]
+		del self._dict[value]
 	
 	def remove_all(self, elems_to_delete: Set):
 		""" Remove all the elements from iterable. 
@@ -250,6 +253,45 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		## Now remove deleted_count items from the end of the list
 		for i in range(deleted_count):
 			del self._list[len(self._list)-1]
+	
+	def sort(self):
+		"""
+		>>> sl = setlist('bca')
+		>>> sl.sort()
+		>>> sl
+		setlist(('a', 'b', 'c'))
+		"""
+		self._quicksort(0, len(self))
+	
+	def _quicksort(self, beg, end):
+		diff = end - beg
+		if diff == 0:
+			return
+		if diff == 1:
+			if self[beg] > self[end]:
+				self._swap(beg, end)
+			return
+		if diff == 2:
+			if self[beg] > self[beg+1]:
+				self._swap(beg, beg+1)
+			if self[beg] > self[end]:
+				temp = self[end]
+				self[end] = self[beg+1]
+				self[beg+1] = self[beg]
+				self[beg] = temp
+			elif self[beg+1] > self[end]:
+				self._swap(beg+1, end)
+			return
+		pivot = self._get_pivot(beg, end)
+
+
+	def _get_pivot(self, beg, end):
+		return random.randrange(beg, end)
+	
+	def _swap(self, index1, index2):
+		temp = self[index1]
+		self[index1] = self[index2]
+		self[index2] = temp
 
 	## Implement MutableSet
 	def add(self, item):
