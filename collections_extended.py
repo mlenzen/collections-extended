@@ -3,9 +3,21 @@
 #
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
 #
-_version = '0.2.1'
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""
+"""
 
-__all__ = ['collection', 'Collection', 'MutableCollection', 'set', 'frozenset', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
+__all__ = ['collection', 'Collection', 'MutableCollection', 'MutableSequence', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
 
 import heapq
 import sys
@@ -84,9 +96,12 @@ class Collection(Sized, Iterable, Container):
 		"""
 		return cls(it)
 
-	@abstractmethod
-	def __getitem__(self, key):
-		raise KeyError
+	def count(self, elem):
+		count = 0
+		for e in self:
+			if e == elem:
+				count += 1
+		return count
 
 Collection.register(Sequence)
 Collection.register(Set)
@@ -107,12 +122,12 @@ class MutableCollection(Collection):
 	True
 	"""
 	@abstractmethod
-	def __setitem__(self, key, value):
-		raise KeyError
+	def add(self, value):
+		raise ValueError
 
 	@abstractmethod
-	def __delitem__(self, key):
-		raise KeyError
+	def remove(self, value):
+		raise ValueError
 
 	@abstractmethod
 	def pop(self):
@@ -123,74 +138,14 @@ MutableCollection.register(MutableSet)
 MutableCollection.register(MutableMapping)
 
 #####################################################################
-## Extending sets
+## Extending built-in classes
 #####################################################################
 
-class set(set, MutableCollection):
-	""" set extends set and implements Collection and MutableCollection.
-	set[item]
-		returns if the item is in the set
-	set[item] = value
-		sets whether or not item is in set based on what value evaluates to
-	del set[item]
-		removes item from set
-	
-	>>> s = set('abc')
-	>>> s['a']
-	True
-	>>> s['d']
-	False
-	>>> s['a'] = False
-	>>> 'a' in s
-	False
-	>>> del s['b']
-	>>> 'b' in s
-	False
-	"""
-	def __repr__(self):
-		""" For some reason this gets a little broken.
-		
-		>>> set().__repr__()
-		'set()'
-		>>> set('abc').__repr__()
-		"{'a', 'c', 'b'}"
-		"""
-		if len(self) == 0:
-			return 'set()'
-		else:
-			format = '{elem!r}'
-			strings = []
-			for elem in self:
-				strings.append(format.format(elem=elem))
-			strings = tuple(strings)
-			string = '{first}'.format(first=strings[0])
-			for i in range(1,len(strings)):
-				string = '{prev}, {next}'.format(prev=string, next=strings[i])
-			string = '{{{0}}}'.format(string)
-			return string
+class MutableSequence(MutableSequence):
+	""" Extended MutableSequence to fit Collection ABC """
 
-	def __getitem__(self, item):
-		""" Equal to `item in self` """
-		return item in self
-
-	def __setitem__(self, elem, value):
-		""" Set whether or not elem is in set based on what value evaluates to. """
-		if not isinstance(value, int):
-			raise TypeError
-		if value != 0 and value != 1:
-			raise ValueError
-		if value:
-			self.add(elem)
-		else:
-			self.remove(elem)
-
-	def __delitem__(self, item):
-		self.remove(item)
-
-class frozenset(frozenset, Collection):
-	""" frozenset extends frozenset and implements Collection """
-	def __getitem__(self, item):
-		return item in self
+	def add(self, value):
+		return self.append(value)
 
 #####################################################################
 ## setlists
@@ -230,10 +185,6 @@ class _basesetlist(Collection, Sequence, Set):
 			index = 0
 		return index
 
-	## Implement Collection
-	def __getitem__(self, index):
-		return self._list[index]
-
 	## Implement Container from Collection
 	def __contains__(self, elem): 
 		return elem in self._dict
@@ -246,8 +197,11 @@ class _basesetlist(Collection, Sequence, Set):
 		return len(self._list)
 
 	## Implement Sequence
+	def __getitem__(self, index):
+		return self._list[index]
+
 	def __reversed__(self):
-		return self._list.__reversed__()
+		return self._from_iterable(self._list.__reversed__())
 
 	def count(self, sub, start=0, end=-1):
 		"""
@@ -290,15 +244,15 @@ class _basesetlist(Collection, Sequence, Set):
 		except KeyError:
 			pass
 		# If we didn't find it as an element, maybe it's a sublist to find
-		if sub[0] in self:
-			try:
+		try:
+			if sub[0] in self:
 				index = self._dict[sub[0]]
 				for i in range(1, len(sub)):
 					if sub[i] != self[index+i]:
 						raise ValueError
 				return index
-			except TypeError:
-				pass
+		except TypeError:
+			pass
 		raise ValueError
 
 	## Nothing needs to be done to implement Set
@@ -392,7 +346,7 @@ class setlist(_basesetlist, MutableCollection, MutableSequence, MutableSet):
 	def remove(self, value):
 		if value not in self:
 			raise ValueError
-		del self._dict[self._dict[value]]
+		del self[self._dict[value]]
 	
 	def remove_all(self, elems_to_delete: Set):
 		""" Remove all the elements from iterable. 
@@ -431,9 +385,10 @@ class setlist(_basesetlist, MutableCollection, MutableSequence, MutableSet):
 		self.append(item)
 
 	def discard(self, value):
-		if value not in self:
-			return
-		del self._dict[self._dict[value]]
+		try:
+			self.remove(value)
+		except ValueError:
+			pass
 
 	def clear(self):
 		self._dict = dict()
@@ -443,7 +398,7 @@ class frozensetlist(_basesetlist, Hashable):
 	""" An immutable (hashable) setlist that inherits from _basesetlist. """
 
 	def __hash__(self):
-		return self._list.__hash__() + self._dict.__hash__() % sys.maxint
+		return self._list.__hash__() ^ self._dict.__hash__()
 
 #####################################################################
 ## bags
@@ -527,9 +482,6 @@ class _basebag(Collection):
 			string = '{{{0}}}'.format(string)
 			return string
 
-	def __getitem__(self, value):
-		return self._dict[value]
-
 	## Internal methods
 
 	def _set(self, elem, value):
@@ -567,7 +519,7 @@ class _basebag(Collection):
 		"""
 		return set(self._dict.keys())
 
-	def multiplicity(self, value):
+	def count(self, value):
 		""" Return the multiplicity of value.  If value is not in the bag no Error is
 		raised, instead 0 is returned. 
 		
@@ -575,9 +527,9 @@ class _basebag(Collection):
 
 		>>> ms = _basebag('abracadabra')
 
-		>>> ms.multiplicity('a')
+		>>> ms.count('a')
 		5
-		>>> ms.multiplicity('x')
+		>>> ms.count('x')
 		0
 		"""
 		try:
@@ -634,6 +586,7 @@ class _basebag(Collection):
 
 	def cardinality(self): return len(self)
 	def underlying_set(self): return self.unique_elements()
+	def multiplicity(self, elem): return self.count(elem)
 	
 	## implementing Sized methods
 
@@ -940,27 +893,6 @@ class bag(_basebag, MutableCollection):
 	""" bag is a MutableCollection _basebag, thus not hashable and unusable for dict keys or in
 	other sets.
 	"""
-
-	def __setitem__(self, elem, value):
-		""" This sets the number of times that value appears in the bag.
-
-		>>> b = bag('abc')
-		>>> b['a'] = 2
-		>>> b['a']
-		2
-		>>> b['d'] = 5
-		>>> b['d']
-		5
-		>>> b['d'] = 0
-		>>> 'd' in b
-		False
-		"""
-		if not isinstance(value, int):
-			raise ValueError
-		self._set(elem, value)
-	
-	def __delitem__(self, elem):
-		self.remove(elem)
 
 	def pop(self):
 		it = iter(self)

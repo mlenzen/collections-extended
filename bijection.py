@@ -8,8 +8,6 @@
 TODO write long desc
 """
 
-_version = '0.0.1'
-
 class bijection(dict, MutableMapping):
 	"""
 

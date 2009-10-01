@@ -8,7 +8,6 @@
 This module is an extension of the built-in collections module that contains
 implementations of bags, AKA multisets, and setlists, AKA ordered sets or unique lists.
 """
-_version = '0.3.0'
 
 __all__ = ['setlist', 'frozensetlist', 'bag', 'frozenbag']
 
