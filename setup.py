@@ -17,6 +17,7 @@
 """
 """
 from distutils.core import setup
+from os.path import dirname, join
 
 _version = '0.1.0'
 
