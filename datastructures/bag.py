@@ -3,317 +3,21 @@
 #
 # Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
 #
-""" collections_ - An extension of the built-in collections to include bags and setlists.
-
-This module is an extension of the built-in collections module that contains
-implementations of bags, AKA multisets, and setlists, AKA ordered sets or unique lists.
-"""
-
-__all__ = ['setlist', 'frozensetlist', 'bag', 'frozenbag']
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import heapq
-import sys
-import random
-from abc import ABCMeta, abstractmethod
 from operator import itemgetter
 from collections import *
-import collections
-__all__ += collections.__all__
-
-#####################################################################
-## setlists
-#####################################################################
-
-class _basesetlist(Sequence, Set):
-	""" A setlist is an ordered Collection of unique elements.
-	_basesetlist is the superclass of setlist and frozensetlist.  It is immutable
-	and unhashable.
-	"""
-
-	def __init__(self, iterable : Iterable = None):
-		self._list = list()
-		self._dict = dict()
-		if iterable:
-			for value in iterable:
-				if value not in self:
-					index = len(self)
-					self._list.insert(index, value)
-					self._dict[value] = index
-	
-	def __str__(self):
-		return self._list.__repr__()
-
-	def __repr__(self):
-		if len(self) == 0:
-			return '{0}()'.format(self.__class__.__name__)
-		else:
-			format = '{class_name}({tuple!r})'
-			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
-	
-	## Convenience methods
-	def _fix_neg_index(self, index):
-		if index < 0:
-			index += len(self)
-		if index < 0:
-			index = 0
-		return index
-
-	## Implement Container
-	def __contains__(self, elem): 
-		return elem in self._dict
-
-	## Implement Iterable
-	__iter__ = list.__iter__
-
-	## Implement Sized
-	def __len__(self):
-		return len(self._list)
-
-	## Implement Sequence
-	def __getitem__(self, index):
-		return self._list[index]
-
-	def __reversed__(self):
-		return self._list.__reversed__()
-
-	def count(self, sub, start=0, end=-1):
-		"""
-		This runs in O(len(sub))
-
-		>>> sl = setlist('abcdea')
-		>>> sl.count('a')
-		1
-		>>> sl.count('f')
-		0
-		>>> sl.count('bc')
-		1
-		"""
-		try:
-			self.index(sub, start, end)
-			return 1
-		except ValueError:
-			return 0
-
-	def index(self, sub, start=0, end=-1):
-		"""
-		This runs in O(len(sub))
-
-		>>> sl = setlist('abcdef')
-		>>> sl.index('a')
-		0
-		>>> sl.index('ef')
-		4
-		>>> try:
-		...   sl.index('cb')
-		...   False
-		... except ValueError:
-		...   True
-		True
-		"""
-		# First assume that sub is an element in self
-		try:
-			index = self._dict[sub]
-			return index
-		except KeyError:
-			pass
-		# If we didn't find it as an element, maybe it's a sublist to find
-		if sub[0] in self:
-			try:
-				index = self._dict[sub[0]]
-				# TODO handle sublist going off the end of list
-				for i in range(1, len(sub)):
-					if sub[i] != self[index+i]:
-						raise ValueError
-				return index
-			except TypeError:
-				pass
-		raise ValueError
-
-	## Nothing needs to be done to implement Set
-
-class setlist(_basesetlist, MutableSequence, MutableSet):
-	""" A mutable (unhashable) setlist that inherits from _basesetlist. 
-	
-	>>> sl = setlist('abcde')
-	>>> sl[0] = 5
-	>>> sl
-	setlist((5, 'b', 'c', 'd', 'e'))
-	>>> sl[-1] = 0
-	>>> sl
-	setlist((5, 'b', 'c', 'd', 0))
-	>>> sl[1] = 'c'
-	>>> sl
-	setlist((5, 'b', 'c', 'd', 0))
-	>>> del sl[0]
-	>>> sl
-	setlist(('b', 'c', 'd', 0))
-	>>> del sl[-1]
-	>>> sl
-	setlist(('b', 'c', 'd'))
-	>>> sl.pop()
-	'd'
-	>>> sl.pop(0)
-	'b'
-	>>> sl
-	setlist(('c',))
-	>>> sl.insert(0, 'a')
-	>>> sl
-	setlist(('a', 'c'))
-	>>> sl.insert(len(sl), 'e')
-	>>> sl
-	setlist(('a', 'c', 'e'))
-	>>> sl.append('f')
-	>>> sl
-	setlist(('a', 'c', 'e', 'f'))
-	>>> sl += ('g', 'h')
-	>>> sl
-	setlist(('a', 'c', 'e', 'f', 'g', 'h'))
-	"""
-
-	def __setitem__(self, index, value):
-		index = self._fix_neg_index(index)
-		if value in self:
-			return
-		old_value = self._list[index]
-		del self._dict[old_value]
-		self._list[index] = value
-		self._dict[value] = index
-
-	def __delitem__(self, index):
-		index = self._fix_neg_index(index)
-		del self._dict[self._list[index]]
-		for i in range(index + 1, len(self._list)):
-			elem = self._list[i]
-			self._dict[elem] = self._dict[elem] - 1
-		del self._list[index]
-	
-	def pop(self, index=-1):
-		index = self._fix_neg_index(index)
-		value = self[index]
-		del self[index]
-		return value
-
-	def insert(self, index, value):
-		if value in self:
-			return
-		index = self._fix_neg_index(index)
-		self._dict[value] = index
-		for i in range(index, len(self._list)):
-			elem = self._list[i]
-			self._dict[elem] = self._dict[elem] + 1
-		self._list.insert(index, value)
-	
-	def append(self, value):
-		self.insert(len(self), value)
-	
-	def extend(self, values):
-		for value in values:
-			self.append(value)
-
-	def __iadd__(self, values):
-		""" This will quietly not add values that are already present. """
-		self.extend(values)
-		return self
-
-	def remove(self, value):
-		if value not in self:
-			raise ValueError
-		del self._list[self._dict[value]]
-		del self._dict[value]
-	
-	def remove_all(self, elems_to_delete: Set):
-		""" Remove all the elements from iterable. 
-		This is much faster than removing them one by one.
-		This runs in O(len(self))
-
-		>>> sl = setlist('abcdefgh')
-		>>> sl.remove_all(set('acdh'))
-		>>> sl
-		setlist(('b', 'e', 'f', 'g'))
-		"""
-		## First go through and mark all of the items to delete, also remove them from the dict
-		marked_to_delete = object()
-		num_to_delete = 0
-		for i in range(len(self)):
-			elem = self[i]
-			if elem in elems_to_delete:
-				del self._dict[elem]
-				self._list[i] = marked_to_delete
-				num_to_delete += 1
-		## Now go through and shift elements backwards
-		deleted_count = 0
-		for i in range(len(self._list)):
-			elem = self._list[i]
-			if elem == marked_to_delete:
-				deleted_count += 1
-			else:
-				self._list[i - deleted_count] = elem
-				self._dict[elem] = i - deleted_count
-		## Now remove deleted_count items from the end of the list
-		for i in range(deleted_count):
-			del self._list[len(self._list)-1]
-	
-	def sort(self):
-		"""
-		>>> sl = setlist('bca')
-		>>> sl.sort()
-		>>> sl
-		setlist(('a', 'b', 'c'))
-		"""
-		self._quicksort(0, len(self))
-	
-	def _quicksort(self, beg, end):
-		diff = end - beg
-		if diff == 0:
-			return
-		if diff == 1:
-			if self[beg] > self[end]:
-				self._swap(beg, end)
-			return
-		if diff == 2:
-			if self[beg] > self[beg+1]:
-				self._swap(beg, beg+1)
-			if self[beg] > self[end]:
-				temp = self[end]
-				self[end] = self[beg+1]
-				self[beg+1] = self[beg]
-				self[beg] = temp
-			elif self[beg+1] > self[end]:
-				self._swap(beg+1, end)
-			return
-		pivot = self._get_pivot(beg, end)
-
-
-	def _get_pivot(self, beg, end):
-		return random.randrange(beg, end)
-	
-	def _swap(self, index1, index2):
-		temp = self[index1]
-		self[index1] = self[index2]
-		self[index2] = temp
-
-	## Implement MutableSet
-	def add(self, item):
-		self.append(item)
-
-	def discard(self, value):
-		if value not in self:
-			return
-		del self._dict[self._dict[value]]
-
-	def clear(self):
-		self._dict = dict()
-		self._list = list()
-
-class frozensetlist(_basesetlist, Hashable):
-	""" An immutable (hashable) setlist that inherits from _basesetlist. """
-
-	def __hash__(self):
-		return self._list.__hash__() + self._dict.__hash__() % sys.maxint
-
-#####################################################################
-## bags
-#####################################################################
 
 class _basebag(Sized, Iterable, Container):
 	""" Base class for bag and frozenbag.	Is not mutable and not hashable, so there's 
@@ -343,15 +47,6 @@ class _basebag(Sized, Iterable, Container):
 				for value in iterable:
 					self._inc(value)
 	
-	@classmethod
-	def _from_iterable(cls, it):
-		""" Construct an instance of the class from any iterable input.
-
-		Must override this method if the class constructor signature
-		does not accept an iterable for an input.
-		"""
-		return cls(it)
-
 	def __repr__(self):
 		""" The string representation is a call to the constructor given a tuple 
 		containing all of the elements.
@@ -404,6 +99,10 @@ class _basebag(Sized, Iterable, Container):
 
 	## Internal methods
 
+	@classmethod
+	def _from_iterable(cls, it):
+		return cls(it)
+
 	def _set(self, elem, value):
 		""" Set the multiplicity of elem to count. 
 		
@@ -439,7 +138,7 @@ class _basebag(Sized, Iterable, Container):
 		"""
 		return set(self._dict.keys())
 
-	def multiplicity(self, value):
+	def count(self, value):
 		""" Return the multiplicity of value.  If value is not in the bag no Error is
 		raised, instead 0 is returned. 
 		
@@ -447,9 +146,9 @@ class _basebag(Sized, Iterable, Container):
 
 		>>> ms = _basebag('abracadabra')
 
-		>>> ms.multiplicity('a')
+		>>> ms.count('a')
 		5
-		>>> ms.multiplicity('x')
+		>>> ms.count('x')
 		0
 		"""
 		try:
@@ -506,6 +205,7 @@ class _basebag(Sized, Iterable, Container):
 
 	def cardinality(self): return len(self)
 	def underlying_set(self): return self.unique_elements()
+	def multiplicity(self, elem): return self.count(elem)
 	
 	## implementing Sized methods
 
@@ -809,7 +509,7 @@ class _basebag(Sized, Iterable, Container):
 		return result
 
 class bag(_basebag):
-	""" bag is a MutableCollection _basebag, thus not hashable and unusable for dict keys or in
+	""" bag is a mutable _basebag, thus not hashable and unusable for dict keys or in
 	other sets.
 	"""
 
@@ -976,4 +676,8 @@ class frozenbag(_basebag, Hashable):
 		True
 		"""
 		return Set._hash(self)
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
 

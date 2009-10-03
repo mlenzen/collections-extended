@@ -19,13 +19,13 @@
 from distutils.core import setup
 
 setup(
-		name='data-structures',
+		name='datastructures',
 		version = '0.1.0',
-		description = 'Python Data Structures',
+		description = 'Python Data Structures - bags/multisets and setlists',
 		author = 'Michael Lenzen',
 		author_email = 'm.lenzen@gmail.com',
 		url = 'http://code.google.com/p/python-data-structures/',
-		py_modules = ['collections_extended'],
+		packages = ['datastructures'],
 		keywords = ['collections', 'bag', 'multiset', 'setlist'],
 		classifiers = [
 			'Development Status :: 4 - Beta',
