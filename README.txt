@@ -1,8 +1,10 @@
-Python Data Structures
-----------------------
+:Author: Michael Lenzen
+:Copyright: 2009 Michael Lenzen
 
-Project Homepage:
-http://code.google.com/p/python-data-structures/
+Overview
+========
+
+A few collections/data structures that I think should be part of python. Python3 that is, I don't plan on supporting old versions. Maybe 2.7, I'm not sure what the deal with that is.
 
 For now, this package includes one module - `collections_extended`.  This module
 extends the built-in collections module to include a `bag` class, AKA multiset, and
@@ -12,6 +14,17 @@ Finally, all collections are abstracted into one Collection abstract base class 
 a Collection factory is provided where you can create a Collection by specifying
 the properties unique, ordered and mutable.
 
-See http://code.google.com/p/python-data-structures/wiki/CollectionsExtendedProposal
-for more.
+Project Homepage:
+http://code.google.com/p/python-data-structures/
 
+Documentation:
+http://code.google.com/p/python-data-structures/wiki/DocCollectionsExtended
+
+Usage
+=====
+
+``import collections_extended as collections``
+
+or
+
+``from collections_extended import *``
