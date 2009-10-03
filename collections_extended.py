@@ -17,7 +17,7 @@
 """
 """
 
-__all__ = ['collection', 'Collection', 'MutableCollection', 'MutableSequence', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
+__all__ = ['collection', 'Collection', 'MutableCollection', 'MutableSequence', 'Set', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
 
 from abc import ABCMeta, abstractmethod
 import heapq
@@ -133,6 +133,12 @@ MutableCollection.register(MutableSet)
 #####################################################################
 ## Extending built-in classes
 #####################################################################
+
+class Set(Set):
+	""" Extended Set to efficiently count elements. """
+
+	def count(self, elem):
+		return elem in self
 
 class MutableSequence(MutableSequence):
 	""" Extended MutableSequence to fit Collection ABC """
