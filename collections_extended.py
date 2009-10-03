@@ -520,7 +520,7 @@ class _basebag(Collection):
 		
 		This runs in O(1) time
 		"""
-		return set(self._dict.keys())
+		return self._dict.keys()
 
 	def count(self, value):
 		""" Return the multiplicity of value.  If value is not in the bag no Error is
