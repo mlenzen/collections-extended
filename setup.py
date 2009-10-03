@@ -18,14 +18,17 @@
 """
 from distutils.core import setup
 
+_version = '0.1.0'
+
 setup(
-		name='datastructures',
-		version = '0.1.0',
+		name='data-structures',
+		version = _version,
 		description = 'Python Data Structures - bags/multisets and setlists',
 		author = 'Michael Lenzen',
 		author_email = 'm.lenzen@gmail.com',
 		url = 'http://code.google.com/p/python-data-structures/',
-		packages = ['datastructures'],
+		download_url = 'http://python-data-structures.googlecode.com/files/data-structures-{0}.tar.gz'.format(_version),
+		py_modules = ['collections_extended'],
 		keywords = ['collections', 'bag', 'multiset', 'setlist'],
 		classifiers = [
 			'Development Status :: 4 - Beta',
@@ -38,19 +41,5 @@ setup(
 			'Topic :: Software Development :: Libraries',
 			'Topic :: Software Development :: Libraries :: Python Modules',
 			],
-		long_description = """\
-Python Data Structures
-----------------------
-
-For now, this package includes one module - `collections_extended`.  This module
-extends the built-in collections module to include a `bag` class, AKA multiset, and
-a `setlist` class, which is a list of unique elements or an ordered set depending on
-how you look at it.  There are also frozen (hashable) varieties of each included.
-Finally, all collections are abstracted into one Collection abstract base class and
-a Collection factory is provided where you can create a Collection by specifying
-the properties unique, ordered and mutable.
-
-See http://code.google.com/p/python-data-structures/wiki/CollectionsExtendedProposal
-for more.
-				""",
+		long_description = open(join(dirname(__file__), 'README.txt')).read(),
 		)

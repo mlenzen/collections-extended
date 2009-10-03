@@ -142,7 +142,9 @@ class MutableSequence(MutableSequence):
 	def add(self, value):
 		return self.append(value)
 
+#####################################################################
 ## setlists
+#####################################################################
 
 class _basesetlist(Sequence, Set):
 	""" A setlist is an ordered Collection of unique elements.
@@ -397,7 +399,9 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
+#####################################################################
 ## bags
+#####################################################################
 
 class _basebag(Sized, Iterable, Container):
 	""" Base class for bag and frozenbag.	Is not mutable and not hashable, so there's 
