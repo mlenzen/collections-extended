@@ -102,7 +102,6 @@ class Collection(Sized, Iterable, Container):
 
 Collection.register(Sequence)
 Collection.register(Set)
-Collection.register(_basebag)
 
 class MutableCollection(Collection):
 	""" A metaclass for all MutableCollection objects.
@@ -130,7 +129,6 @@ class MutableCollection(Collection):
 
 MutableCollection.register(MutableSequence)
 MutableCollection.register(MutableSet)
-MutableCollection.register(bag)
 
 #####################################################################
 ## Extending built-in classes
@@ -146,7 +144,7 @@ class MutableSequence(MutableSequence):
 ## setlists
 #####################################################################
 
-class _basesetlist(Sequence, Set):
+class _basesetlist(Collection, Sequence, Set):
 	""" A setlist is an ordered Collection of unique elements.
 	_basesetlist is the superclass of setlist and frozensetlist.  It is immutable
 	and unhashable.
@@ -395,15 +393,11 @@ class frozensetlist(_basesetlist, Hashable):
 	def __hash__(self):
 		return self._list.__hash__() ^ self._dict.__hash__()
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
-
 #####################################################################
 ## bags
 #####################################################################
 
-class _basebag(Sized, Iterable, Container):
+class _basebag(Collection):
 	""" Base class for bag and frozenbag.	Is not mutable and not hashable, so there's 
 	no reason to use this instead of either bag or frozenbag.
 	"""
@@ -892,7 +886,7 @@ class _basebag(Sized, Iterable, Container):
 					result.add(symbol_set + others)
 		return result
 
-class bag(_basebag):
+class bag(_basebag, MutableCollection):
 	""" bag is a mutable _basebag, thus not hashable and unusable for dict keys or in
 	other sets.
 	"""
