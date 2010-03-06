@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2009 Michael Lenzen <m.lenzen@gmail.com>
+# Copyright © 2010 Michael Lenzen <m.lenzen@gmail.com>
+#
+# This is part of the project at http://code.google.com/p/python-data-structures/
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,14 +19,13 @@
 """
 """
 
-__all__ = ['collection', 'Collection', 'MutableCollection', 'MutableSequence', 'Set', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
-
 from abc import ABCMeta, abstractmethod
 import heapq
 from operator import itemgetter
 from collections import *
 import collections
-__all__ += collections.__all__
+
+__all__ = ['collection', 'Collection', 'MutableCollection', 'MutableSequence', 'Set', 'setlist', 'frozensetlist', 'bag', 'frozenbag'] + collections.__all__
 
 def collection(it : Iterable = (), mutable=True, ordered=False, unique=False):
 	""" Return a Collection with the specified properties. 
@@ -200,6 +201,7 @@ class _basesetlist(Collection, Sequence, Set):
 		return self._list[index]
 
 	def __reversed__(self):
+		# TODO this can be done more efficiently
 		return self._from_iterable(self._list.__reversed__())
 
 	def count(self, sub, start=0, end=-1):
@@ -211,8 +213,6 @@ class _basesetlist(Collection, Sequence, Set):
 		1
 		>>> sl.count('f')
 		0
-		>>> sl.count('bc')
-		1
 		"""
 		try:
 			self.index(sub, start, end)
@@ -220,29 +220,45 @@ class _basesetlist(Collection, Sequence, Set):
 		except ValueError:
 			return 0
 
-	def index(self, sub, start=0, end=-1):
+	def index(self, sub, start=0, end=None):
 		"""
-		This runs in O(len(sub))
+		This runs in O(1)
 
 		>>> sl = setlist('abcdef')
 		>>> sl.index('a')
 		0
-		>>> sl.index('ef')
+		>>> sl.index('f')
+		5
+		"""
+		start = self._fix_neg_index(start)
+		if end == None:
+			end = len(self)
+		end = self._fix_neg_index(end)
+		try:
+			index = self._dict[sub]
+			if start <= index and index < end:
+				return index
+			else:
+				raise ValueError
+		except KeyError:
+			raise ValueError
+
+	def sub_index(self, sub, start=0, end=-1):
+		"""
+		Find the index of a subsequence
+
+		This runs in O(len(sub))
+		
+		>>> sl = setlist('abcdef')
+		>>> sl.sub_index('ef')
 		4
 		>>> try:
-		...   sl.index('cb')
+		...   sl.sub_index('cb')
 		...   False
 		... except ValueError:
 		...   True
 		True
 		"""
-		# First assume that sub is an element in self
-		try:
-			index = self._dict[sub]
-			return index
-		except KeyError:
-			pass
-		# If we didn't find it as an element, maybe it's a sublist to find
 		try:
 			if sub[0] in self:
 				index = self._dict[sub[0]]
@@ -252,7 +268,6 @@ class _basesetlist(Collection, Sequence, Set):
 				return index
 		except TypeError:
 			pass
-		raise ValueError
 
 	## Nothing needs to be done to implement Set
 
@@ -483,10 +498,6 @@ class _basebag(Collection):
 
 	## Internal methods
 
-	@classmethod
-	def _from_iterable(cls, it):
-		return cls(it)
-
 	def _set(self, elem, value):
 		""" Set the multiplicity of elem to count. 
 		
@@ -632,7 +643,7 @@ class _basebag(Collection):
 				yield(value)
 
 	## Comparison methods
-	## A bag can be compared to any iterable
+	# TODO should only be comparable to other bags
 	
 	def __le__(self, other: Iterable):
 		""" Tests if self <= other where other is any Iterable
@@ -850,47 +861,6 @@ class _basebag(Collection):
 		True
 		"""
 		return (self - other) | (other - self)
-
-	def multichoose(it: Iterable, k):
-		""" Returns a set of all possible multisets of length k on unique elements from iterable.
-		The number of sets returned is C(n+k-1, k) where:
-			C is the binomial coefficient function
-			n is the number of unique elements in iterable
-			k is the cardinality of the resulting multisets
-
-		The run time is O((n+k-1)!/((n-1)!*k!)) which is O((n+k)^min(k,n))
-		DO NOT run this on big inputs.
-
-		see http://en.wikipedia.org/wiki/Multiset#Multiset_coefficients
-
-		>>> _basebag.multichoose((), 1)
-		set()
-		>>> _basebag.multichoose('a', 1)
-		{frozenbag(('a',))}
-		>>> _basebag.multichoose('a', 2)
-		{frozenbag(('a', 'a'))}
-		>>> result = _basebag.multichoose('ab', 3)
-		>>> len(result) == 4 and \
-			 	frozenbag(('a', 'a', 'a')) in result and \
-			 	frozenbag(('a', 'a', 'b')) in result and \
-			 	frozenbag(('a', 'b', 'b')) in result and \
-			 	frozenbag(('b', 'b', 'b')) in result
-		True
-		"""
-		# if iterable is empty there are no multisets
-		if not it:
-			return set()
-		symbols = set(it)
-		symbol = symbols.pop()
-		result = set()
-		if len(symbols) == 0:
-			result.add(frozenbag._from_map({symbol : k}))
-		else:
-			for symbol_multiplicity in range(k+1):
-				symbol_set = frozenbag._from_map({symbol : symbol_multiplicity})
-				for others in _basebag.multichoose(symbols, k-symbol_multiplicity):
-					result.add(symbol_set + others)
-		return result
 
 class bag(_basebag, MutableCollection):
 	""" bag is a mutable _basebag, thus not hashable and unusable for dict keys or in
