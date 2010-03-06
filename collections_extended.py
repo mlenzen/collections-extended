@@ -271,6 +271,34 @@ class _basesetlist(Collection, Sequence, Set):
 
 	## Nothing needs to be done to implement Set
 
+	## Comparison
+
+	def __le__(self, other: Iterable):
+		return NotImplemented
+
+	def __lt__(self, other: Iterable):
+		return self <= other
+
+	def __gt__(self, other: Iterable):
+		return other < self
+
+	def __ge__(self, other: Iterable):
+		return other <= self
+
+	def __eq__(self, other):
+		if not isinstance(other, _basesetlist):
+			return False
+		if not len(self) == len(other):
+			return False
+		for i in range(len(self)):
+			if self[i] != other[i]:
+				return False
+		return True
+
+	def __ne__(self, other: Iterable):
+		return not (self == other)
+
+
 class setlist(_basesetlist, MutableSequence, MutableSet):
 	""" A mutable (unhashable) setlist that inherits from _basesetlist. 
 	
@@ -643,7 +671,6 @@ class _basebag(Collection):
 				yield(value)
 
 	## Comparison methods
-	# TODO should only be comparable to other bags
 	
 	def __le__(self, other: Iterable):
 		""" Tests if self <= other where other is any Iterable
@@ -664,12 +691,12 @@ class _basebag(Collection):
 		>>> _basebag('abbc') <= _basebag('abc')
 		False
 		>>> _basebag('abc') <= set('abc')
-		True
+		False
 		>>> _basebag('abbc') <= set('abc')
 		False
 		"""
 		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
+			return NotImplemented
 		if len(self) > len(other):
 			return False
 		for elem in self.unique_elements():
@@ -678,28 +705,20 @@ class _basebag(Collection):
 		return True
 
 	def __lt__(self, other: Iterable):
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
-		return len(self) < len(other) and self <= other
+		return self <= other and len(self) < len(other)
 
 	def __gt__(self, other: Iterable):
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
 		return other < self
 
 	def __ge__(self, other: Iterable):
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
 		return other <= self
 
 	def __eq__(self, other: Iterable):
 		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
+			return False
 		return len(self) == len(other) and self <= other 
 
 	def __ne__(self, other: Iterable):
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
 		return not (self == other)
 
 	## Operations - &, |, +, -, ^, * and isdisjoint
