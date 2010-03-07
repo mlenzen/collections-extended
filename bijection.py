@@ -21,57 +21,87 @@
 TODO write long desc
 
 This implementation kinda sucks because it stores everything twice.
-It also assumes that dict only manipulates everything via __setitem__ and __delitem__
 """
 
-class bijection(dict):
+from collections import MutableMapping
+
+class bijection(MutableMapping):
 	"""
 
 	TODO write unit tests for bijection including dict methods like copy
 	"""
 	def __init__(self, *args):
-		dict.__init__(self, args)
+		self.data = dict(args)
 		self.invr = bijection()
 		self.invr.invr = self
-		for key, value in self.items():
-			if value in self.invr:
-				dict.__delitem__(self, self.invr[value])
-			dict.__setitem__(invr, value, key)
+		for key, value in self.data.items():
+			if value in self.invr.data:
+				del self.data(self.invr.data[value])
+			self.data[key] = value
 	
-	def clear(self):
-		dict.clear(self)
-		dict.clear(invr)
+	def __len__(self):
+		return len(self.data)
+
+	def __getitem__(self, key):
+		return self.data[key]
 	
 	def __setitem__(self, key, value):
 		if key in self:
-			dict.__delitem__(invr, self[key])
+			del self.invr.data[self[key]]
 		if value in self.invr:
-			dict.__delitem__(self, self.invr[value])
-		dict.__setitem__(self, key, value)
-		dict.__setitem__(invr, value, key)
+			del self.data[self.invr[value]]
+		self.data[key] = value
+		self.invr.data[value] = key
 
 	def __delitem__(self, key):
 		# if key is not is self then self[key] will raise a KeyError as expected
-		dict.__delitem__(invr, self[key])
-		dict.__delitem__(self, key)
+		del self.invr.data[self[key]]
+		del self.data[key]
 	
+	def __contains__(self, key):
+		return key in self.data
+
+	def iter(self):
+		return self.data.iter()
+	
+	def clear(self):
+		""" This should be more efficient than MutableMapping.clear """
+		self.data.clear()
+		self.invr.data.clear()
+
+	def copy(self):
+		return bijection(self)
+	
+	@classmethod
+	def fromkeys(cls, seq, value=None):
+		""" Since only the last pair will be retained (as values must be unique) 
+		we have a more optimal solution than dict's. """
+		result = bijection()
+		result[seq[-1]] = value
+		return result
+
+	def get(self, key, default=None):
+		if key in self:
+			return self[key]
+		else:
+			return default
+
+	def items(self):
+		return self.data.items()
+
+	def keys(self):
+		return self.data.keys()
+
 	def values(self):
 		return self.invr.keys()
 
 	def __eq__(self, other):
 		if not isinstance(other, bijection):
 			return False
-		return dict.__eq__(self, other)
+		return self.data == other.data
 
 	def __ne__(self, other):
 		return not self.__eq__(other)
-
-	@classmethod
-	def fromkeys(cls, seq, value=None):
-		""" Since only the last pair will be retained (as values must be unique) we have a more optimal solution than dict's. """
-		result = bijection()
-		result[seq[-1]] = value
-		return result
 
 if __name__ == "__main__":
     import doctest
