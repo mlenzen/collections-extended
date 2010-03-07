@@ -34,6 +34,8 @@ class bijection(dict):
 		self.invr = bijection()
 		self.invr.invr = self
 		for key, value in self.items():
+			if value in self.invr:
+				dict.__delitem__(self, self.invr[value])
 			dict.__setitem__(invr, value, key)
 	
 	def clear(self):
@@ -55,3 +57,23 @@ class bijection(dict):
 	
 	def values(self):
 		return self.invr.keys()
+
+	def __eq__(self, other):
+		if not isinstance(other, bijection):
+			return False
+		return dict.__eq__(self, other)
+
+	def __ne__(self, other):
+		return not self.__eq__(other)
+
+	@classmethod
+	def fromkeys(cls, seq, value=None):
+		""" Since only the last pair will be retained (as values must be unique) we have a more optimal solution than dict's. """
+		result = bijection()
+		result[seq[-1]] = value
+		return result
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+
