@@ -461,8 +461,17 @@ class _basebag(Collection):
 
 		>>> _basebag()                     # create empty bag
 		_basebag()
-		>>> _basebag('abracadabra')        # create from an Iterable
-		_basebag(('a', 'a', 'a', 'a', 'a', 'r', 'r', 'b', 'b', 'c', 'd'))
+		>>> b =_basebag('abracadabra')        # create from an Iterable
+		>>> b.count('a')
+		5
+		>>> b.count('b')
+		2
+		>>> b.count('r')
+		2
+		>>> b.count('c')
+		1
+		>>> b.count('d')
+		1
 		"""
 		self._dict = dict()
 		self._size = 0
@@ -501,9 +510,13 @@ class _basebag(Collection):
 
 		>>> print(_basebag())
 		bag()
-		>>> print(_basebag('abracadabra'))
-		{'a'^5, 'r'^2, 'b'^2, 'c', 'd'}
-		>>> _basebag('abc').__str__() == set('abc').__str__()
+		>>> "'a'^5" in str(_basebag('abracadabra'))
+		True
+		>>> "'b'^2" in str(_basebag('abracadabra'))
+		True
+		>>> "'c'" in str(_basebag('abracadabra'))
+		True
+		>>> str(_basebag('abc')) == str(set('abc'))
 		True
 		"""
 		if self._size == 0:
@@ -517,12 +530,7 @@ class _basebag(Collection):
 					strings.append(format_mult.format(elem=elem, mult=mult))
 				else:
 					strings.append(format_single.format(elem=elem))
-			strings = tuple(strings)
-			string = '{first}'.format(first=strings[0])
-			for i in range(1,len(strings)):
-				string = '{prev}, {next}'.format(prev=string, next=strings[i])
-			string = '{{{0}}}'.format(string)
-			return string
+			return '{{{}}}'.format(', '.join(strings))
 
 	## Internal methods
 
@@ -585,10 +593,12 @@ class _basebag(Collection):
 
 		Run time should be O(m log m) where m is len(self)
 
-		>>> _basebag('abracadabra').nlargest()
-		[('a', 5), ('r', 2), ('b', 2), ('c', 1), ('d', 1)]
-		>>> _basebag('abracadabra').nlargest(2)
-		[('a', 5), ('r', 2)]
+		>>> sorted(_basebag('abracadabra').nlargest(), key=lambda e: (-e[1], e[0]))
+		[('a', 5), ('b', 2), ('r', 2), ('c', 1), ('d', 1)]
+		>>> sorted(_basebag('abracadabra').nlargest(3), key=lambda e: (-e[1], e[0]))
+		[('a', 5), ('b', 2), ('r', 2)]
+		>>> _basebag('abcaba').nlargest(3)
+		[('a', 3), ('b', 2), ('c', 1)]
 		"""
 		if n is None:
 			return sorted(self._dict.items(), key=itemgetter(1), reverse=True)
@@ -602,8 +612,8 @@ class _basebag(Collection):
 
 		This runs in O(len(map))
 		
-		>>> _basebag._from_map({'a': 1, 'b': 2})
-		_basebag(('a', 'b', 'b'))
+		>>> _basebag._from_map({'a': 1, 'b': 2}) == _basebag('abb')
+		True
 		"""
 		out = cls()
 		for elem, count in map.items():
@@ -672,8 +682,8 @@ class _basebag(Collection):
 
 	## Comparison methods
 	
-	def __le__(self, other: Iterable):
-		""" Tests if self <= other where other is any Iterable
+	def __le__(self, other):
+		""" Tests if self <= other where other is another bag
 
 		This runs in O(l + n) where:
 			n is self.num_unique_elements()
@@ -689,10 +699,6 @@ class _basebag(Collection):
 		>>> _basebag('abc') <= _basebag('aabbbc')
 		True
 		>>> _basebag('abbc') <= _basebag('abc')
-		False
-		>>> _basebag('abc') <= set('abc')
-		False
-		>>> _basebag('abbc') <= set('abc')
 		False
 		"""
 		if not isinstance(other, _basebag):
@@ -849,10 +855,10 @@ class _basebag(Collection):
 
 		>>> ms = _basebag('aab')
 
-		>>> ms * set('a')
-		_basebag(('aa', 'aa', 'ba'))
-		>>> ms * set()
-		_basebag()
+		>>> ms * set('a') == _basebag(('aa', 'aa', 'ba'))
+		True
+		>>> ms * set() == _basebag()
+		True
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
@@ -922,16 +928,16 @@ class bag(_basebag, MutableCollection):
 
 		>>> b = bag()
 		>>> b |= bag()
-		>>> print(b)
-		bag()
+		>>> b == bag()
+		True
 		>>> b = bag('aab')
 		>>> b |= bag()
-		>>> print(b)
-		{'a'^2, 'b'}
+		>>> b == bag('aab')
+		True
 		>>> b = bag('aab')
 		>>> b |= bag('ac')
-		>>> print(b)
-		{'a'^2, 'c', 'b'}
+		>>> b == bag('aabc')
+		True
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
