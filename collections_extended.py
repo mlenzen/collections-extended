@@ -1,23 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-#
-# Copyright © 2010 Michael Lenzen <m.lenzen@gmail.com>
-#
-# This is part of the project at http://code.google.com/p/python-data-structures/
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-"""
-"""
+""" """
 
 from abc import ABCMeta, abstractmethod
 import heapq
@@ -27,7 +9,7 @@ import collections
 
 __all__ = ['collection', 'Collection', 'MutableCollection', 'MutableSequence', 'Set', 'setlist', 'frozensetlist', 'bag', 'frozenbag'] + collections.__all__
 
-def collection(it : Iterable = (), mutable=True, ordered=False, unique=False):
+def collection(it=(), mutable=True, ordered=False, unique=False):
 	""" Return a Collection with the specified properties. 
 	
 	>>> isinstance(collection(), bag)
@@ -157,7 +139,7 @@ class _basesetlist(Collection, Sequence, Set):
 	and unhashable.
 	"""
 
-	def __init__(self, iterable : Iterable = None):
+	def __init__(self, iterable=None):
 		self._list = list()
 		self._dict = dict()
 		if iterable:
@@ -273,16 +255,16 @@ class _basesetlist(Collection, Sequence, Set):
 
 	## Comparison
 
-	def __le__(self, other: Iterable):
+	def __le__(self, other):
 		return NotImplemented
 
-	def __lt__(self, other: Iterable):
+	def __lt__(self, other):
 		return self <= other
 
-	def __gt__(self, other: Iterable):
+	def __gt__(self, other):
 		return other < self
 
-	def __ge__(self, other: Iterable):
+	def __ge__(self, other):
 		return other <= self
 
 	def __eq__(self, other):
@@ -295,7 +277,7 @@ class _basesetlist(Collection, Sequence, Set):
 				return False
 		return True
 
-	def __ne__(self, other: Iterable):
+	def __ne__(self, other):
 		return not (self == other)
 
 
@@ -390,7 +372,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			raise ValueError
 		del self[self._dict[value]]
 	
-	def remove_all(self, elems_to_delete: Set):
+	def remove_all(self, elems_to_delete):
 		""" Remove all the elements from iterable. 
 		This is much faster than removing them one by one.
 		This runs in O(len(self))
@@ -452,7 +434,7 @@ class _basebag(Collection):
 	"""
 	## Basic object methods
 
-	def __init__(self, iterable : Iterable = None):
+	def __init__(self, iterable=None):
 		""" Create a new basebag.  If iterable isn't given, is None or is empty then the 
 		bag starts empty.  Otherwise each element from iterable will be added to the bag 
 		however many times it appears.
@@ -710,26 +692,26 @@ class _basebag(Collection):
 				return False
 		return True
 
-	def __lt__(self, other: Iterable):
+	def __lt__(self, other):
 		return self <= other and len(self) < len(other)
 
-	def __gt__(self, other: Iterable):
+	def __gt__(self, other):
 		return other < self
 
-	def __ge__(self, other: Iterable):
+	def __ge__(self, other):
 		return other <= self
 
-	def __eq__(self, other: Iterable):
+	def __eq__(self, other):
 		if not isinstance(other, _basebag):
 			return False
 		return len(self) == len(other) and self <= other 
 
-	def __ne__(self, other: Iterable):
+	def __ne__(self, other):
 		return not (self == other)
 
 	## Operations - &, |, +, -, ^, * and isdisjoint
 
-	def __and__(self, other: Iterable):
+	def __and__(self, other):
 		""" Intersection is the minimum of corresponding counts. 
 		
 		This runs in O(l + n) where:
@@ -751,7 +733,7 @@ class _basebag(Collection):
 			values[elem] = min(other.multiplicity(elem), self.multiplicity(elem))
 		return self._from_map(values)
 
-	def isdisjoint(self, other: Iterable):
+	def isdisjoint(self, other):
 		""" This runs in O(len(other))
 
 		TODO move isdisjoint somewhere more appropriate
@@ -769,7 +751,7 @@ class _basebag(Collection):
 				return False
 		return True
 
-	def __or__(self, other: Iterable):
+	def __or__(self, other):
 		""" Union is the maximum of all elements. 
 		
 		This runs in O(m + n) where:
@@ -793,7 +775,7 @@ class _basebag(Collection):
 			values[elem] = max(self.multiplicity(elem), other.multiplicity(elem))
 		return self._from_map(values)
 
-	def __add__(self, other: Iterable):
+	def __add__(self, other):
 		"""
 		other can be any iterable.
 		self + other = self & other + self | other 
@@ -814,7 +796,7 @@ class _basebag(Collection):
 			out._inc(value)
 		return out
 	
-	def __sub__(self, other: Iterable):
+	def __sub__(self, other):
 		""" Difference between the sets.
 		other can be any iterable.
 		For normal sets this is all s.t. x in self and x not in other. 
@@ -837,7 +819,7 @@ class _basebag(Collection):
 				pass
 		return out
 
-	def __mul__(self, other: Iterable):
+	def __mul__(self, other):
 		""" Cartesian product of the two sets.
 		other can be any iterable.
 		Both self and other must contain elements that can be added together.
@@ -919,7 +901,7 @@ class bag(_basebag, MutableCollection):
 
 	## In-place operations
 
-	def __ior__(self, other: Iterable):
+	def __ior__(self, other):
 		"""
 		if isinstance(other, _basebag):
 			This runs in O(other.num_unique_elements())
@@ -946,7 +928,7 @@ class bag(_basebag, MutableCollection):
 			self._set(elem, max(other_count, self_count))
 		return self
 	
-	def __iand__(self, other: Iterable):
+	def __iand__(self, other):
 		"""
 		if isinstance(other, _basebag):
 			This runs in O(other.num_unique_elements())
@@ -973,7 +955,7 @@ class bag(_basebag, MutableCollection):
 			self._set(elem, min(other_count, self_count))
 		return self
 	
-	def __ixor__(self, other: Iterable):
+	def __ixor__(self, other):
 		"""
 		if isinstance(other, _basebag):
 			This runs in O(other.num_unique_elements())
@@ -992,7 +974,7 @@ class bag(_basebag, MutableCollection):
 		self |= other_minus_self
 		return self
 	
-	def __isub__(self, other: Iterable):
+	def __isub__(self, other):
 		"""
 		if isinstance(it, _basebag):
 			This runs in O(it.num_unique_elements())
@@ -1013,7 +995,7 @@ class bag(_basebag, MutableCollection):
 				pass
 		return self
 
-	def __iadd__(self, other: Iterable):
+	def __iadd__(self, other):
 		"""
 		if isinstance(it, _basebag):
 			This runs in O(it.num_unique_elements())
