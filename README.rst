@@ -3,8 +3,8 @@ python-data-structures README
 =============================
 
 :Author: Michael Lenzen
-:Copyright: 2009 Michael Lenzen
-:Project Homepage: http://code.google.com/p/python-data-structures/
+:Copyright: 2013 Michael Lenzen
+:Project Homepage: https://github.com/mlenzen/python-data-structures
 
 .. contents::
 
