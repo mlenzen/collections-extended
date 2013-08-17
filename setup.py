@@ -1,16 +1,16 @@
 from distutils.core import setup
 from os.path import dirname, join
 
-_version = '0.1.2'
+import collections_extended
 
 setup(
 		name='data-structures',
-		version = _version,
+		packages=['collections_extended'],
+		version = collections_extended.__version__,
 		description = 'Python Data Structures - bags/multisets and setlists',
 		author = 'Michael Lenzen',
 		author_email = 'm.lenzen@gmail.com',
 		url = 'https://github.com/mlenzen/python-data-structures',
-		py_modules = ['collections_extended'],
 		keywords = ['collections', 'bag', 'multiset', 'setlist'],
 		classifiers = [
 			'Development Status :: 4 - Beta',

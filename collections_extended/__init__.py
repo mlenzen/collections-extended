@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
-""" """
+'''collections_extended contains a few extra basic data structures'''
+
+__version__ = '0.1.2'
 
 from abc import ABCMeta, abstractmethod
 import heapq
@@ -1037,8 +1038,4 @@ class frozenbag(_basebag, Hashable):
 		True
 		"""
 		return Set._hash(self)
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
 
