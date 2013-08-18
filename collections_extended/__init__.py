@@ -143,7 +143,7 @@ class _basesetlist(Collection, Sequence, Set):
 	def __init__(self, iterable=None):
 		self._list = list()
 		self._dict = dict()
-		if iterable:
+		if iterable is not None:
 			for value in iterable:
 				if value not in self:
 					index = len(self)
@@ -184,7 +184,6 @@ class _basesetlist(Collection, Sequence, Set):
 		return self._list[index]
 
 	def __reversed__(self):
-		# TODO this can be done more efficiently
 		return self._from_iterable(self._list.__reversed__())
 
 	def count(self, sub, start=0, end=-1):
@@ -213,18 +212,21 @@ class _basesetlist(Collection, Sequence, Set):
 		>>> sl.index('f')
 		5
 		"""
-		start = self._fix_neg_index(start)
-		if end == None:
-			end = len(self)
-		end = self._fix_neg_index(end)
+		# TODO add more tests with start and end
 		try:
 			index = self._dict[sub]
+		except KeyError:
+			raise ValueError
+		else:
+			start = self._fix_neg_index(start)
+			if end == None:
+				end = len(self)
+			else:
+				end = self._fix_neg_index(end)
 			if start <= index and index < end:
 				return index
 			else:
 				raise ValueError
-		except KeyError:
-			raise ValueError
 
 	def sub_index(self, sub, start=0, end=-1):
 		"""
@@ -617,12 +619,6 @@ class _basebag(Collection):
 		"""
 		return self._from_map(self._dict)
 
-	## Alias methods - these methods are just names for other operations
-
-	def cardinality(self): return len(self)
-	def underlying_set(self): return self.unique_elements()
-	def multiplicity(self, elem): return self.count(elem)
-	
 	## implementing Sized methods
 
 	def __len__(self):
@@ -876,6 +872,7 @@ class bag(_basebag, MutableCollection):
 	"""
 
 	def pop(self):
+		# TODO can this be done more efficiently (no need to create an iterator)?
 		it = iter(self)
 		try:
 			value = next(it)
