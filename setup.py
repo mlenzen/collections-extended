@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 from os.path import dirname, join
 
 import collections_extended
@@ -11,7 +11,7 @@ setup(
 		author = 'Michael Lenzen',
 		author_email = 'm.lenzen@gmail.com',
 		url = 'https://github.com/mlenzen/python-data-structures',
-		keywords = ['collections', 'bag', 'multiset', 'setlist'],
+		keywords = ['collections', 'bag', 'multiset', 'setlist', 'ordered set', 'unique list'],
 		classifiers = [
 			'Development Status :: 4 - Beta',
 			'Intended Audience :: Developers',
