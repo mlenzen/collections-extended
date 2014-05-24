@@ -1,21 +1,21 @@
-=============================
-python-data-structures README
-=============================
-
 :Author: Michael Lenzen
-:Copyright: 2013 Michael Lenzen
+:Copyright: 2014 Michael Lenzen
 :Project Homepage: https://github.com/mlenzen/python-data-structures
 
 .. contents::
 
+.. code:: python
+
+   from collections_extended import bag, setlist
+   b = bag('abracadabra')
+   b.count('a')
+    
+   
+
 Overview
 ========
 
-A few collections/data structures that I think should be part of python. 
-Python3 that is, I don't plan on supporting old versions. Maybe 2.7, I'm not
-sure what the deal with that is.
-
-For now, this package includes one module - `collections_extended`.  This 
+This package includes one module - `collections_extended`.  This 
 module extends the built-in collections module to include a `bag` class, 
 AKA multiset, and a `setlist` class, which is a list of unique elements or 
 an ordered set depending on how you look at it.  There are also frozen 
@@ -27,14 +27,7 @@ unique, ordered and mutable.
 
 Usage
 =====
-To replace the built in collections module do:
-  ``import collections_extended as collections``
-
-To get the basic data structures:
   ``from collections_extended import bag, frozenbag, setlist, frozensetlist``
-
-Or you can simply:
-  ``from collections_extended import *``
 
 Classes
 =======
@@ -51,7 +44,7 @@ frozensetlist
 
 bag
 ---
-Bags have constant time inclusion testing.
+Bags have constant time inclusion testing but can only contain hashable elements.
 
 - ``count(elem)``
     Returns the count of elem in the bag.  O(1)
@@ -82,10 +75,17 @@ The following are only for mutable bags (not frozenbags).
 
 setlist
 -------
-
+A `setlist` is an ordered collection with unique elements.  The class
+implements Sequence and Set and should be able to be used as a drop in
+replacement for a set or list of you want to add the add an additional
+constraint of ordering or uniqueness.  It it more than just an ordered Set
+in that the elements are accessible by index (ie. not just a linked set).
 
 Collection Factory
 ==================
-A Collection factory is provided where you can specify whether you want the Collection returned to be mutable, have unique elements and/or be ordered.  If an Iterable object is passed the Collection will be filled from it, otherwise it will be empty.
+A Collection factory is provided where you can specify whether you want the
+Collection returned to be mutable, have unique elements and/or be ordered.  If
+an Iterable object is passed the Collection will be filled from it, otherwise
+it will be empty.
 
 ``collection(it: Iterable = None, mutable=True, unique=False, ordered=False)``
