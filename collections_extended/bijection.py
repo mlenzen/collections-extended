@@ -36,7 +36,7 @@ class bijection(MutableMapping):
 		self.invr.invr = self
 		for key, value in self.data.items():
 			if value in self.invr.data:
-				del self.data(self.invr.data[value])
+				del self.data[self.invr.data[value]]
 			self.data[key] = value
 	
 	def __len__(self):
