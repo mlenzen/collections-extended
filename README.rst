@@ -1,5 +1,5 @@
-collections_extended
-####################
+collections_extended README
+###########################
 
 :Author: Michael Lenzen
 :Copyright: 2014 Michael Lenzen
@@ -30,9 +30,9 @@ Installation
 Overview
 ========
 
-This package includes one module - `collections_extended`.  This 
-module extends the built-in collections module to include a `bag` class, 
-AKA multiset, and a `setlist` class, which is a list of unique elements or 
+This package includes one module - ``collections_extended``.  This 
+module extends the built-in collections module to include a ``bag`` class, 
+AKA multiset, and a ``setlist`` class, which is a list of unique elements or 
 an ordered set depending on how you look at it.  There are also frozen 
 (hashable) varieties of each included.  Finally, all collections are 
 abstracted into one Collection abstract base class and a Collection factory
@@ -49,7 +49,7 @@ Classes
 There are four new classes provided:
 
 bag
-  This is a bag AKA multiset.  See http://en.wikipedia.org/wiki/Multiset
+  This is a bag AKA multiset. 
 frozenbag
   This is a frozen (hashable) version of a bag.
 setlist
@@ -59,7 +59,7 @@ frozensetlist
 
 bag
 ---
-Bags have constant time inclusion testing but can only contain hashable elements.
+Bags have constant time inclusion testing but can only contain hashable elements. See http://en.wikipedia.org/wiki/Multiset
 
 - ``count(elem)``
     Returns the count of elem in the bag.  O(1)
@@ -90,7 +90,7 @@ The following are only for mutable bags (not frozenbags).
 
 setlist
 -------
-A `setlist` is an ordered collection with unique elements.  The class
+A ``setlist`` is an ordered collection with unique elements.  The class
 implements Sequence and Set and should be able to be used as a drop in
 replacement for a set or list of you want to add the add an additional
 constraint of ordering or uniqueness.  It it more than just an ordered Set
@@ -103,4 +103,4 @@ Collection returned to be mutable, have unique elements and/or be ordered.  If
 an Iterable object is passed the Collection will be filled from it, otherwise
 it will be empty.
 
-``collection(it: Iterable = None, mutable=True, unique=False, ordered=False)``
+``collection(it = None, mutable=True, unique=False, ordered=False)``
