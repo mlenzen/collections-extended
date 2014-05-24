@@ -1,16 +1,31 @@
+collections_extended
+####################
+
 :Author: Michael Lenzen
 :Copyright: 2014 Michael Lenzen
+:License: Apache License, Version 2.0
 :Project Homepage: https://github.com/mlenzen/python-data-structures
 
 .. contents::
 
 .. code:: python
 
-   from collections_extended import bag, setlist
-   b = bag('abracadabra')
-   b.count('a')
-    
-   
+Getting Started
+===============
+
+   >>> from collections_extended import bag, setlist
+   >>> b = bag('abracadabra')
+   >>> b.count('a')
+   5
+   >>> sl = setlist('abracadabra')
+   >>> sl[3]
+   'c'
+   >>> sl[-1]
+   'd'
+ 
+Installation
+============
+   pip install data-structures
 
 Overview
 ========
