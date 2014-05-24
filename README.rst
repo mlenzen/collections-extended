@@ -8,10 +8,10 @@ collections_extended README
 
 .. contents::
 
-.. code:: python
-
 Getting Started
 ===============
+
+.. code:: python
 
    >>> from collections_extended import bag, setlist
    >>> b = bag('abracadabra')
@@ -25,7 +25,8 @@ Getting Started
  
 Installation
 ============
-   pip install data-structures
+
+``pip install data-structures``
 
 Overview
 ========
