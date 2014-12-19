@@ -1,11 +1,6 @@
 collections_extended README
 ###########################
 
-:Author: Michael Lenzen
-:Copyright: 2014 Michael Lenzen
-:License: Apache License, Version 2.0
-:Project Homepage: https://github.com/mlenzen/python-data-structures
-
 .. contents::
 
 Getting Started
@@ -55,12 +50,8 @@ Overview
 
 This package includes one module - ``collections_extended``.  This 
 module extends the built-in collections module to include a ``bag`` class, 
-AKA multiset, and a ``setlist`` class, which is a list of unique elements or 
-an ordered set depending on how you look at it.  There are also frozen 
-(hashable) varieties of each included.  Finally, all collections are 
-abstracted into one Collection abstract base class and a Collection factory
-is provided where you can create a Collection by specifying the properties 
-unique, ordered and mutable.
+AKA multiset, and a ``setlist`` class, which is a list of unique elements /
+ordered set.  There are also frozen (hashable) varieties of each included.
 
 
 Usage
@@ -113,14 +104,28 @@ The following are only for mutable bags (not frozenbags).
 
 setlist
 -------
-A ``setlist`` is an ordered collection with unique elements.  The class
+A ``setlist`` is an ordered, indexed collection with unique elements.  The class
 implements Sequence and Set and should be able to be used as a drop in
 replacement for a set or list of you want to add the add an additional
 constraint of ordering or uniqueness.  It it more than just an ordered Set
 in that the elements are accessible by index (ie. not just a linked set).
 
 However, ``setlist``'s are not comparable like sets or lists. Equality
-testing still works, but ``setlist(('a', 'c')) < setlist(('a', 'b'))`` does not.
+testing still works, but ``setlist(('a', 'c')) < setlist(('a', 'b'))`` does not
+because we'd have to choose to compare by order or by set comparison.
+
+Differences from list
+~~~~~~~~~~~~~~~~~~~~~
+
+ * Inclusion testing is O(1)
+ * Adding an element that is already present does nothing
+
+Differences from set
+~~~~~~~~~~~~~~~~~~~~
+
+ * Elements are ordered and accessible by index
+ * Adding an element is O(n) as opposed to O(1)
+
 
 Collection Factory
 ==================
@@ -130,3 +135,8 @@ an Iterable object is passed the Collection will be filled from it, otherwise
 it will be empty.
 
 ``collection(it = None, mutable=True, unique=False, ordered=False)``
+
+:Author: Michael Lenzen
+:Copyright: 2014 Michael Lenzen
+:License: Apache License, Version 2.0
+:Project Homepage: https://github.com/mlenzen/python-data-structures
