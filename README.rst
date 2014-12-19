@@ -117,14 +117,14 @@ because we'd have to choose to compare by order or by set comparison.
 Differences from list
 ~~~~~~~~~~~~~~~~~~~~~
 
- * Inclusion testing is O(1)
- * Adding an element that is already present does nothing
+* Inclusion testing is O(1)
+* Adding an element that is already present does nothing
 
 Differences from set
 ~~~~~~~~~~~~~~~~~~~~
 
- * Elements are ordered and accessible by index
- * Adding an element is O(n) as opposed to O(1)
+* Elements are ordered and accessible by index
+* Adding an element is O(n) as opposed to O(1)
 
 
 Collection Factory
