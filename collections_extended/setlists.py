@@ -202,9 +202,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 	def __delitem__(self, index):
 		index = self._fix_neg_index(index)
 		del self._dict[self._list[index]]
-		for i in range(index + 1, len(self._list)):
-			elem = self._list[i]
-			self._dict[elem] = self._dict[elem] - 1
+		for elem in self._list[index+1:]:
+			self._dict[elem] -= 1
 		del self._list[index]
 	
 	def pop(self, index=-1):
@@ -219,9 +218,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			return
 		index = self._fix_neg_index(index)
 		self._dict[value] = index
-		for i in range(index, len(self._list)):
-			elem = self._list[i]
-			self._dict[elem] = self._dict[elem] + 1
+		for elem in self._list[index:]:
+			self._dict[elem] += 1
 		self._list.insert(index, value)
 	
 	def append(self, value):
@@ -244,34 +242,28 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 	def remove_all(self, elems_to_delete):
 		""" Remove all the elements from iterable. 
 		This is much faster than removing them one by one.
-		This runs in O(len(self))
+		This runs in O(len(self) + len(elems_to_delete))
 
 		>>> sl = setlist('abcdefgh')
 		>>> sl.remove_all(set('acdh'))
 		>>> sl
 		setlist(('b', 'e', 'f', 'g'))
 		"""
-		## First go through and mark all of the items to delete, also remove them from the dict
 		marked_to_delete = object()
-		num_to_delete = 0
-		for i in range(len(self)):
-			elem = self[i]
-			if elem in elems_to_delete:
+		for elem in elems_to_delete:
+			if elem in self:
+				self._list[self._dict[elem]] = marked_to_delete
 				del self._dict[elem]
-				self._list[i] = marked_to_delete
-				num_to_delete += 1
-		## Now go through and shift elements backwards
 		deleted_count = 0
-		for i in range(len(self._list)):
-			elem = self._list[i]
-			if elem == marked_to_delete:
+		for i, elem in enumerate(self):
+			if elem is marked_to_delete:
 				deleted_count += 1
 			else:
-				self._list[i - deleted_count] = elem
-				self._dict[elem] = i - deleted_count
+				new_index = i - deleted_count
+				self._list[new_index] = elem
+				self._dict[elem] = new_index
 		## Now remove deleted_count items from the end of the list
-		for i in range(deleted_count):
-			del self._list[len(self._list)-1]
+		self._list = self._list[:-deleted_count]
 
 	## Implement MutableSet
 	def add(self, item):

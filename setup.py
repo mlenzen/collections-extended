@@ -7,7 +7,7 @@ setup(
 		name='data-structures',
 		packages=['collections_extended'],
 		version = collections_extended.__version__,
-		description = 'Extra Python Data Structures - bags/multisets and setlists',
+		description = 'Extra Python Data Structures - bags (multisets) and setlists (ordered sets)',
 		author = 'Michael Lenzen',
 		author_email = 'm.lenzen@gmail.com',
 		license='Apache License, Version 2.0',
