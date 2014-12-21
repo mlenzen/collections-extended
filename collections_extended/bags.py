@@ -138,10 +138,7 @@ class _basebag(Sized, Iterable, Container):
 		>>> ms.count('x')
 		0
 		"""
-		try:
-			return self._dict[value]
-		except KeyError:
-			return 0
+		return self._dict.get(value, 0)
 	
 	def nlargest(self, n=None):
 		""" List the n most common elements and their counts from the most
