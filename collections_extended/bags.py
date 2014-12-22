@@ -2,6 +2,7 @@ import heapq
 from operator import itemgetter
 from collections import Set, Sized, Iterable, Container, Hashable
 
+
 class _basebag(Sized, Iterable, Container):
 	""" Base class for bag and frozenbag.	Is not mutable and not hashable, so there's 
 	no reason to use this instead of either bag or frozenbag.
@@ -14,20 +15,6 @@ class _basebag(Sized, Iterable, Container):
 		however many times it appears.
 
 		This runs in O(len(iterable))
-
-		>>> _basebag()                     # create empty bag
-		_basebag()
-		>>> b =_basebag('abracadabra')        # create from an Iterable
-		>>> b.count('a')
-		5
-		>>> b.count('b')
-		2
-		>>> b.count('r')
-		2
-		>>> b.count('c')
-		1
-		>>> b.count('d')
-		1
 		"""
 		self._dict = dict()
 		self._size = 0
@@ -44,13 +31,6 @@ class _basebag(Sized, Iterable, Container):
 		containing all of the elements.
 		
 		This runs in whatever tuple(self) does, I'm assuming O(len(self))
-
-		>>> ms = _basebag()
-		>>> ms == eval(ms.__repr__())
-		True
-		>>> ms = _basebag('abracadabra')
-		>>> ms == eval(ms.__repr__())
-		True
 		"""
 		if self._size == 0:
 			return '{0}()'.format(self.__class__.__name__)
@@ -63,20 +43,9 @@ class _basebag(Sized, Iterable, Container):
 		is raised to the power of the multiplicity if it is greater than 1.
 
 		This runs in O(self.num_unique_elements())
-
-		>>> print(_basebag())
-		bag()
-		>>> "'a'^5" in str(_basebag('abracadabra'))
-		True
-		>>> "'b'^2" in str(_basebag('abracadabra'))
-		True
-		>>> "'c'" in str(_basebag('abracadabra'))
-		True
-		>>> str(_basebag('abc')) == str(set('abc'))
-		True
 		"""
 		if self._size == 0:
-			return 'bag()'
+			return '{class_name}()'.format(class_name=self.__class__.__name__)
 		else:
 			format_single = '{elem!r}'
 			format_mult = '{elem!r}^{mult}'
@@ -130,13 +99,6 @@ class _basebag(Sized, Iterable, Container):
 		raised, instead 0 is returned. 
 		
 		This runs in O(1) time
-
-		>>> ms = _basebag('abracadabra')
-
-		>>> ms.count('a')
-		5
-		>>> ms.count('x')
-		0
 		"""
 		return self._dict.get(value, 0)
 	
@@ -145,13 +107,6 @@ class _basebag(Sized, Iterable, Container):
 		common to the least.  If n is None, the list all element counts.
 
 		Run time should be O(m log m) where m is len(self)
-
-		>>> sorted(_basebag('abracadabra').nlargest(), key=lambda e: (-e[1], e[0]))
-		[('a', 5), ('b', 2), ('r', 2), ('c', 1), ('d', 1)]
-		>>> sorted(_basebag('abracadabra').nlargest(3), key=lambda e: (-e[1], e[0]))
-		[('a', 5), ('b', 2), ('r', 2)]
-		>>> _basebag('abcaba').nlargest(3)
-		[('a', 3), ('b', 2), ('c', 1)]
 		"""
 		if n is None:
 			return sorted(self._dict.items(), key=itemgetter(1), reverse=True)
@@ -168,9 +123,6 @@ class _basebag(Sized, Iterable, Container):
 		is added if the value is > 0.
 
 		This runs in O(len(map))
-		
-		>>> _basebag._from_map({'a': 1, 'b': 2}) == _basebag('abb')
-		True
 		"""
 		out = cls()
 		for elem, count in map.items():
@@ -181,13 +133,6 @@ class _basebag(Sized, Iterable, Container):
 		""" Create a shallow copy of self.
 
 		This runs in O(len(self.num_unique_elements()))
-		
-		>>> _basebag().copy() == _basebag()
-		True
-		>>> abc = _basebag('abc')
-
-		>>> abc.copy() == abc
-		True
 		"""
 		return self._from_map(self._dict)
 
@@ -197,13 +142,6 @@ class _basebag(Sized, Iterable, Container):
 		""" Returns the cardinality of the bag. 
 
 		This runs in O(1)
-		
-		>>> len(_basebag())
-		0
-		>>> len(_basebag('abc'))
-		3
-		>>> len(_basebag('aaba'))
-		4
 		"""
 		return self._size
 
@@ -213,13 +151,6 @@ class _basebag(Sized, Iterable, Container):
 		""" Returns the multiplicity of the element. 
 
 		This runs in O(1)
-		
-		>>> 'a' in _basebag('bbac')
-		True
-		>>> 'a' in _basebag()
-		False
-		>>> 'a' in _basebag('missing letter')
-		False
 		"""
 		return self.count(value)
 	
@@ -242,15 +173,6 @@ class _basebag(Sized, Iterable, Container):
 				l = 1
 			else:
 				l = len(other)
-
-		>>> _basebag() <= _basebag()
-		True
-		>>> _basebag() <= _basebag('a')
-		True
-		>>> _basebag('abc') <= _basebag('aabbbc')
-		True
-		>>> _basebag('abbc') <= _basebag('abc')
-		False
 		"""
 		if not isinstance(other, _basebag):
 			return NotImplemented
@@ -289,11 +211,6 @@ class _basebag(Sized, Iterable, Container):
 				l = 1
 			else:
 				l = len(other)
-
-		>>> bag('aabc') & bag('aacd') == bag('aac')
-		True
-		>>> bag() & bag('safgsd') == bag()
-		True
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
@@ -306,14 +223,6 @@ class _basebag(Sized, Iterable, Container):
 		""" This runs in O(len(other))
 
 		TODO move isdisjoint somewhere more appropriate
-		>>> bag().isdisjoint(bag())
-		True
-		>>> bag().isdisjoint(bag('abc'))
-		True
-		>>> bag('ab').isdisjoint(bag('ac'))
-		False
-		>>> bag('ab').isdisjoint(bag('cd'))
-		True
 		"""
 		for value in other:
 			if value in self:
@@ -329,13 +238,6 @@ class _basebag(Sized, Iterable, Container):
 				m = other.num_unique_elements()
 			else:
 				m = len(other)
-
-		>>> bag('abcc') | bag() == bag('abcc')
-		True
-		>>> bag('abcc') | bag('aabd') == bag('aabccd')
-		True
-		>>> bag('aabc') | set('abdd') == bag('aabcd')
-		True
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
@@ -352,13 +254,6 @@ class _basebag(Sized, Iterable, Container):
 		This runs in O(m + n) where:
 			n is self.num_unique_elements()
 			m is len(other)
-		
-		>>> bag('abcc') & bag() == bag()
-		True
-		>>> bag('abcc') & bag('aabd') == bag('ab')
-		True
-		>>> bag('aabc') & set('abdd') == bag('ab')
-		True
 		"""
 		out = self.copy()
 		for value in other:
@@ -374,11 +269,6 @@ class _basebag(Sized, Iterable, Container):
 		This runs in O(m + n) where:
 			n is self.num_unique_elements()
 			m is len(other)
-
-		>>> bag('abc') - bag() == bag('abc')
-		True
-		>>> bag('abbc') - bag('bd') == bag('abc')
-		True
 		"""
 		out = self.copy()
 		for value in other:
@@ -403,13 +293,6 @@ class _basebag(Sized, Iterable, Container):
 		The +l will only really matter when other is an iterable with MANY repeated elements
 		For example: {'a'^2} * 'bbbbbbbbbbbbbbbbbbbbbbbbbb'
 		The algorithm will be dominated by counting the 'b's
-
-		>>> ms = _basebag('aab')
-
-		>>> ms * set('a') == _basebag(('aa', 'aa', 'ba'))
-		True
-		>>> ms * set() == _basebag()
-		True
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
@@ -428,15 +311,9 @@ class _basebag(Sized, Iterable, Container):
 		This runs in O(m + n) where:
 			m = len(self)
 			n = len(other)
-
-		>>> bag('abc') ^ bag() == bag('abc')
-		True
-		>>> bag('aabc') ^ bag('ab') == bag('ac')
-		True
-		>>> bag('aabcc') ^ bag('abcde') == bag('acde')
-		True
 		"""
 		return (self - other) | (other - self)
+
 
 class bag(_basebag):
 	""" bag is a mutable _basebag, thus not hashable and unusable for dict keys or in
@@ -477,19 +354,6 @@ class bag(_basebag):
 			This runs in O(other.num_unique_elements())
 		else:
 			This runs in O(len(other))
-
-		>>> b = bag()
-		>>> b |= bag()
-		>>> b == bag()
-		True
-		>>> b = bag('aab')
-		>>> b |= bag()
-		>>> b == bag('aab')
-		True
-		>>> b = bag('aab')
-		>>> b |= bag('ac')
-		>>> b == bag('aabc')
-		True
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
@@ -504,19 +368,6 @@ class bag(_basebag):
 			This runs in O(other.num_unique_elements())
 		else:
 			This runs in O(len(other))
-
-		>>> b = bag()
-		>>> b &= bag()
-		>>> print(b)
-		bag()
-		>>> b = bag('aab')
-		>>> b &= bag()
-		>>> print(b)
-		bag()
-		>>> b = bag('aab')
-		>>> b &= bag('ac')
-		>>> print(b)
-		{'a'}
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
@@ -531,11 +382,6 @@ class bag(_basebag):
 			This runs in O(other.num_unique_elements())
 		else:
 			This runs in O(len(other))
-
-		>>> b = bag('abbc')
-		>>> b ^= bag('bg')
-		>>> b == bag('abcg')
-		True
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
@@ -550,11 +396,6 @@ class bag(_basebag):
 			This runs in O(it.num_unique_elements())
 		else:
 			This runs in O(len(it))
-
-		>>> b = bag('aabbc')
-		>>> b -= bag('bd')
-		>>> b == bag('aabc')
-		True
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
@@ -571,11 +412,6 @@ class bag(_basebag):
 			This runs in O(it.num_unique_elements())
 		else:
 			This runs in O(len(it))
-
-		>>> b = bag('abc')
-		>>> b += bag('cde')
-		>>> b == bag('abccde')
-		True
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
@@ -590,21 +426,6 @@ class frozenbag(_basebag, Hashable):
 	def __hash__(self):
 		""" Use the hash funtion from Set,
 		I'm not sure that it works for collections with multiple elements.
-
-		>>> hash(frozenbag()) == hash(frozenbag((0,)))
-		False
-		>>> hash(frozenbag('a')) == hash(frozenbag(('aa')))
-		False
-		>>> hash(frozenbag('a')) == hash(frozenbag(('aaa')))
-		False
-		>>> hash(frozenbag('a')) == hash(frozenbag(('aaaa')))
-		False
-		>>> hash(frozenbag('a')) == hash(frozenbag(('aaaaa')))
-		False
-		>>> hash(frozenbag('ba')) == hash(frozenbag(('ab')))
-		True
-		>>> hash(frozenbag('badce')) == hash(frozenbag(('dbeac')))
-		True
 		"""
 		return Set._hash(self)
 

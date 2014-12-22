@@ -1,5 +1,6 @@
 from collections import Sequence, Set, Sized, Iterable, Container, MutableSequence, MutableSet, Hashable
 
+
 class _basesetlist(Sequence, Set):
 	""" A setlist is an ordered Collection of unique elements.
 	_basesetlist is the superclass of setlist and frozensetlist.  It is immutable
@@ -55,12 +56,6 @@ class _basesetlist(Sequence, Set):
 	def count(self, sub, start=0, end=-1):
 		"""
 		This runs in O(len(sub))
-
-		>>> sl = setlist('abcdea')
-		>>> sl.count('a')
-		1
-		>>> sl.count('f')
-		0
 		"""
 		try:
 			self.index(sub, start, end)
@@ -71,12 +66,6 @@ class _basesetlist(Sequence, Set):
 	def index(self, sub, start=0, end=None):
 		"""
 		This runs in O(1)
-
-		>>> sl = setlist('abcdef')
-		>>> sl.index('a')
-		0
-		>>> sl.index('f')
-		5
 		"""
 		# TODO add more tests with start and end
 		try:
@@ -99,16 +88,6 @@ class _basesetlist(Sequence, Set):
 		Find the index of a subsequence
 
 		This runs in O(len(sub))
-		
-		>>> sl = setlist('abcdef')
-		>>> sl.sub_index('ef')
-		4
-		>>> try:
-		...   sl.sub_index('cb')
-		...   False
-		... except ValueError:
-		...   True
-		True
 		"""
 		try:
 			if sub[0] in self:
@@ -152,41 +131,6 @@ class _basesetlist(Sequence, Set):
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
 	""" A mutable (unhashable) setlist that inherits from _basesetlist. 
-	
-	>>> sl = setlist('abcde')
-	>>> sl[0] = 5
-	>>> sl
-	setlist((5, 'b', 'c', 'd', 'e'))
-	>>> sl[-1] = 0
-	>>> sl
-	setlist((5, 'b', 'c', 'd', 0))
-	>>> sl[1] = 'c'
-	>>> sl
-	setlist((5, 'b', 'c', 'd', 0))
-	>>> del sl[0]
-	>>> sl
-	setlist(('b', 'c', 'd', 0))
-	>>> del sl[-1]
-	>>> sl
-	setlist(('b', 'c', 'd'))
-	>>> sl.pop()
-	'd'
-	>>> sl.pop(0)
-	'b'
-	>>> sl
-	setlist(('c',))
-	>>> sl.insert(0, 'a')
-	>>> sl
-	setlist(('a', 'c'))
-	>>> sl.insert(len(sl), 'e')
-	>>> sl
-	setlist(('a', 'c', 'e'))
-	>>> sl.append('f')
-	>>> sl
-	setlist(('a', 'c', 'e', 'f'))
-	>>> sl += ('g', 'h')
-	>>> sl
-	setlist(('a', 'c', 'e', 'f', 'g', 'h'))
 	"""
 
 	## Implement MutableCollection
@@ -243,11 +187,6 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		""" Remove all the elements from iterable. 
 		This is much faster than removing them one by one.
 		This runs in O(len(self) + len(elems_to_delete))
-
-		>>> sl = setlist('abcdefgh')
-		>>> sl.remove_all(set('acdh'))
-		>>> sl
-		setlist(('b', 'e', 'f', 'g'))
 		"""
 		marked_to_delete = object()
 		for elem in elems_to_delete:
@@ -278,6 +217,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 	def clear(self):
 		self._dict = dict()
 		self._list = list()
+
 
 class frozensetlist(_basesetlist, Hashable):
 	""" An immutable (hashable) setlist that inherits from _basesetlist. """
