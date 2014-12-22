@@ -154,7 +154,8 @@ def test_iadd():
 
 
 def test_hash():
-	assert not hash(frozenbag()) == hash(frozenbag(tuple()))
+	bag_with_empty_tuple = frozenbag([()])
+	assert not hash(frozenbag()) == hash(bag_with_empty_tuple)
 	assert not hash(frozenbag()) == hash(frozenbag((0,)))
 	assert not hash(frozenbag('a')) == hash(frozenbag(('aa')))
 	assert not hash(frozenbag('a')) == hash(frozenbag(('aaa')))
