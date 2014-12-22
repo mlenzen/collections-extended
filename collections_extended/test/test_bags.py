@@ -18,12 +18,18 @@ def test_repr():
 	assert ms == eval(ms.__repr__())
 
 
+def compare_bag_string(b):
+	s = str(b)
+	return set(s.lstrip('{').rstrip('}').split(', '))
+
+
 def test_str():
 	assert str(_basebag()) == '_basebag()'
 	assert "'a'^5" in str(_basebag('abracadabra'))
 	assert "'b'^2" in str(_basebag('abracadabra'))
 	assert "'c'" in str(_basebag('abracadabra'))
-	assert str(_basebag('abc')) == str(set('abc'))
+	assert compare_bag_string(bag('abracadabra')) == set(("'a'^5", "'b'^2", "'r'^2", "'c'", "'d'"))
+	assert compare_bag_string(bag('abc')) == compare_bag_string(set('abc'))
 
 
 def test_count():
