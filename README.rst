@@ -1,6 +1,10 @@
 collections_extended README
 ###########################
 
+.. image:: https://travis-ci.org/mlenzen/python-data-structures.svg?branch=master
+  :target: https://travis-ci.org/mlenzen/python-data-structures
+  :alt: Build Status
+
 .. contents::
 
 Getting Started
