@@ -77,7 +77,9 @@ frozensetlist
 
 bag
 ---
-Bags have constant time inclusion testing but can only contain hashable elements. See http://en.wikipedia.org/wiki/Multiset
+Bags have constant time inclusion testing but can only contain hashable
+elements. See http://en.wikipedia.org/wiki/Multiset
+Implements Sized, Iterable and Container.
 
 Differences from list
 ~~~~~~~~~~~~~~~~~~~~~
@@ -94,6 +96,7 @@ Differences from set
 
 New Methods
 ~~~~~~~~~~~
+
 - ``count(elem)``
     Returns the count of elem in the bag.  O(1)
 - ``num_unique_elements()``
@@ -101,15 +104,10 @@ New Methods
 - ``unique_elements()``
     Returns a set of all the unique elements in the bag. O(1)
 - ``nlargest(n=None)``
-    Returns the n most common elements and their counts from most common to least.  If n is None then all elements are returned. O(n log n)
+    Returns the n most common elements and their counts from most common to
+    least.  If n is None then all elements are returned. O(n log n)
 - ``copy()``
     Returns a shallow copy of self.  O(self.num_unique_elements())
-- ``cardinality()``
-    Returns the cardinality of this bag.  Same as ``len(self)``.  O(1)
-- ``underlying_set()``
-    Returns the underlying set.  Same as ``self.unique_elements()``.
-- ``multiplicity(elem)``
-    Same as ``self.count(elem)``
 - ``isdisjoint(other: Iterable)``
     Tests if self is disjoint with any other Iterable.  O(len(other))
 
