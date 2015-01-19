@@ -15,6 +15,14 @@ def test_index():
 	sl = setlist('abcdef')
 	assert sl.index('a') == 0
 	assert sl.index('f') == 5
+	with pytest.raises(ValueError):
+		sl.index('g')
+	with pytest.raises(ValueError):
+		sl.index('a', start=1)
+	with pytest.raises(ValueError):
+		sl.index('f', end=5)
+	with pytest.raises(ValueError):
+		sl.index('f', end=-1)
 
 
 def test_sub_index():
@@ -22,6 +30,14 @@ def test_sub_index():
 	assert sl.sub_index('ef') == 4
 	with pytest.raises(ValueError):
 		sl.sub_index('cb')
+	with pytest.raises(ValueError):
+		sl.sub_index('efg')
+	with pytest.raises(TypeError):
+		sl.sub_index(1)
+	with pytest.raises(ValueError):
+		sl.sub_index('ef', end=5)
+	with pytest.raises(ValueError):
+		sl.sub_index('ab', start=1)
 
 
 def test_setlist():

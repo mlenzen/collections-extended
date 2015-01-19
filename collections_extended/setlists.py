@@ -44,12 +44,17 @@ class _basesetlist(Sequence, Set):
 			index = 0
 		return index
 
+	def _fix_end_index(self, index):
+		if index is None:
+			return len(self)
+		else:
+			return self._fix_neg_index(index)
+
 	## Implement Container
 	def __contains__(self, elem):
 		return elem in self._dict
 
-	## Implement Iterable
-	__iter__ = list.__iter__
+	## Iterable we get by inheriting from Sequence
 
 	## Implement Sized
 	def __len__(self):
@@ -58,9 +63,6 @@ class _basesetlist(Sequence, Set):
 	## Implement Sequence
 	def __getitem__(self, index):
 		return self._list[index]
-
-	def __reversed__(self):
-		return self._from_iterable(self._list.__reversed__())
 
 	def count(self, sub, start=0, end=-1):
 		"""
@@ -83,30 +85,11 @@ class _basesetlist(Sequence, Set):
 			raise ValueError
 		else:
 			start = self._fix_neg_index(start)
-			if end is None:
-				end = len(self)
-			else:
-				end = self._fix_neg_index(end)
+			end = self._fix_end_index(end)
 			if start <= index and index < end:
 				return index
 			else:
 				raise ValueError
-
-	def sub_index(self, sub, start=0, end=-1):
-		"""
-		Find the index of a subsequence
-
-		This runs in O(len(sub))
-		"""
-		try:
-			if sub[0] in self:
-				index = self._dict[sub[0]]
-				for i in range(1, len(sub)):
-					if sub[i] != self[index+i]:
-						raise ValueError
-				return index
-		except TypeError:
-			pass
 
 	## Nothing needs to be done to implement Set
 
@@ -136,6 +119,28 @@ class _basesetlist(Sequence, Set):
 
 	def __ne__(self, other):
 		return not (self == other)
+
+	## New methods
+
+	def sub_index(self, sub, start=0, end=None):
+		"""
+		Find the index of a subsequence
+
+		This runs in O(len(sub))
+		Raises ValueError if the subsequence doesn't exist.
+		Raises TypeError if sub isn't a Sequence.
+		"""
+		start_index = self.index(sub[0], start, end)
+		end = self._fix_end_index(end)
+		if start_index + len(sub) > end:
+			raise ValueError
+		for i in range(1, len(sub)):
+			try:
+				if sub[i] != self[start_index+i]:
+					raise ValueError
+			except IndexError:
+				raise ValueError
+		return start_index
 
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
