@@ -52,7 +52,7 @@ def test_setlist():
 def test_removeall():
 	sl = setlist('abcdefgh')
 	sl.remove_all(set('acdh'))
-	assert sl == setlist(('b', 'e', 'f', 'g'))
+	assert sl == setlist(('befg'))
 
 
 def test_assignment():
@@ -74,3 +74,9 @@ def test_len():
 	assert len(setlist('a')) == 1
 	assert len(setlist('ab')) == 2
 	assert len(setlist('abc')) == 3
+
+
+def test_shuffle():
+	sl = setlist(range(100))
+	sl.shuffle()
+	assert sl != setlist(range(100))

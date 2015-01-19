@@ -1,4 +1,6 @@
 
+import random as random_
+
 from collections import (
 	Sequence,
 	Set,
@@ -224,6 +226,12 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 	def clear(self):
 		self._dict = dict()
 		self._list = list()
+
+	## New methods
+	def shuffle(self, random=None):
+		random_.shuffle(self._list, random=random)
+		for i, elem in enumerate(self._list):
+			self._dict[elem] = i
 
 
 class frozensetlist(_basesetlist, Hashable):
