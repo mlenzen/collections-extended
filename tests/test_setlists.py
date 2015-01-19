@@ -46,7 +46,14 @@ def test_setlist():
 	assert sl == setlist((5, 'b', 'c', 'd', 'e'))
 	sl[-1] = 0
 	assert sl == setlist((5, 'b', 'c', 'd', 0))
-	sl[1] = 'c'
+	with pytest.raises(ValueError):
+		sl[1] = 'c'
+	assert sl == setlist((5, 'b', 'c', 'd', 0))
+	with pytest.raises(ValueError):
+		sl.append('c')
+	assert sl == setlist((5, 'b', 'c', 'd', 0))
+	sl[2] == 'c'
+	assert sl == setlist((5, 'b', 'c', 'd', 0))
 	assert sl == setlist((5, 'b', 'c', 'd', 0))
 	del sl[0]
 	assert sl == setlist(('b', 'c', 'd', 0))
@@ -96,3 +103,17 @@ def test_shuffle():
 	sl = setlist(range(100))
 	sl.shuffle()
 	assert sl != setlist(range(100))
+
+
+def test_del():
+	sl = setlist('abcde')
+	del sl[1]
+	assert sl == setlist('acde')
+	del sl[0]
+	assert sl == setlist('cde')
+	del sl[2]
+	assert sl == setlist('cd')
+	with pytest.raises(IndexError):
+		del sl[2]
+	with pytest.raises(IndexError):
+		del sl[-3]

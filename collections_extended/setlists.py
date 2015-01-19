@@ -41,7 +41,7 @@ class _basesetlist(Sequence, Set):
 		if index < 0:
 			index += len(self)
 		if index < 0:
-			index = 0
+			raise IndexError
 		return index
 
 	def _fix_end_index(self, index):
@@ -93,7 +93,7 @@ class _basesetlist(Sequence, Set):
 
 	## Nothing needs to be done to implement Set
 
-	## Comparison
+	## Comparison (not currently implemented)
 
 	def __le__(self, other):
 		return NotImplemented
@@ -147,33 +147,30 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 	""" A mutable (unhashable) setlist that inherits from _basesetlist.
 	"""
 
-	## Implement MutableCollection
+	## Implement MutableSequence
 	def __setitem__(self, index, value):
 		index = self._fix_neg_index(index)
-		if value in self:
-			return
 		old_value = self._list[index]
+		if value in self:
+			if value == old_value:
+				return
+			else:
+				raise ValueError
 		del self._dict[old_value]
 		self._list[index] = value
 		self._dict[value] = index
 
 	def __delitem__(self, index):
 		index = self._fix_neg_index(index)
-		del self._dict[self._list[index]]
+		value = self._list[index]
+		del self._dict[value]
 		for elem in self._list[index+1:]:
 			self._dict[elem] -= 1
 		del self._list[index]
 
-	def pop(self, index=-1):
-		index = self._fix_neg_index(index)
-		value = self[index]
-		del self[index]
-		return value
-
-	## Implement MutableSequence
 	def insert(self, index, value):
 		if value in self:
-			return
+			raise ValueError
 		index = self._fix_neg_index(index)
 		self._dict[value] = index
 		for elem in self._list[index:]:
@@ -181,7 +178,12 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		self._list.insert(index, value)
 
 	def append(self, value):
-		self.insert(len(self), value)
+		if value in self:
+			raise ValueError
+		else:
+			# Do this first in case value isn't Hashable
+			self._dict[value] = len(self) + 1
+			self._list.append(value)
 
 	def extend(self, values):
 		for value in values:
