@@ -42,3 +42,6 @@ nosetests.xml
 *.sublime-workspace
 
 MANIFEST
+
+env
+dev-env

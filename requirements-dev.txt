@@ -1,0 +1,4 @@
+bumpversion
+pytest
+sphinx
+wheel
