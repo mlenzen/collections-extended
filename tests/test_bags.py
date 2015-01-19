@@ -1,5 +1,5 @@
 
-from ..bags import _basebag, bag, frozenbag
+from collections_extended.bags import _basebag, bag, frozenbag
 
 
 def test_init():

@@ -1,7 +1,7 @@
 
 import pytest
 
-from ..setlists import _basesetlist, setlist, frozensetlist
+from collections_extended.setlists import _basesetlist, setlist, frozensetlist
 
 
 def test_count():
