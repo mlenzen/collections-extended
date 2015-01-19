@@ -43,7 +43,7 @@ Getting Started
    >>> sl.insert('d', 1)  # inserting an element already in the setlist does nothing
    >>> sl.index('d')
    4
- 
+
 Installation
 ============
 
@@ -52,8 +52,8 @@ Installation
 Overview
 ========
 
-This package includes one module - ``collections_extended``.  This 
-module extends the built-in collections module to include a ``bag`` class, 
+This package includes one module - ``collections_extended``.  This
+module extends the built-in collections module to include a ``bag`` class,
 AKA multiset, and a ``setlist`` class, which is a list of unique elements /
 ordered set.  There are also frozen (hashable) varieties of each included.
 
@@ -67,7 +67,7 @@ Classes
 There are four new classes provided:
 
 bag
-  This is a bag AKA multiset. 
+  This is a bag AKA multiset.
 frozenbag
   This is a frozen (hashable) version of a bag.
 setlist
@@ -141,6 +141,6 @@ it will be empty.
 ``collection(it = None, mutable=True, unique=False, ordered=False)``
 
 :Author: Michael Lenzen
-:Copyright: 2014 Michael Lenzen
+:Copyright: 2015 Michael Lenzen
 :License: Apache License, Version 2.0
 :Project Homepage: https://github.com/mlenzen/python-data-structures
