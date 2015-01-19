@@ -47,4 +47,5 @@ setup(
 		install_requires=['setuptools'],
 		tests_require=['pytest'],
 		package_data={'': ['README.rst', 'LICENSE']},
+		cmdclass={'test': PyTest},
 		)
