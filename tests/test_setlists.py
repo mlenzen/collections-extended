@@ -1,5 +1,6 @@
 
 import pytest
+import random
 
 from collections_extended.setlists import _basesetlist, setlist, frozensetlist
 
@@ -52,3 +53,24 @@ def test_removeall():
 	sl = setlist('abcdefgh')
 	sl.remove_all(set('acdh'))
 	assert sl == setlist(('b', 'e', 'f', 'g'))
+
+
+def test_assignment():
+	sl = setlist('abc')
+	sl[0] = 'd'
+	assert sl == setlist('dbc')
+	sl[1] = 'e'
+	assert sl == setlist('dec')
+	sl[2] = 'f'
+	assert sl == setlist('def')
+	with pytest.raises(IndexError):
+		sl[3] = 'g'
+	sl[0], sl[1] = 'h', 'i'
+	assert sl == setlist('hif')
+
+
+def test_len():
+	assert len(setlist()) == 0
+	assert len(setlist('a')) == 1
+	assert len(setlist('ab')) == 2
+	assert len(setlist('abc')) == 3
