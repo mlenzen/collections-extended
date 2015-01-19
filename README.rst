@@ -79,6 +79,21 @@ bag
 ---
 Bags have constant time inclusion testing but can only contain hashable elements. See http://en.wikipedia.org/wiki/Multiset
 
+Differences from list
+~~~~~~~~~~~~~~~~~~~~~
+
+* Inclusion testing is O(1)
+* Adding and removing elements is O(1)
+* Cannot add Mutable elements
+* Elements aren't ordered
+
+Differences from set
+~~~~~~~~~~~~~~~~~~~~
+
+* Can add multiple instances of equal elements
+
+New Methods
+~~~~~~~~~~~
 - ``count(elem)``
     Returns the count of elem in the bag.  O(1)
 - ``num_unique_elements()``
@@ -130,6 +145,18 @@ Differences from set
 * Elements are ordered and accessible by index
 * Adding an element is O(n) as opposed to O(1)
 
+New Methods
+~~~~~~~~~~~
+Aside from the methods expected from Sequence and Set, this provides:
+- ``setlist.shuffle(random=None)``
+  Because random.shuffle(setlist) doesn't work, this is provided to do the same.
+
+Quirks
+~~~~~~
+* Swapping elements, eg. `sl[0], sl[1] = sl[1], sl[0]`, doesn't work because
+  it is implemented by first inserting one element then the other. But since
+  the first element it tries to insert is still in the setlist, nothing happens.
+  This causes random.shuffle not to work on a setlist.
 
 Collection Factory
 ==================
