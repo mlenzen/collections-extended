@@ -4,14 +4,17 @@ from collections import Set, Sized, Iterable, Container, Hashable
 
 
 class _basebag(Sized, Iterable, Container):
-	""" Base class for bag and frozenbag.	Is not mutable and not hashable, so there's 
+	"""
+	Base class for bag and frozenbag.	Is not mutable and not hashable, so there's
 	no reason to use this instead of either bag or frozenbag.
 	"""
 	## Basic object methods
 
 	def __init__(self, iterable=None):
-		""" Create a new basebag.  If iterable isn't given, is None or is empty then the 
-		bag starts empty.  Otherwise each element from iterable will be added to the bag 
+		"""Create a new basebag.
+
+		If iterable isn't given, is None or is empty then the bag starts empty.
+		Otherwise each element from iterable will be added to the bag
 		however many times it appears.
 
 		This runs in O(len(iterable))
@@ -25,11 +28,11 @@ class _basebag(Sized, Iterable, Container):
 			else:
 				for value in iterable:
 					self._inc(value)
-	
+
 	def __repr__(self):
-		""" The string representation is a call to the constructor given a tuple 
+		"""The string representation is a call to the constructor given a tuple
 		containing all of the elements.
-		
+
 		This runs in whatever tuple(self) does, I'm assuming O(len(self))
 		"""
 		if self._size == 0:
@@ -37,9 +40,9 @@ class _basebag(Sized, Iterable, Container):
 		else:
 			format = '{class_name}({tuple!r})'
 			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
-	
+
 	def __str__(self):
-		""" The printable string appears just like a set, except that each element 
+		"""The printable string appears just like a set, except that each element
 		is raised to the power of the multiplicity if it is greater than 1.
 
 		This runs in O(self.num_unique_elements())
@@ -60,8 +63,8 @@ class _basebag(Sized, Iterable, Container):
 	## Internal methods
 
 	def _set(self, elem, value):
-		""" Set the multiplicity of elem to count. 
-		
+		"""Set the multiplicity of elem to count.
+
 		This runs in O(1) time
 		"""
 		if value < 0:
@@ -75,35 +78,38 @@ class _basebag(Sized, Iterable, Container):
 		self._size += value - old_count
 
 	def _inc(self, elem, count=1):
-		""" Increment the multiplicity of value by count (if count <0 then decrement). """
+		"""Increment the multiplicity of value by count.
+
+		If count <0 then decrement.
+		"""
 		self._set(elem, self.count(elem) + count)
 
 	## New public methods (not overriding/implementing anything)
 
 	def num_unique_elements(self):
-		""" Returns the number of unique elements. 
-		
+		"""Returns the number of unique elements.
+
 		This runs in O(1) time
 		"""
 		return len(self._dict)
 
 	def unique_elements(self):
-		""" Returns a view of unique elements in this bag. 
-		
+		"""Returns a view of unique elements in this bag.
+
 		This runs in O(1) time
 		"""
 		return self._dict.keys()
 
 	def count(self, value):
-		""" Return the multiplicity of value.  If value is not in the bag no Error is
-		raised, instead 0 is returned. 
-		
+		"""Return the multiplicity of value.  If value is not in the bag no Error is
+		raised, instead 0 is returned.
+
 		This runs in O(1) time
 		"""
 		return self._dict.get(value, 0)
-	
+
 	def nlargest(self, n=None):
-		""" List the n most common elements and their counts from the most
+		"""List the n most common elements and their counts from the most
 		common to the least.  If n is None, the list all element counts.
 
 		Run time should be O(m log m) where m is len(self)
@@ -119,7 +125,7 @@ class _basebag(Sized, Iterable, Container):
 
 	@classmethod
 	def _from_map(cls, map):
-		""" Creates a bag from a dict of elem->count.  Each key in the dict 
+		"""Creates a bag from a dict of elem->count.  Each key in the dict
 		is added if the value is > 0.
 
 		This runs in O(len(map))
@@ -130,7 +136,7 @@ class _basebag(Sized, Iterable, Container):
 		return out
 
 	def copy(self):
-		""" Create a shallow copy of self.
+		"""Create a shallow copy of self.
 
 		This runs in O(len(self.num_unique_elements()))
 		"""
@@ -139,7 +145,7 @@ class _basebag(Sized, Iterable, Container):
 	## implementing Sized methods
 
 	def __len__(self):
-		""" Returns the cardinality of the bag. 
+		"""Returns the cardinality of the bag.
 
 		This runs in O(1)
 		"""
@@ -148,24 +154,27 @@ class _basebag(Sized, Iterable, Container):
 	## implementing Container methods
 
 	def __contains__(self, value):
-		""" Returns the multiplicity of the element. 
+		"""Returns the multiplicity of the element.
 
 		This runs in O(1)
 		"""
 		return self.count(value)
-	
+
 	## implementing Iterable methods
 
 	def __iter__(self):
-		""" Iterate through all elements, multiple copies will be returned if they exist. """
+		"""Iterate through all elements.
+
+		Multiple copies will be returned if they exist.
+		"""
 		for value, count in self._dict.items():
 			for i in range(count):
 				yield(value)
 
 	## Comparison methods
-	
+
 	def __le__(self, other):
-		""" Tests if self <= other where other is another bag
+		"""Tests if self <= other where other is another bag
 
 		This runs in O(l + n) where:
 			n is self.num_unique_elements()
@@ -195,7 +204,7 @@ class _basebag(Sized, Iterable, Container):
 	def __eq__(self, other):
 		if not isinstance(other, _basebag):
 			return False
-		return len(self) == len(other) and self <= other 
+		return len(self) == len(other) and self <= other
 
 	def __ne__(self, other):
 		return not (self == other)
@@ -203,8 +212,8 @@ class _basebag(Sized, Iterable, Container):
 	## Operations - &, |, +, -, ^, * and isdisjoint
 
 	def __and__(self, other):
-		""" Intersection is the minimum of corresponding counts. 
-		
+		"""Intersection is the minimum of corresponding counts.
+
 		This runs in O(l + n) where:
 			n is self.num_unique_elements()
 			if other is a bag:
@@ -220,7 +229,7 @@ class _basebag(Sized, Iterable, Container):
 		return self._from_map(values)
 
 	def isdisjoint(self, other):
-		""" This runs in O(len(other))
+		"""This runs in O(len(other))
 
 		TODO move isdisjoint somewhere more appropriate
 		"""
@@ -230,8 +239,8 @@ class _basebag(Sized, Iterable, Container):
 		return True
 
 	def __or__(self, other):
-		""" Union is the maximum of all elements. 
-		
+		"""Union is the maximum of all elements.
+
 		This runs in O(m + n) where:
 			n is self.num_unique_elements()
 			if other is a bag:
@@ -249,7 +258,7 @@ class _basebag(Sized, Iterable, Container):
 	def __add__(self, other):
 		"""
 		other can be any iterable.
-		self + other = self & other + self | other 
+		self + other = self & other + self | other
 
 		This runs in O(m + n) where:
 			n is self.num_unique_elements()
@@ -259,11 +268,11 @@ class _basebag(Sized, Iterable, Container):
 		for value in other:
 			out._inc(value)
 		return out
-	
+
 	def __sub__(self, other):
-		""" Difference between the sets.
+		"""Difference between the sets.
 		other can be any iterable.
-		For normal sets this is all s.t. x in self and x not in other. 
+		For normal sets this is all s.t. x in self and x not in other.
 		For bags this is count(x) = max(0, self.count(x)-other.count(x))
 
 		This runs in O(m + n) where:
@@ -279,7 +288,7 @@ class _basebag(Sized, Iterable, Container):
 		return out
 
 	def __mul__(self, other):
-		""" Cartesian product of the two sets.
+		"""Cartesian product of the two sets.
 		other can be any iterable.
 		Both self and other must contain elements that can be added together.
 
@@ -290,7 +299,8 @@ class _basebag(Sized, Iterable, Container):
 				l is 0
 			else:
 				l is the len(other)
-		The +l will only really matter when other is an iterable with MANY repeated elements
+		The +l will only really matter when other is an iterable with MANY
+		repeated elements.
 		For example: {'a'^2} * 'bbbbbbbbbbbbbbbbbbbbbbbbbb'
 		The algorithm will be dominated by counting the 'b's
 		"""
@@ -305,7 +315,7 @@ class _basebag(Sized, Iterable, Container):
 		return self._from_map(values)
 
 	def __xor__(self, other):
-		""" Symmetric difference between the sets. 
+		"""Symmetric difference between the sets.
 		other can be any iterable.
 
 		This runs in O(m + n) where:
@@ -316,8 +326,9 @@ class _basebag(Sized, Iterable, Container):
 
 
 class bag(_basebag):
-	""" bag is a mutable _basebag, thus not hashable and unusable for dict keys or in
-	other sets.
+	"""bag is a mutable _basebag.
+
+	Thus not hashable and unusable for dict keys or in other sets.
 	"""
 
 	def pop(self):
@@ -332,7 +343,7 @@ class bag(_basebag):
 
 	def add(self, elem):
 		self._inc(elem, 1)
-	
+
 	def discard(self, elem):
 		try:
 			self.remove(elem)
@@ -361,7 +372,7 @@ class bag(_basebag):
 			self_count = self.count(elem)
 			self._set(elem, max(other_count, self_count))
 		return self
-	
+
 	def __iand__(self, other):
 		"""
 		if isinstance(other, _basebag):
@@ -375,7 +386,7 @@ class bag(_basebag):
 			other_count = other.count(elem)
 			self._set(elem, min(other_count, self_count))
 		return self
-	
+
 	def __ixor__(self, other):
 		"""
 		if isinstance(other, _basebag):
@@ -389,7 +400,7 @@ class bag(_basebag):
 		self -= other
 		self |= other_minus_self
 		return self
-	
+
 	def __isub__(self, other):
 		"""
 		if isinstance(it, _basebag):
@@ -418,14 +429,15 @@ class bag(_basebag):
 		for elem, count in other._dict.items():
 			self._inc(elem, count)
 		return self
-	
+
 
 class frozenbag(_basebag, Hashable):
-	""" frozenbag is a Hashable _basebag, thus it is immutable and usable for dict keys
+	"""frozenbag is an immutable _basebag.
+
+	Thus it is Hashable and usable for dict keys
 	"""
 	def __hash__(self):
-		""" Use the hash funtion from Set,
+		"""Use the hash funtion from Set,
 		I'm not sure that it works for collections with multiple elements.
 		"""
 		return Set._hash(self)
-

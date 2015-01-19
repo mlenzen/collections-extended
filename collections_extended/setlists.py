@@ -1,4 +1,11 @@
-from collections import Sequence, Set, Sized, Iterable, Container, MutableSequence, MutableSet, Hashable
+
+from collections import (
+	Sequence,
+	Set,
+	MutableSequence,
+	MutableSet,
+	Hashable,
+	)
 
 
 class _basesetlist(Sequence, Set):
@@ -16,7 +23,7 @@ class _basesetlist(Sequence, Set):
 					index = len(self)
 					self._list.insert(index, value)
 					self._dict[value] = index
-	
+
 	def __str__(self):
 		return self._list.__repr__()
 
@@ -26,7 +33,7 @@ class _basesetlist(Sequence, Set):
 		else:
 			format = '{class_name}({tuple!r})'
 			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
-	
+
 	## Convenience methods
 	def _fix_neg_index(self, index):
 		if index < 0:
@@ -36,7 +43,7 @@ class _basesetlist(Sequence, Set):
 		return index
 
 	## Implement Container
-	def __contains__(self, elem): 
+	def __contains__(self, elem):
 		return elem in self._dict
 
 	## Implement Iterable
@@ -74,7 +81,7 @@ class _basesetlist(Sequence, Set):
 			raise ValueError
 		else:
 			start = self._fix_neg_index(start)
-			if end == None:
+			if end is None:
 				end = len(self)
 			else:
 				end = self._fix_neg_index(end)
@@ -130,7 +137,7 @@ class _basesetlist(Sequence, Set):
 
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
-	""" A mutable (unhashable) setlist that inherits from _basesetlist. 
+	""" A mutable (unhashable) setlist that inherits from _basesetlist.
 	"""
 
 	## Implement MutableCollection
@@ -149,7 +156,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		for elem in self._list[index+1:]:
 			self._dict[elem] -= 1
 		del self._list[index]
-	
+
 	def pop(self, index=-1):
 		index = self._fix_neg_index(index)
 		value = self[index]
@@ -165,10 +172,10 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		for elem in self._list[index:]:
 			self._dict[elem] += 1
 		self._list.insert(index, value)
-	
+
 	def append(self, value):
 		self.insert(len(self), value)
-	
+
 	def extend(self, values):
 		for value in values:
 			self.append(value)
@@ -182,9 +189,9 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		if value not in self:
 			raise ValueError
 		del self[self._dict[value]]
-	
+
 	def remove_all(self, elems_to_delete):
-		""" Remove all the elements from iterable. 
+		""" Remove all the elements from iterable.
 		This is much faster than removing them one by one.
 		This runs in O(len(self) + len(elems_to_delete))
 		"""
@@ -224,4 +231,3 @@ class frozensetlist(_basesetlist, Hashable):
 
 	def __hash__(self):
 		return self._list.__hash__() ^ self._dict.__hash__()
-
