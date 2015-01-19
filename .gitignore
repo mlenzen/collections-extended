@@ -37,4 +37,8 @@ nosetests.xml
 # Vim
 *.swp
 
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
 MANIFEST
