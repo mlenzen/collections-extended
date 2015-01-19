@@ -7,25 +7,10 @@ from .setlists import setlist, frozensetlist
 
 __all__ = ['collection', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
 
+
 def collection(it=(), mutable=True, ordered=False, unique=False):
-	""" Return a Collection with the specified properties. 
-	
-	>>> isinstance(collection(), bag)
-	True
-	>>> isinstance(collection(ordered=True), list)
-	True
-	>>> isinstance(collection(unique=True), set)
-	True
-	>>> isinstance(collection(unique=True, ordered=True), setlist)
-	True
-	>>> isinstance(collection(mutable=False), frozenbag)
-	True
-	>>> isinstance(collection(mutable=False, ordered=True), tuple)
-	True
-	>>> isinstance(collection(mutable=False, unique=True), frozenset)
-	True
-	>>> isinstance(collection(mutable=False, ordered=True, unique=True), frozensetlist)
-	True
+	""" Return a Collection with the specified properties.
+
 	"""
 	if unique:
 		if ordered:
@@ -49,4 +34,3 @@ def collection(it=(), mutable=True, ordered=False, unique=False):
 				return bag(it)
 			else:
 				return frozenbag(it)
-
