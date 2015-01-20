@@ -10,7 +10,7 @@ README
   :target: https://coveralls.io/r/mlenzen/collections-extended?branch=master
   :alt: Coverage
 
-Documentation: http://python-collections-extended.lenzm.net/en/latest
+Documentation: http://collections-extended.lenzm.net/en/latest
 
 GitHub: https://github.com/mlenzen/collections-extended
 

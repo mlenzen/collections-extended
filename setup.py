@@ -27,7 +27,7 @@ setup(
 		author='Michael Lenzen',
 		author_email='m.lenzen@gmail.com',
 		license='Apache License, Version 2.0',
-		url='http://python-collections-extended.lenzm.net/en/latest',
+		url='http://collections-extended.lenzm.net/en/latest',
 		keywords=['collections', 'bag', 'multiset', 'setlist', 'ordered set', 'unique list'],
 		classifiers=[
 			'Development Status :: 4 - Beta',
