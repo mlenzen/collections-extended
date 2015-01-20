@@ -59,7 +59,7 @@ class _basebag(Sized, Iterable, Container):
 					strings.append(format_mult.format(elem=elem, mult=mult))
 				else:
 					strings.append(format_single.format(elem=elem))
-			return '{{{}}}'.format(', '.join(strings))
+			return '{%s}' % ', '.join(strings)
 
 	## Internal methods
 

@@ -150,7 +150,9 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 					raise ValueError
 			else:
 				self._list[index] = value
-				self._dict = {v: i for i, v in enumerate(self._list)}
+				self._dict = {}
+				for i, v in enumerate(self._list):
+					self._dict[v] = i
 		else:
 			index = self._fix_neg_index(index)
 			old_value = self._list[index]
