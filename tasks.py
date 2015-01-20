@@ -56,3 +56,13 @@ def publish():
 	run('python setup.py bdist_wheel upload', pty=True)
 
 	log.info('published new release')
+
+
+@task
+def docs():
+	run('rm -f docs/collections_extended.rst')
+	run('rm -f docs/modules.rst')
+	run('sphinx-apidoc -o docs/ collections_extended')
+	run('make -C docs clean')
+	run('make -C docs html')
+	run('open docs/_build/html/index.html')
