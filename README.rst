@@ -5,6 +5,11 @@ collections_extended README
   :target: https://travis-ci.org/mlenzen/python-data-structures
   :alt: Build Status
 
+
+.. image:: https://coveralls.io/repos/mlenzen/python-data-structures/badge.svg
+  :target: https://coveralls.io/r/mlenzen/python-data-structures
+  :alt: Coverage
+
 .. contents::
 
 Getting Started
