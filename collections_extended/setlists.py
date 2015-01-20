@@ -129,10 +129,7 @@ class _basesetlist(Sequence, Set):
 		if start_index + len(sub) > end:
 			raise ValueError
 		for i in range(1, len(sub)):
-			try:
-				if sub[i] != self[start_index+i]:
-					raise ValueError
-			except IndexError:
+			if sub[i] != self[start_index+i]:
 				raise ValueError
 		return start_index
 
@@ -172,10 +169,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		else:
 			index = self._fix_neg_index(index)
 			value = self._list[index]
-			del self._dict[value]
-			for elem in self._list[index+1:]:
-				self._dict[elem] -= 1
-			del self._list[index]
+			self.remove(value)
 
 	def insert(self, index, value):
 		if value in self:
@@ -206,9 +200,15 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		return self
 
 	def remove(self, value):
-		if value not in self:
+		try:
+			index = self._dict[value]
+		except KeyError:
 			raise ValueError
-		del self[self._dict[value]]
+		else:
+			del self._dict[value]
+			for elem in self._list[index+1:]:
+				self._dict[elem] -= 1
+			del self._list[index]
 
 	def remove_all(self, elems_to_delete):
 		""" Remove all the elements from iterable.
