@@ -133,6 +133,9 @@ class _basesetlist(Sequence, Set):
 				raise ValueError
 		return start_index
 
+	def copy(self):
+		return self.__class__(self)
+
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
 	""" A mutable (unhashable) setlist that inherits from _basesetlist.

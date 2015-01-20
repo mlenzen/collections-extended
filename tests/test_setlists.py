@@ -256,3 +256,15 @@ def test_str():
 def test_repr():
 	assert repr(setlist()) == 'setlist()'
 	assert repr(setlist(range(4))) == 'setlist((0, 1, 2, 3))'
+
+
+def test_copy():
+	sl = setlist(range(10))
+	copy = sl.copy()
+	assert sl == copy
+	assert not sl is copy
+	sl = setlist(('1', (0, 1)))
+	copy = sl.copy()
+	assert sl == copy
+	assert not sl is copy
+	assert sl[1] is copy[1]
