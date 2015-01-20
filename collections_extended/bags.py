@@ -99,7 +99,7 @@ class _basebag(Sized, Iterable, Container):
 
 		This runs in O(1) time
 		"""
-		return self._dict.keys()
+		return _compat.keys_set(self._dict)
 
 	def count(self, value):
 		"""Return the multiplicity of value.  If value is not in the bag no Error is
