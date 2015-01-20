@@ -6,3 +6,4 @@ ipython
 flake8
 invoke
 coverage
+tox
