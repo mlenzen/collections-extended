@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to collections extended's documentation!
-======================================
+collections_extended's documentation
+====================================
 
 Contents:
 
@@ -12,9 +12,10 @@ Contents:
    :maxdepth: 2
 
    readme
-   installation
-   usage
+   bags
+   setlists
    contributing
+   collections_extended
 
 Indices and tables
 ==================

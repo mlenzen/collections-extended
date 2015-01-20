@@ -1,5 +1,5 @@
-collections_extended README
-###########################
+README
+######
 
 .. image:: https://travis-ci.org/mlenzen/python-data-structures.svg?branch=master
   :target: https://travis-ci.org/mlenzen/python-data-structures
@@ -10,7 +10,20 @@ collections_extended README
   :target: https://coveralls.io/r/mlenzen/python-data-structures
   :alt: Coverage
 
-.. contents::
+Documentation: http://python-collections-extended.lenzm.net
+
+GitHub: https://github.com/mlenzen/python-data-structures
+
+PyPI: https://pypi.python.org/pypi/data-structures
+
+Overview
+========
+
+This package includes one module - ``collections_extended``.  This
+module extends the built-in collections module to include a ``bag`` class,
+AKA multiset, and a ``setlist`` class, which is a list of unique elements /
+ordered set.  There are also frozen (hashable) varieties of each included.
+
 
 Getting Started
 ===============
@@ -45,7 +58,8 @@ Getting Started
    True
    >>> sl.index('d')  # so is finding the index of an element
    4
-   >>> sl.insert('d', 1)  # inserting an element already in the setlist does nothing
+   >>> sl.insert(1, 'd')  # inserting an element already in raises a ValueError
+   ValueError
    >>> sl.index('d')
    4
 
@@ -53,15 +67,6 @@ Installation
 ============
 
 ``pip install data-structures``
-
-Overview
-========
-
-This package includes one module - ``collections_extended``.  This
-module extends the built-in collections module to include a ``bag`` class,
-AKA multiset, and a ``setlist`` class, which is a list of unique elements /
-ordered set.  There are also frozen (hashable) varieties of each included.
-
 
 Usage
 =====
@@ -71,95 +76,19 @@ Classes
 =======
 There are four new classes provided:
 
+bags
+----
 bag
   This is a bag AKA multiset.
 frozenbag
   This is a frozen (hashable) version of a bag.
+
+setlists
+--------
 setlist
   An ordered set or a list of unique elements depending on how you look at it.
 frozensetlist
   This is a frozen (hashable) version of a setlist.
-
-bag
----
-Bags have constant time inclusion testing but can only contain hashable
-elements. See http://en.wikipedia.org/wiki/Multiset
-Implements Sized, Iterable and Container.
-
-Differences from list
-~~~~~~~~~~~~~~~~~~~~~
-
-* Inclusion testing is O(1)
-* Adding and removing elements is O(1)
-* Cannot add Mutable elements
-* Elements aren't ordered
-
-Differences from set
-~~~~~~~~~~~~~~~~~~~~
-
-* Can add multiple instances of equal elements
-
-New Methods
-~~~~~~~~~~~
-
-- ``count(elem)``
-    Returns the count of elem in the bag.  O(1)
-- ``num_unique_elements()``
-    Returns the number of unique elements in the bag. O(1)
-- ``unique_elements()``
-    Returns a set of all the unique elements in the bag. O(1)
-- ``nlargest(n=None)``
-    Returns the n most common elements and their counts from most common to
-    least.  If n is None then all elements are returned. O(n log n)
-- ``copy()``
-    Returns a shallow copy of self.  O(self.num_unique_elements())
-- ``isdisjoint(other: Iterable)``
-    Tests if self is disjoint with any other Iterable.  O(len(other))
-
-The following are only for mutable bags (not frozenbags).
-
-- ``pop()``
-- ``add(elem)``
-- ``discard(elem)``
-- ``remove(elem)``
-- ``clear()``
-
-setlist
--------
-A ``setlist`` is an ordered, indexed collection with unique elements.  The class
-implements Sequence and Set and should be able to be used as a drop in
-replacement for a set or list of you want to add the add an additional
-constraint of ordering or uniqueness.  It it more than just an ordered Set
-in that the elements are accessible by index (ie. not just a linked set).
-
-However, ``setlist``'s are not comparable like sets or lists. Equality
-testing still works, but ``setlist(('a', 'c')) < setlist(('a', 'b'))`` does not
-because we'd have to choose to compare by order or by set comparison.
-
-Differences from list
-~~~~~~~~~~~~~~~~~~~~~
-
-* Inclusion testing is O(1)
-* Adding an element that is already present does nothing
-
-Differences from set
-~~~~~~~~~~~~~~~~~~~~
-
-* Elements are ordered and accessible by index
-* Adding an element is O(n) as opposed to O(1)
-
-New Methods
-~~~~~~~~~~~
-Aside from the methods expected from Sequence and Set, this provides:
-- ``setlist.shuffle(random=None)``
-  Because random.shuffle(setlist) doesn't work, this is provided to do the same.
-
-Quirks
-~~~~~~
-* Swapping elements, eg. `sl[0], sl[1] = sl[1], sl[0]`, doesn't work because
-  it is implemented by first inserting one element then the other. But since
-  the first element it tries to insert is still in the setlist, nothing happens.
-  This causes random.shuffle not to work on a setlist.
 
 Collection Factory
 ==================
