@@ -19,7 +19,7 @@ class PyTest(TestCommand):
 setup(
 		name='collections-extended',
 		packages=['collections_extended'],
-		version='0.1.4',
+		version='0.2.0',
 		description=(
 			'Extra Python Collections - bags (multisets) and setlists (ordered'
 			' sets)'
