@@ -2,3 +2,7 @@ bumpversion
 pytest
 sphinx
 wheel
+ipython
+flake8
+invoke
+coverage

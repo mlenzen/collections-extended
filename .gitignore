@@ -45,3 +45,4 @@ MANIFEST
 
 env
 dev-env
+htmlcov
