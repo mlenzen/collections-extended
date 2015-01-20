@@ -12,14 +12,6 @@ collections_extended.bags module
     :undoc-members:
     :show-inheritance:
 
-collections_extended.bijection module
--------------------------------------
-
-.. automodule:: collections_extended.bijection
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 collections_extended.setlists module
 ------------------------------------
 
