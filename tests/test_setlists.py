@@ -150,21 +150,22 @@ def test_setitem():
 	with pytest.raises(IndexError):
 		sl[10] = 'd'
 	assert sl == setlist(['a'] + list(range(1, 9)) + ['c'])
-	test_set_slice(slice(0, 2), ['a', 'b'])
-	test_set_slice(slice(2, 4), ['a', 'b'])
-	test_set_slice(slice(7, 9), ['a', 'b'])
-	test_set_slice(slice(2, -2), ['a', 'b'])
-	test_set_slice(slice(2, 7, 2), ['a', 'b'])
-	test_set_slice(slice(-1, 0, -1), ['a', 'b'])
-	test_set_slice(slice(-1, 0, -2), ['a', 'b'])
+	compare_set_slice_to_list(slice(0, 2), ['a', 'b'])
+	compare_set_slice_to_list(slice(2, 4), ['a', 'b'])
+	compare_set_slice_to_list(slice(7, 9), ['a', 'b'])
+	compare_set_slice_to_list(slice(2, -2), ['a', 'b'])
+	compare_set_slice_to_list(slice(2, 5, 2), ['a', 'b'])
+	compare_set_slice_to_list(slice(-1, None, -1), list(range(10)))
 	with pytest.raises(TypeError):
 		sl[0:2] = 1
 	sl = setlist(range(10))
 	with pytest.raises(ValueError):
 		sl[0:2] = [8, 9]
+	with pytest.raises(ValueError):
+		sl[-1:0:-2] = ['a', 'b']
 
 
-def test_set_slice(slice_, replacement):
+def compare_set_slice_to_list(slice_, replacement):
 	sl = setlist(range(10))
 	sl[slice_] = replacement
 	l = list(range(10))
@@ -182,14 +183,14 @@ def test_delitem():
 	assert sl == setlist(range(1, 8))
 	with pytest.raises(IndexError):
 		del sl[10]
-	test_del_slice(slice(0, 2))
-	test_del_slice(slice(6, 9))
-	test_del_slice(slice(3, 7))
-	test_del_slice(slice(7, 3, -1))
-	test_del_slice(slice(0, 7, 2))
+	compare_del_slice_to_list(slice(0, 2))
+	compare_del_slice_to_list(slice(6, 9))
+	compare_del_slice_to_list(slice(3, 7))
+	compare_del_slice_to_list(slice(7, 3, -1))
+	compare_del_slice_to_list(slice(0, 7, 2))
 
 
-def test_del_slice(slice_):
+def compare_del_slice_to_list(slice_):
 	sl = setlist(range(10))
 	del sl[slice_]
 	l = list(range(10))

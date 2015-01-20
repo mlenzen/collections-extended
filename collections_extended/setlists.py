@@ -144,27 +144,36 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 	## Implement MutableSequence
 	def __setitem__(self, index, value):
 		if isinstance(index, slice):
-			pass
-		index = self._fix_neg_index(index)
-		old_value = self._list[index]
-		if value in self:
-			if value == old_value:
-				return
+			old_values = self[index]
+			for v in value:
+				if v in self and v not in old_values:
+					raise ValueError
 			else:
-				raise ValueError
-		del self._dict[old_value]
-		self._list[index] = value
-		self._dict[value] = index
+				self._list[index] = value
+				self._dict = {v: i for i, v in enumerate(self._list)}
+		else:
+			index = self._fix_neg_index(index)
+			old_value = self._list[index]
+			if value in self:
+				if value == old_value:
+					return
+				else:
+					raise ValueError
+			del self._dict[old_value]
+			self._list[index] = value
+			self._dict[value] = index
 
 	def __delitem__(self, index):
 		if isinstance(index, slice):
-			pass
-		index = self._fix_neg_index(index)
-		value = self._list[index]
-		del self._dict[value]
-		for elem in self._list[index+1:]:
-			self._dict[elem] -= 1
-		del self._list[index]
+			values_to_remove = self._list[index]
+			self.remove_all(values_to_remove)
+		else:
+			index = self._fix_neg_index(index)
+			value = self._list[index]
+			del self._dict[value]
+			for elem in self._list[index+1:]:
+				self._dict[elem] -= 1
+			del self._list[index]
 
 	def insert(self, index, value):
 		if value in self:
