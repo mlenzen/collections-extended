@@ -184,6 +184,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			self._list.append(value)
 
 	def extend(self, values):
+		if not self.isdisjoint(values):
+			raise ValueError
 		for value in values:
 			self.append(value)
 
