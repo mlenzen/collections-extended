@@ -1,7 +1,8 @@
 import heapq
 from operator import itemgetter
-from collections import Set, Sized, Iterable, Container, Hashable
+from collections import Sized, Iterable, Container, Hashable
 
+from . import _compat
 
 class _basebag(Sized, Iterable, Container):
 	"""
@@ -437,7 +438,25 @@ class frozenbag(_basebag, Hashable):
 	Thus it is Hashable and usable for dict keys
 	"""
 	def __hash__(self):
-		"""Use the hash funtion from Set,
-		I'm not sure that it works for collections with multiple elements.
+		"""Compute the hash value of a frozenbag.
+
+		This was copied directly from _collections_abc.Set._hash in Python3 which
+		is identical to _abcoll.Set._hash
+		We can't call it directly because Python2 raises a TypeError.
 		"""
-		return Set._hash(self)
+		MAX = _compat.maxint
+		MASK = 2 * MAX + 1
+		n = len(self)
+		h = 1927868237 * (n + 1)
+		h &= MASK
+		for x in self:
+			hx = hash(x)
+			h ^= (hx ^ (hx << 16) ^ 89869747) * 3644798167
+			h &= MASK
+		h = h * 69069 + 907133923
+		h &= MASK
+		if h > MAX:
+			h -= MASK + 1
+		if h == -1:
+			h = 590923713
+		return h
