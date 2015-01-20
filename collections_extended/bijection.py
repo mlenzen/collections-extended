@@ -1,21 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-#
-# Copyright © 2010 Michael Lenzen <m.lenzen@gmail.com>
-#
-# This is part of the project at http://code.google.com/p/python-data-structures/
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 """ bijection - a one-to-one onto mapping, a dict with unique values
 
 TODO write long desc
@@ -30,78 +12,70 @@ class bijection(MutableMapping):
 
 	TODO write unit tests for bijection including dict methods like copy
 	"""
-	def __init__(self, *args):
-		self.data = dict(args)
-		self.invr = bijection()
-		self.invr.invr = self
-		for key, value in self.data.items():
-			if value in self.invr.data:
-				del self.data[self.invr.data[value]]
-			self.data[key] = value
+	def __init__(self, iterable=None, inverse=None, **kwarg):
+		self._data = {}
+		if inverse is not None:
+			self.inverse = inverse
+		else:
+			self.inverse = bijection(inverse=self)
+		if iterable is not None:
+			if isinstance(iterable, Mapping):
+				for key, value in iterable.items():
+					self[key] = value
+			else:
+				for pair in iterable:
+					self[pair[0]] = pair[1]
+		for key, value in kwarg.items():
+			self[key] = value
 	
+	# Required for MutableMapping
 	def __len__(self):
-		return len(self.data)
+		return len(self._data)
 
+	# Required for MutableMapping
 	def __getitem__(self, key):
-		return self.data[key]
+		return self._data[key]
 	
+	# Required for MutableMapping
 	def __setitem__(self, key, value):
 		if key in self:
-			del self.invr.data[self[key]]
-		if value in self.invr:
-			del self.data[self.invr[value]]
-		self.data[key] = value
-		self.invr.data[value] = key
+			del self.inverse._data[self[key]]
+		if value in self.inverse:
+			del self._data[self.inverse[value]]
+		self._data[key] = value
+		self.inverse._data[value] = key
 
+	# Required for MutableMapping
 	def __delitem__(self, key):
-		# if key is not is self then self[key] will raise a KeyError as expected
-		del self.invr.data[self[key]]
-		del self.data[key]
+		value = self._data.pop(key)
+		del self.inverse._data[value]
 	
-	def __contains__(self, key):
-		return key in self.data
+	# Required for MutableMapping
+	def __iter__(self):
+		return iter(self._data)
 
-	def iter(self):
-		return self.data.iter()
-	
+	def __contains__(self, key):
+		return key in self._data
+
 	def clear(self):
 		""" This should be more efficient than MutableMapping.clear """
-		self.data.clear()
-		self.invr.data.clear()
+		self._data.clear()
+		self.inverse._data.clear()
 
 	def copy(self):
 		return bijection(self)
 	
-	@classmethod
-	def fromkeys(cls, seq, value=None):
-		""" Since only the last pair will be retained (as values must be unique) 
-		we have a more optimal solution than dict's. """
-		result = bijection()
-		result[seq[-1]] = value
-		return result
-
-	def get(self, key, default=None):
-		if key in self:
-			return self[key]
-		else:
-			return default
-
 	def items(self):
-		return self.data.items()
+		return self._data.items()
 
 	def keys(self):
-		return self.data.keys()
+		return self._data.keys()
 
 	def values(self):
-		return self.invr.keys()
+		return self.inverse.keys()
 
 	def __eq__(self, other):
-		if not isinstance(other, bijection):
-			return False
-		return self.data == other.data
-
-	def __ne__(self, other):
-		return not self.__eq__(other)
+		return isinstance(other, bijection) and self._data == other._data
 
 if __name__ == "__main__":
     import doctest
