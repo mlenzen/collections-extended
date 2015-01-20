@@ -1,4 +1,6 @@
 
+import pytest
+
 from collections_extended.bags import _basebag, bag, frozenbag, _compat
 
 
@@ -9,6 +11,8 @@ def test_init():
 	assert b.count('r') == 2
 	assert b.count('c') == 1
 	assert b.count('d') == 1
+	b2 = bag(b)
+	assert b2 == b
 
 
 def test_repr():
@@ -79,11 +83,17 @@ def test_le():
 	assert _basebag() <= _basebag('a')
 	assert _basebag('abc') <= _basebag('aabbbc')
 	assert not _basebag('abbc') <= _basebag('abc')
+	with pytest.raises(TypeError):
+		bag('abc') < set('abc')
+	assert not bag('aabc') < bag('abc')
 
 
 def test_and():
 	assert bag('aabc') & bag('aacd') == bag('aac')
 	assert bag() & bag('safgsd') == bag()
+	assert bag('abcc') & bag() == bag()
+	assert bag('abcc') & bag('aabd') == bag('ab')
+	assert bag('aabc') & set('abdd') == bag('ab')
 
 
 def test_isdisjoint():
@@ -99,10 +109,32 @@ def test_or():
 	assert bag('aabc') | set('abdd') == bag('aabcd')
 
 
+def test_add_op():
+	b1 = bag('abc')
+	result = b1 + bag('ab')
+	assert result == bag('aabbc')
+	assert b1 == bag('abc')
+	assert result is not b1
+
+
 def test_add():
-	assert bag('abcc') & bag() == bag()
-	assert bag('abcc') & bag('aabd') == bag('ab')
-	assert bag('aabc') & set('abdd') == bag('ab')
+	b = bag('abc')
+	b.add('a')
+	assert b == bag('aabc')
+
+
+def test_clear():
+	b = bag('abc')
+	b.clear()
+	assert b == bag()
+
+
+def test_discard():
+	b = bag('abc')
+	b.discard('a')
+	assert b == bag('bc')
+	b.discard('a')
+	assert b == bag('bc')
 
 
 def test_sub():
@@ -132,6 +164,9 @@ def test_ior():
 	b = bag('aab')
 	b |= bag('ac')
 	assert b == bag('aabc')
+	b = bag('aab')
+	b |= set('ac')
+	assert b == bag('aabc')
 
 
 def test_iand():
@@ -144,11 +179,17 @@ def test_iand():
 	b = bag('aab')
 	b &= bag('ac')
 	assert b == bag('a')
+	b = bag('aab')
+	b &= set('ac')
+	assert b == bag('a')
 
 
 def test_ixor():
 	b = bag('abbc')
 	b ^= bag('bg')
+	assert b == bag('abcg')
+	b = bag('abbc')
+	b ^= set('bg')
 	assert b == bag('abcg')
 
 
@@ -156,11 +197,17 @@ def test_isub():
 	b = bag('aabbc')
 	b -= bag('bd')
 	assert b == bag('aabc')
+	b = bag('aabbc')
+	b -= set('bd')
+	assert b == bag('aabc')
 
 
 def test_iadd():
 	b = bag('abc')
 	b += bag('cde')
+	assert b == bag('abccde')
+	b = bag('abc')
+	b += 'cde'
 	assert b == bag('abccde')
 
 
@@ -174,3 +221,14 @@ def test_hash():
 	assert not hash(frozenbag('a')) == hash(frozenbag(('aaaaa')))
 	assert hash(frozenbag('ba')) == hash(frozenbag(('ab')))
 	assert hash(frozenbag('badce')) == hash(frozenbag(('dbeac')))
+
+
+def test_num_unique_elems():
+	assert bag('abracadabra').num_unique_elements() == 5
+
+
+def test_pop():
+	b = bag('a')
+	assert b.pop() == 'a'
+	with pytest.raises(KeyError):
+		b.pop()

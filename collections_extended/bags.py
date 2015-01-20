@@ -186,7 +186,7 @@ class _basebag(Sized, Iterable, Container):
 				l = len(other)
 		"""
 		if not isinstance(other, _basebag):
-			return NotImplemented
+			raise TypeError
 		if len(self) > len(other):
 			return False
 		for elem in self.unique_elements():
