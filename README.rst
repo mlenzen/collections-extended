@@ -6,8 +6,8 @@ README
   :alt: Build Status
 
 
-.. image:: https://coveralls.io/repos/mlenzen/python-data-structures/badge.svg
-  :target: https://coveralls.io/r/mlenzen/python-data-structures
+.. image:: https://coveralls.io/repos/mlenzen/python-data-structures/badge.svg?branch=master
+  :target: https://coveralls.io/r/mlenzen/python-data-structures?branch=master
   :alt: Coverage
 
 Documentation: http://python-collections-extended.lenzm.net
