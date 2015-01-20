@@ -9,6 +9,8 @@ def test_count():
 	sl = setlist('abcdea')
 	assert sl.count('a') == 1
 	assert sl.count('f') == 0
+	assert sl.count('e') == 1
+	assert sl.count('e', end=-2) == 0
 
 
 def test_index():
@@ -117,3 +119,23 @@ def test_del():
 		del sl[2]
 	with pytest.raises(IndexError):
 		del sl[-3]
+
+
+def test_getitem():
+	sl = setlist(range(10))
+	assert sl[0] == 0
+	assert sl[5] == 5
+	assert sl[9] == 9
+	with pytest.raises(IndexError):
+		sl[10]
+	assert sl[-1] == 9
+	with pytest.raises(IndexError):
+		sl[-11]
+	assert sl[1:3] == setlist([1, 2])
+	assert sl[1:6:2] == setlist([1, 3, 5])
+	assert sl[6:1:-2] == setlist([6, 4, 2])
+
+
+def test_setitem():
+	sl = setlist(range(10))
+

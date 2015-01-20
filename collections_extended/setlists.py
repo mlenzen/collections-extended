@@ -62,9 +62,11 @@ class _basesetlist(Sequence, Set):
 
 	## Implement Sequence
 	def __getitem__(self, index):
+		if isinstance(index, slice):
+			return self._from_iterable(self._list[index])
 		return self._list[index]
 
-	def count(self, sub, start=0, end=-1):
+	def count(self, sub, start=0, end=None):
 		"""
 		This runs in O(len(sub))
 		"""
@@ -93,27 +95,15 @@ class _basesetlist(Sequence, Set):
 
 	## Nothing needs to be done to implement Set
 
-	## Comparison (not currently implemented)
-
-	def __le__(self, other):
-		return NotImplemented
-
-	def __lt__(self, other):
-		return self <= other
-
-	def __gt__(self, other):
-		return other < self
-
-	def __ge__(self, other):
-		return other <= self
+	## Comparison
 
 	def __eq__(self, other):
 		if not isinstance(other, _basesetlist):
 			return False
 		if not len(self) == len(other):
 			return False
-		for i in range(len(self)):
-			if self[i] != other[i]:
+		for self_elem, other_elem in zip(self, other):
+			if self_elem != other_elem:
 				return False
 		return True
 
@@ -141,6 +131,12 @@ class _basesetlist(Sequence, Set):
 			except IndexError:
 				raise ValueError
 		return start_index
+
+	## Convenience Methods
+
+	@classmethod
+	def _from_iterable(cls, it):
+		return cls(it)
 
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
