@@ -6,12 +6,13 @@
 collections_extended's documentation
 ====================================
 
+.. include:: ../README.rst
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   readme
    bags
    setlists
    contributing
