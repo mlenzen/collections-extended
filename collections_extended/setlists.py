@@ -50,6 +50,10 @@ class _basesetlist(Sequence, Set):
 		else:
 			return self._fix_neg_index(index)
 
+	@classmethod
+	def _from_iterable(cls, it):
+		return cls(it)
+
 	## Implement Container
 	def __contains__(self, elem):
 		return elem in self._dict
@@ -132,12 +136,6 @@ class _basesetlist(Sequence, Set):
 				raise ValueError
 		return start_index
 
-	## Convenience Methods
-
-	@classmethod
-	def _from_iterable(cls, it):
-		return cls(it)
-
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
 	""" A mutable (unhashable) setlist that inherits from _basesetlist.
@@ -145,6 +143,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 	## Implement MutableSequence
 	def __setitem__(self, index, value):
+		if isinstance(index, slice):
+			pass
 		index = self._fix_neg_index(index)
 		old_value = self._list[index]
 		if value in self:
@@ -157,6 +157,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		self._dict[value] = index
 
 	def __delitem__(self, index):
+		if isinstance(index, slice):
+			pass
 		index = self._fix_neg_index(index)
 		value = self._list[index]
 		del self._dict[value]
