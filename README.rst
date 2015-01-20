@@ -1,20 +1,20 @@
 README
 ######
 
-.. image:: https://travis-ci.org/mlenzen/python-data-structures.svg?branch=master
-  :target: https://travis-ci.org/mlenzen/python-data-structures
+.. image:: https://travis-ci.org/mlenzen/collections-extended.svg?branch=master
+  :target: https://travis-ci.org/mlenzen/collections-extended
   :alt: Build Status
 
 
-.. image:: https://coveralls.io/repos/mlenzen/python-data-structures/badge.svg?branch=master
-  :target: https://coveralls.io/r/mlenzen/python-data-structures?branch=master
+.. image:: https://coveralls.io/repos/mlenzen/collections-extended/badge.svg?branch=master
+  :target: https://coveralls.io/r/mlenzen/collections-extended?branch=master
   :alt: Coverage
 
 Documentation: http://python-collections-extended.lenzm.net
 
-GitHub: https://github.com/mlenzen/python-data-structures
+GitHub: https://github.com/mlenzen/collections-extended
 
-PyPI: https://pypi.python.org/pypi/data-structures
+PyPI: https://pypi.python.org/pypi/collections-extended
 
 Overview
 ========
@@ -67,7 +67,7 @@ Getting Started
 Installation
 ============
 
-``pip install data-structures``
+``pip install collections-extended``
 
 Usage
 =====
@@ -103,4 +103,4 @@ it will be empty.
 :Author: Michael Lenzen
 :Copyright: 2015 Michael Lenzen
 :License: Apache License, Version 2.0
-:Project Homepage: https://github.com/mlenzen/python-data-structures
+:Project Homepage: https://github.com/mlenzen/collections-extended
