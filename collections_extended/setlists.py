@@ -256,4 +256,4 @@ class frozensetlist(_basesetlist, Hashable):
 	""" An immutable (hashable) setlist that inherits from _basesetlist. """
 
 	def __hash__(self):
-		return self._list.__hash__() ^ self._dict.__hash__()
+		return Set._hash(self)

@@ -40,8 +40,11 @@ def test_count():
 
 
 def test_nlargest():
-	assert sorted(_basebag('abracadabra').nlargest(), key=lambda e: (-e[1], e[0])) == [('a', 5), ('b', 2), ('r', 2), ('c', 1), ('d', 1)]
-	assert sorted(_basebag('abracadabra').nlargest(3), key=lambda e: (-e[1], e[0])) == [('a', 5), ('b', 2), ('r', 2)]
+	abra = _basebag('abracadabra')
+	sort_key = lambda e: (-e[1], e[0])
+	abra_counts = [('a', 5), ('b', 2), ('r', 2), ('c', 1), ('d', 1)]
+	assert (sorted(abra.nlargest(), key=sort_key) == abra_counts)
+	assert sorted(abra.nlargest(3), key=sort_key) == abra_counts[:3]
 	assert _basebag('abcaba').nlargest(3) == [('a', 3), ('b', 2), ('c', 1)]
 
 

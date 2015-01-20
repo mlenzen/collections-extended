@@ -1,8 +1,7 @@
 
 import pytest
-import random
 
-from collections_extended.setlists import _basesetlist, setlist, frozensetlist
+from collections_extended.setlists import setlist, frozensetlist
 
 
 def test_count():
@@ -208,3 +207,8 @@ def test_extend():
 	with pytest.raises(ValueError):
 		sl.extend([13, 2])
 	assert sl == setlist(range(12))
+
+
+def test_hash():
+	assert hash(frozensetlist('abc')) == hash(frozensetlist('abc'))
+	assert hash(frozensetlist()) == hash(frozensetlist())
