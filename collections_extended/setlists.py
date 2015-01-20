@@ -36,7 +36,7 @@ class _basesetlist(Sequence, Set):
 			format = '{class_name}({tuple!r})'
 			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
 
-	## Convenience methods
+	# Convenience methods
 	def _fix_neg_index(self, index):
 		if index < 0:
 			index += len(self)
@@ -54,17 +54,17 @@ class _basesetlist(Sequence, Set):
 	def _from_iterable(cls, it):
 		return cls(it)
 
-	## Implement Container
+	# Implement Container
 	def __contains__(self, elem):
 		return elem in self._dict
 
-	## Iterable we get by inheriting from Sequence
+	# Iterable we get by inheriting from Sequence
 
-	## Implement Sized
+	# Implement Sized
 	def __len__(self):
 		return len(self._list)
 
-	## Implement Sequence
+	# Implement Sequence
 	def __getitem__(self, index):
 		if isinstance(index, slice):
 			return self._from_iterable(self._list[index])
@@ -97,9 +97,9 @@ class _basesetlist(Sequence, Set):
 			else:
 				raise ValueError
 
-	## Nothing needs to be done to implement Set
+	# Nothing needs to be done to implement Set
 
-	## Comparison
+	# Comparison
 
 	def __eq__(self, other):
 		if not isinstance(other, _basesetlist):
@@ -114,7 +114,7 @@ class _basesetlist(Sequence, Set):
 	def __ne__(self, other):
 		return not (self == other)
 
-	## New methods
+	# New methods
 
 	def sub_index(self, sub, start=0, end=None):
 		"""
@@ -129,7 +129,7 @@ class _basesetlist(Sequence, Set):
 		if start_index + len(sub) > end:
 			raise ValueError
 		for i in range(1, len(sub)):
-			if sub[i] != self[start_index+i]:
+			if sub[i] != self[start_index + i]:
 				raise ValueError
 		return start_index
 
@@ -138,7 +138,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 	""" A mutable (unhashable) setlist that inherits from _basesetlist.
 	"""
 
-	## Implement MutableSequence
+	# Implement MutableSequence
 	def __setitem__(self, index, value):
 		if isinstance(index, slice):
 			old_values = self[index]
@@ -206,7 +206,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			raise ValueError
 		else:
 			del self._dict[value]
-			for elem in self._list[index+1:]:
+			for elem in self._list[index + 1:]:
 				self._dict[elem] -= 1
 			del self._list[index]
 
@@ -228,10 +228,10 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 				new_index = i - deleted_count
 				self._list[new_index] = elem
 				self._dict[elem] = new_index
-		## Now remove deleted_count items from the end of the list
+		# Now remove deleted_count items from the end of the list
 		self._list = self._list[:-deleted_count]
 
-	## Implement MutableSet
+	# Implement MutableSet
 	def add(self, item):
 		self.append(item)
 
@@ -245,7 +245,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		self._dict = dict()
 		self._list = list()
 
-	## New methods
+	# New methods
 	def shuffle(self, random=None):
 		random_.shuffle(self._list, random=random)
 		for i, elem in enumerate(self._list):

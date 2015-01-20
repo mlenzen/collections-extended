@@ -3,7 +3,7 @@ from collections_extended.bags import _basebag, bag, frozenbag, _compat
 
 
 def test_init():
-	b =_basebag('abracadabra')
+	b = _basebag('abracadabra')
 	assert b.count('a') == 5
 	assert b.count('b') == 2
 	assert b.count('r') == 2
@@ -28,7 +28,8 @@ def test_str():
 	assert "'a'^5" in str(_basebag('abracadabra'))
 	assert "'b'^2" in str(_basebag('abracadabra'))
 	assert "'c'" in str(_basebag('abracadabra'))
-	assert compare_bag_string(bag('abracadabra')) == set(("'a'^5", "'b'^2", "'r'^2", "'c'", "'d'"))
+	abra_elems = set(("'a'^5", "'b'^2", "'r'^2", "'c'", "'d'"))
+	assert compare_bag_string(bag('abracadabra')) == abra_elems
 	if not _compat.is_py2:
 		assert compare_bag_string(bag('abc')) == compare_bag_string(set('abc'))
 

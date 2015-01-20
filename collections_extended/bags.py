@@ -4,12 +4,13 @@ from collections import Sized, Iterable, Container, Hashable
 
 from . import _compat
 
+
 class _basebag(Sized, Iterable, Container):
 	"""
 	Base class for bag and frozenbag.	Is not mutable and not hashable, so there's
 	no reason to use this instead of either bag or frozenbag.
 	"""
-	## Basic object methods
+	# Basic object methods
 
 	def __init__(self, iterable=None):
 		"""Create a new basebag.
@@ -61,7 +62,7 @@ class _basebag(Sized, Iterable, Container):
 					strings.append(format_single.format(elem=elem))
 			return '{%s}' % ', '.join(strings)
 
-	## Internal methods
+	# Internal methods
 
 	def _set(self, elem, value):
 		"""Set the multiplicity of elem to count.
@@ -85,7 +86,7 @@ class _basebag(Sized, Iterable, Container):
 		"""
 		self._set(elem, self.count(elem) + count)
 
-	## New public methods (not overriding/implementing anything)
+	# New public methods (not overriding/implementing anything)
 
 	def num_unique_elements(self):
 		"""Returns the number of unique elements.
@@ -143,7 +144,7 @@ class _basebag(Sized, Iterable, Container):
 		"""
 		return self._from_map(self._dict)
 
-	## implementing Sized methods
+	# implementing Sized methods
 
 	def __len__(self):
 		"""Returns the cardinality of the bag.
@@ -152,7 +153,7 @@ class _basebag(Sized, Iterable, Container):
 		"""
 		return self._size
 
-	## implementing Container methods
+	# implementing Container methods
 
 	def __contains__(self, value):
 		"""Returns the multiplicity of the element.
@@ -161,7 +162,7 @@ class _basebag(Sized, Iterable, Container):
 		"""
 		return self.count(value)
 
-	## implementing Iterable methods
+	# implementing Iterable methods
 
 	def __iter__(self):
 		"""Iterate through all elements.
@@ -172,7 +173,7 @@ class _basebag(Sized, Iterable, Container):
 			for i in range(count):
 				yield(value)
 
-	## Comparison methods
+	# Comparison methods
 
 	def __le__(self, other):
 		"""Tests if self <= other where other is another bag
@@ -210,7 +211,7 @@ class _basebag(Sized, Iterable, Container):
 	def __ne__(self, other):
 		return not (self == other)
 
-	## Operations - &, |, +, -, ^, * and isdisjoint
+	# Operations - &, |, +, -, ^, * and isdisjoint
 
 	def __and__(self, other):
 		"""Intersection is the minimum of corresponding counts.
@@ -358,7 +359,7 @@ class bag(_basebag):
 		self._dict = dict()
 		self._size = 0
 
-	## In-place operations
+	# In-place operations
 
 	def __ior__(self, other):
 		"""
