@@ -1,5 +1,5 @@
 
-from collections_extended.bags import _basebag, bag, frozenbag
+from collections_extended.bags import _basebag, bag, frozenbag, _compat
 
 
 def test_init():
@@ -29,7 +29,8 @@ def test_str():
 	assert "'b'^2" in str(_basebag('abracadabra'))
 	assert "'c'" in str(_basebag('abracadabra'))
 	assert compare_bag_string(bag('abracadabra')) == set(("'a'^5", "'b'^2", "'r'^2", "'c'", "'d'"))
-	assert compare_bag_string(bag('abc')) == compare_bag_string(set('abc'))
+	if not _compat.is_py2:
+		assert compare_bag_string(bag('abc')) == compare_bag_string(set('abc'))
 
 
 def test_count():
