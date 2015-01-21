@@ -74,7 +74,7 @@ Ready to contribute? Here's how to set up `collections-extended` for local devel
     $ pyvenv env
     $ . env/bin/activate
     $ pip install -r requirements-dev.txt
-    $ pip install --editable .
+    $ python setup.py develop
 
 4. Create a branch for local development::
 
