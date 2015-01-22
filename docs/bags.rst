@@ -6,9 +6,9 @@ elements. See http://en.wikipedia.org/wiki/Multiset
 
 There are two classes provided:
 
-bag :py:class:`collections_extended.bag`
+:py:class:`collections_extended.bag`
   This is a bag AKA multiset (implements ``Mutable``)
-frozenbag :py:class:`collections_extended.frozenbag`
+:py:class:`collections_extended.frozenbag`
   This is a frozen (implements ``Hashable``) version of a bag.
 
 Both classes implement ``Sized``, ``Iterable`` and ``Container``.
@@ -29,7 +29,7 @@ Counters don't really behave like "collections" (Sized, Iterable, Container)
 Adding and Removing
 """""""""""""""""""
 
-.. doctest::
+.. doctest:: show
 
 	>>> c = Counter()
 	>>> c['a'] += 1
