@@ -2,13 +2,13 @@ README
 ######
 
 .. image:: https://travis-ci.org/mlenzen/collections-extended.svg?branch=master
-  :target: https://travis-ci.org/mlenzen/collections-extended
-  :alt: Build Status
+	:target: https://travis-ci.org/mlenzen/collections-extended
+	:alt: Build Status
 
 
 .. image:: https://coveralls.io/repos/mlenzen/collections-extended/badge.svg?branch=master
-  :target: https://coveralls.io/r/mlenzen/collections-extended?branch=master
-  :alt: Coverage
+	:target: https://coveralls.io/r/mlenzen/collections-extended?branch=master
+	:alt: Coverage
 
 Documentation: http://collections-extended.lenzm.net/en/latest
 
@@ -21,8 +21,8 @@ Overview
 
 This package includes one module - ``collections_extended``.  This
 module provides a ``bag`` class,
-AKA multiset, and a ``setlist`` class, which is a list of unique elements /
-ordered set.  There are also frozen (hashable) varieties of each included.
+AKA **multiset**, and a ``setlist`` class, which is a **unique list** or
+**ordered set**.  There are also frozen (hashable) varieties of each included.
 
 Tested against Python 2.6, 2.7, 3.2, 3.3, 3.4 & PyPy.
 
@@ -31,38 +31,41 @@ Getting Started
 
 .. code:: python
 
-   >>> from collections_extended import bag, setlist
-   >>> b = bag('abracadabra')
-   >>> b.count('a')
-   5
-   >>> b.remove('a')
-   >>> b.count('a')
-   4
-   >>> 'a' in b
-   True
-   >>> b.count('d')
-   1
-   >>> b.remove('d')
-   >>> b.count('d')
-   0
-   >>> 'd' in b
-   False
+	>>> from collections_extended import bag, setlist
+	>>> b = bag('abracadabra')
+	>>> b.count('a')
+	5
+	>>> b.remove('a')
+	>>> b.count('a')
+	4
+	>>> 'a' in b
+	True
+	>>> b.count('d')
+	1
+	>>> b.remove('d')
+	>>> b.count('d')
+	0
+	>>> 'd' in b
+	False
 
-   >>> sl = setlist('abracadabra')
-   >>> sl
-   setlist(('a', 'b', 'r', 'c', 'd'))
-   >>> sl[3]
-   'c'
-   >>> sl[-1]
-   'd'
-   >>> 'r' in sl  # testing for inclusion is fast
-   True
-   >>> sl.index('d')  # so is finding the index of an element
-   4
-   >>> sl.insert(1, 'd')  # inserting an element already in raises a ValueError
-   ValueError
-   >>> sl.index('d')
-   4
+	>>> sl = setlist('abracadabra')
+	>>> sl
+	setlist(('a', 'b', 'r', 'c', 'd'))
+	>>> sl[3]
+	'c'
+	>>> sl[-1]
+	'd'
+	>>> 'r' in sl  # testing for inclusion is fast
+	True
+	>>> sl.index('d')  # so is finding the index of an element
+	4
+	>>> sl.insert(1, 'd')  # inserting an element already in raises a ValueError
+	Traceback (most recent call last):
+	...
+		raise ValueError
+	ValueError
+	>>> sl.index('d')
+	4
 
 Installation
 ============
@@ -71,7 +74,7 @@ Installation
 
 Usage
 =====
-  ``from collections_extended import bag, frozenbag, setlist, frozensetlist``
+	``from collections_extended import bag, frozenbag, setlist, frozensetlist``
 
 Classes
 =======
@@ -80,16 +83,16 @@ There are four new classes provided:
 bags
 ----
 bag
-  This is a bag AKA multiset.
+	This is a bag AKA multiset.
 frozenbag
-  This is a frozen (hashable) version of a bag.
+	This is a frozen (hashable) version of a bag.
 
 setlists
 --------
 setlist
-  An ordered set or a list of unique elements depending on how you look at it.
+	An ordered set or a list of unique elements depending on how you look at it.
 frozensetlist
-  This is a frozen (hashable) version of a setlist.
+	This is a frozen (hashable) version of a setlist.
 
 Collection Factory
 ==================

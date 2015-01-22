@@ -98,20 +98,26 @@ class _basebag(Sized, Iterable, Container):
 	def unique_elements(self):
 		"""Returns a view of unique elements in this bag.
 
-		This runs in O(1) time
+		In Python 3:
+			This runs in O(1) time and returns a view of the unique elements
+		In Python 2:
+			This runs in O(n) and returns set of the current elements.
 		"""
 		return _compat.keys_set(self._dict)
 
 	def count(self, value):
-		"""Return the multiplicity of value.  If value is not in the bag no Error is
-		raised, instead 0 is returned.
+		"""Return the number of value present in this bag.
+
+		If value is not in the bag no Error is raised, instead 0 is returned.
 
 		This runs in O(1) time
 		"""
 		return self._dict.get(value, 0)
 
 	def nlargest(self, n=None):
-		"""List the n most common elements and their counts from the most
+		"""List the n most common elements and their counts.
+
+		List is from the most
 		common to the least.  If n is None, the list all element counts.
 
 		Run time should be O(m log m) where m is len(self)
