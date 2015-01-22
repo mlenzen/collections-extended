@@ -6,12 +6,12 @@ elements. See http://en.wikipedia.org/wiki/Multiset
 
 There are two classes provided:
 
-:py:class:`collections_extended.bag`
-  This is a bag AKA multiset (implements ``Mutable``)
-:py:class:`collections_extended.frozenbag`
-  This is a frozen (implements ``Hashable``) version of a bag.
+:class:`collections_extended.bag`
+  This is a mutable bag
+:class:`collections_extended.frozenbag`
+  This is a frozen (implements :class:`collections.abc.Hashable`) version of a bag.
 
-Both classes implement ``Sized``, ``Iterable`` and ``Container``.
+Both classes implement :class:`collections.abc.Sized`, :class:`collections.abc.Iterable` and :class:`collections.abc.Container`.
 
 Compared to existing similar implements
 ---------------------------------------
@@ -86,23 +86,23 @@ Iterating
 Compared to Standard Types
 --------------------------
 
-list
-^^^^
+bag vs. list
+^^^^^^^^^^^^
 
 * Inclusion testing is O(1)
 * Adding and removing elements is O(1)
-* Cannot add Mutable elements
+* Cannot add mutable elements
 * Elements aren't ordered
 
-set
-^^^
+bag vs. set
+^^^^^^^^^^^
 
 * Can add multiple instances of equal elements
 
 New Methods
 -----------
 
-``num_unique_elements()``
+``num_unique_elements``
 	Returns the number of unique elements in the bag. O(1)
 ``unique_elements()``
 	Returns a set of all the unique elements in the bag. O(1)
