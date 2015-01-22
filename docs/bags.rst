@@ -29,7 +29,7 @@ Counters don't really behave like "collections" (Sized, Iterable, Container)
 Adding and Removing
 """""""""""""""""""
 
-.. doctest:: show
+::
 
 	>>> c = Counter()
 	>>> c['a'] += 1
@@ -47,7 +47,7 @@ Adding and Removing
 ``len``
 """""""
 
-.. doctest::
+::
 
 	>>> c = Counter()
 	>>> c['a'] += 1
@@ -74,7 +74,7 @@ Adding and Removing
 Iterating
 """""""""
 
-.. doctest::
+::
 
 	>>> for item in Counter('aaa'): print(item)
 	a
