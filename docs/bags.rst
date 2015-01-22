@@ -13,8 +13,8 @@ There are two classes provided:
 
 Both classes implement :class:`collections.abc.Sized`, :class:`collections.abc.Iterable` and :class:`collections.abc.Container`.
 
-Compared to existing similar implements
----------------------------------------
+Compared to existing similar implementations
+--------------------------------------------
 
 collections.Counter
 ^^^^^^^^^^^^^^^^^^^

@@ -22,7 +22,7 @@ Contents:
 :Author: Michael Lenzen
 :Copyright: 2015 Michael Lenzen
 :License: Apache License, Version 2.0
-:Documentation: http://collections-extended.lenzm.net/en/latest
+:Documentation: http://collections-extended.lenzm.net/
 :GitHub: https://github.com/mlenzen/collections-extended
 :PyPI: https://pypi.python.org/pypi/collections-extended
 

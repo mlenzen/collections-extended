@@ -13,10 +13,10 @@ There are two classes provided:
 
 :class:`collections_extended.setlist`
   This is a mutable setlist
-:class:`collections_extended.frozenbag`
+:class:`collections_extended.frozensetlist`
   This is a frozen (implements :class:`collections.abc.Hashable`) version of a setlist.
 
- Both classes implement :class:`collections.abc.Sequence`, :class:`collections.abc.Set`
+Both classes implement :class:`collections.abc.Sequence`, :class:`collections.abc.Set`
 
 Compared to existing similar implementations
 --------------------------------------------
