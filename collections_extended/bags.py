@@ -111,6 +111,11 @@ class _basebag(Sized, Iterable, Container):
 		If value is not in the bag no Error is raised, instead 0 is returned.
 
 		This runs in O(1) time
+
+		Args:
+			value: The element of self to get the count of
+		Returns:
+			int: The count of value in self
 		"""
 		return self._dict.get(value, 0)
 
@@ -121,6 +126,8 @@ class _basebag(Sized, Iterable, Container):
 		common to the least.  If n is None, the list all element counts.
 
 		Run time should be O(m log m) where m is len(self)
+		Args:
+			n (int): The number of elements to return
 		"""
 		if n is None:
 			return sorted(self._dict.items(), key=itemgetter(1), reverse=True)

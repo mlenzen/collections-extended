@@ -55,8 +55,8 @@ class _basesetlist(Sequence, Set):
 		return cls(it)
 
 	# Implement Container
-	def __contains__(self, elem):
-		return elem in self._dict
+	def __contains__(self, value):
+		return value in self._dict
 
 	# Iterable we get by inheriting from Sequence
 
@@ -70,23 +70,45 @@ class _basesetlist(Sequence, Set):
 			return self._from_iterable(self._list[index])
 		return self._list[index]
 
-	def count(self, sub, start=0, end=None):
-		"""
-		This runs in O(len(sub))
+	def count(self, value, start=0, end=None):
+		"""Return the number of occurences of value between start and end.
+
+		By default, the entire setlist is searched.
+
+		This runs in O(1)
+
+		Args:
+			value: The value to count
+			start (int): The index to start searching at (defaults to 0)
+			end (int): The index to stop searching at (defaults to the end of the list)
+		Returns:
+			int: 1 if the value is in the setlist, otherwise 0
 		"""
 		try:
-			self.index(sub, start, end)
+			self.index(value, start, end)
 			return 1
 		except ValueError:
 			return 0
 
-	def index(self, sub, start=0, end=None):
-		"""
+	def index(self, value, start=0, end=None):
+		"""Return the index of value between start and end.
+
+		By default, the entire setlist is searched.
+
 		This runs in O(1)
+
+		Args:
+			value: The value to find the index of
+			start (int): The index to start searching at (defaults to 0)
+			end (int): The index to stop searching at (defaults to the end of the list)
+		Returns:
+			int: The index of the value
+		Raises:
+			ValueError: If the value is not in the list or outside of start - end
+			IndexError: If start or end are out of range
 		"""
-		# TODO add more tests with start and end
 		try:
-			index = self._dict[sub]
+			index = self._dict[value]
 		except KeyError:
 			raise ValueError
 		else:
@@ -117,12 +139,18 @@ class _basesetlist(Sequence, Set):
 	# New methods
 
 	def sub_index(self, sub, start=0, end=None):
-		"""
-		Find the index of a subsequence
+		"""Return the index of a subsequence
 
 		This runs in O(len(sub))
-		Raises ValueError if the subsequence doesn't exist.
-		Raises TypeError if sub isn't a Sequence.
+
+		Args:
+			sub (Iterable): An Iterable to search for
+		Returns:
+			int: The index of the first element of sub
+		Raises:
+			ValueError: If sub isn't a subsequence
+			TypeError: If sub isn't iterable
+			IndexError: If start or end are out of range
 		"""
 		start_index = self.index(sub[0], start, end)
 		end = self._fix_end_index(end)
@@ -175,6 +203,15 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			self.remove(value)
 
 	def insert(self, index, value):
+		'''Insert value at index.
+
+		Args:
+			index (int): Index to insert value at
+			value: Value to insert
+		Raises:
+			ValueError: If value already in self
+			IndexError: If start or end are out of range
+		'''
 		if value in self:
 			raise ValueError
 		index = self._fix_neg_index(index)
@@ -184,6 +221,14 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		self._list.insert(index, value)
 
 	def append(self, value):
+		'''Append value to the end.
+
+		Args:
+			value: Value to append
+		Raises:
+			ValueError: If value alread in self
+			IndexError: If start or end are out of range
+		'''
 		if value in self:
 			raise ValueError
 		else:
@@ -192,6 +237,16 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			self._list.append(value)
 
 	def extend(self, values):
+		'''Append all values to the end.
+
+		This should be atomic, if any of the values are present, ValueError will
+		be raised and none of the values will be appended.
+
+		Args:
+			values (Iterable): Values to append
+		Raises:
+			ValueError: If any values are already present
+		'''
 		if not self.isdisjoint(values):
 			raise ValueError
 		for value in values:
