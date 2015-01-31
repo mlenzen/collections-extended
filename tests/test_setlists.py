@@ -233,6 +233,8 @@ def test_add():
 	sl = setlist(range(10))
 	sl.add(10)
 	assert sl == setlist(range(11))
+	sl.add(10)
+	assert sl == setlist(range(11))
 
 
 def test_remove():

@@ -227,7 +227,6 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			value: Value to append
 		Raises:
 			ValueError: If value alread in self
-			IndexError: If start or end are out of range
 		'''
 		if value in self:
 			raise ValueError
@@ -291,9 +290,27 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 	# Implement MutableSet
 	def add(self, item):
-		self.append(item)
+		'''Add an item.
+
+		Note:
+			This does not raise a ValueError for an already present value like
+			append does. This is to match the behavior of set.add
+		Args:
+			item: Item to add
+		Raises:
+		'''
+		try:
+			self.append(item)
+		except ValueError:
+			pass
 
 	def discard(self, value):
+		'''Discard an item.
+
+		Note:
+			This does not raise a ValueError for a missing value like remove does.
+			This is to match the behavior of set.discard
+		'''
 		try:
 			self.remove(value)
 		except ValueError:
