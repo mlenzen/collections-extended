@@ -28,8 +28,6 @@
 	<try out my_project>
 	deactivate
 
-#. Tag the last git commit with the version number: ``git tag -a x.y.z``
-
 #. Push: ``git push``
 
 #. Push tags: ``git push --tags``
