@@ -1,9 +1,10 @@
+-r requirements.txt
 bumpversion
 pytest
 sphinx
+sphinxcontrib-napoleon
 wheel
 ipython
 flake8
-invoke
 coverage
 tox

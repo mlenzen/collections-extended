@@ -40,7 +40,7 @@ import collections_extended
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinxcontrib.napoleon']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -146,7 +146,7 @@ html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page
 # bottom, using the given strftime format.
-html_last_updated_fmt = '%y-%b-%d'
+html_last_updated_fmt = '%Y-%b-%d'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.

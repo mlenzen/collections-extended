@@ -1,8 +1,7 @@
 
 import pytest
-import random
 
-from collections_extended.setlists import _basesetlist, setlist, frozensetlist
+from collections_extended.setlists import setlist, frozensetlist
 
 
 def test_count():
@@ -68,6 +67,8 @@ def test_setlist():
 	assert sl == setlist(('a', 'c'))
 	sl.insert(len(sl), 'e')
 	assert sl == setlist(('a', 'c', 'e'))
+	with pytest.raises(ValueError):
+		sl.insert(1, 'e')
 	sl.append('f')
 	assert sl == setlist(('a', 'c', 'e', 'f'))
 	sl += ('g', 'h')
@@ -78,20 +79,6 @@ def test_removeall():
 	sl = setlist('abcdefgh')
 	sl.remove_all(set('acdh'))
 	assert sl == setlist(('befg'))
-
-
-def test_assignment():
-	sl = setlist('abc')
-	sl[0] = 'd'
-	assert sl == setlist('dbc')
-	sl[1] = 'e'
-	assert sl == setlist('dec')
-	sl[2] = 'f'
-	assert sl == setlist('def')
-	with pytest.raises(IndexError):
-		sl[3] = 'g'
-	sl[0], sl[1] = 'h', 'i'
-	assert sl == setlist('hif')
 
 
 def test_len():
@@ -137,6 +124,19 @@ def test_getitem():
 
 
 def test_setitem():
+	sl = setlist('abc')
+	sl[0] = 'd'
+	assert sl == setlist('dbc')
+	sl[0] = 'd'
+	assert sl == setlist('dbc')
+	sl[1] = 'e'
+	assert sl == setlist('dec')
+	sl[2] = 'f'
+	assert sl == setlist('def')
+	with pytest.raises(IndexError):
+		sl[3] = 'g'
+	sl[0], sl[1] = 'h', 'i'
+	assert sl == setlist('hif')
 	sl = setlist(range(10))
 	sl[0] = 'a'
 	assert sl == setlist(['a'] + list(range(1, 10)))
@@ -208,3 +208,65 @@ def test_extend():
 	with pytest.raises(ValueError):
 		sl.extend([13, 2])
 	assert sl == setlist(range(12))
+
+
+def test_hash():
+	assert hash(frozensetlist('abc')) == hash(frozensetlist('abc'))
+	assert hash(frozensetlist()) == hash(frozensetlist())
+
+
+def test_clear():
+	sl = setlist(range(10))
+	sl.clear()
+	assert sl == setlist()
+
+
+def test_discard():
+	sl = setlist(range(10))
+	sl.discard(9)
+	assert sl == setlist(range(9))
+	sl.discard(100)
+	assert sl == setlist(range(9))
+
+
+def test_add():
+	sl = setlist(range(10))
+	sl.add(10)
+	assert sl == setlist(range(11))
+	sl.add(10)
+	assert sl == setlist(range(11))
+
+
+def test_remove():
+	sl = setlist(range(10))
+	sl.remove(9)
+	assert sl == setlist(range(9))
+	with pytest.raises(ValueError):
+		sl.remove(100)
+
+
+def test_eq():
+	assert not setlist(range(10)) == list(range(10))
+	assert not setlist(range(10)) == setlist(range(9))
+
+
+def test_str():
+	assert str(setlist()) == str(list())
+	assert str(setlist('abc')) == str(list('abc'))
+
+
+def test_repr():
+	assert repr(setlist()) == 'setlist()'
+	assert repr(setlist(range(4))) == 'setlist((0, 1, 2, 3))'
+
+
+def test_copy():
+	sl = setlist(range(10))
+	copy = sl.copy()
+	assert sl == copy
+	assert not sl is copy
+	sl = setlist(('1', (0, 1)))
+	copy = sl.copy()
+	assert sl == copy
+	assert not sl is copy
+	assert sl[1] is copy[1]

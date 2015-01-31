@@ -36,7 +36,7 @@ class _basesetlist(Sequence, Set):
 			format = '{class_name}({tuple!r})'
 			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
 
-	## Convenience methods
+	# Convenience methods
 	def _fix_neg_index(self, index):
 		if index < 0:
 			index += len(self)
@@ -54,39 +54,61 @@ class _basesetlist(Sequence, Set):
 	def _from_iterable(cls, it):
 		return cls(it)
 
-	## Implement Container
-	def __contains__(self, elem):
-		return elem in self._dict
+	# Implement Container
+	def __contains__(self, value):
+		return value in self._dict
 
-	## Iterable we get by inheriting from Sequence
+	# Iterable we get by inheriting from Sequence
 
-	## Implement Sized
+	# Implement Sized
 	def __len__(self):
 		return len(self._list)
 
-	## Implement Sequence
+	# Implement Sequence
 	def __getitem__(self, index):
 		if isinstance(index, slice):
 			return self._from_iterable(self._list[index])
 		return self._list[index]
 
-	def count(self, sub, start=0, end=None):
-		"""
-		This runs in O(len(sub))
+	def count(self, value, start=0, end=None):
+		"""Return the number of occurences of value between start and end.
+
+		By default, the entire setlist is searched.
+
+		This runs in O(1)
+
+		Args:
+			value: The value to count
+			start (int): The index to start searching at (defaults to 0)
+			end (int): The index to stop searching at (defaults to the end of the list)
+		Returns:
+			int: 1 if the value is in the setlist, otherwise 0
 		"""
 		try:
-			self.index(sub, start, end)
+			self.index(value, start, end)
 			return 1
 		except ValueError:
 			return 0
 
-	def index(self, sub, start=0, end=None):
-		"""
+	def index(self, value, start=0, end=None):
+		"""Return the index of value between start and end.
+
+		By default, the entire setlist is searched.
+
 		This runs in O(1)
+
+		Args:
+			value: The value to find the index of
+			start (int): The index to start searching at (defaults to 0)
+			end (int): The index to stop searching at (defaults to the end of the list)
+		Returns:
+			int: The index of the value
+		Raises:
+			ValueError: If the value is not in the list or outside of start - end
+			IndexError: If start or end are out of range
 		"""
-		# TODO add more tests with start and end
 		try:
-			index = self._dict[sub]
+			index = self._dict[value]
 		except KeyError:
 			raise ValueError
 		else:
@@ -97,9 +119,9 @@ class _basesetlist(Sequence, Set):
 			else:
 				raise ValueError
 
-	## Nothing needs to be done to implement Set
+	# Nothing needs to be done to implement Set
 
-	## Comparison
+	# Comparison
 
 	def __eq__(self, other):
 		if not isinstance(other, _basesetlist):
@@ -114,34 +136,40 @@ class _basesetlist(Sequence, Set):
 	def __ne__(self, other):
 		return not (self == other)
 
-	## New methods
+	# New methods
 
 	def sub_index(self, sub, start=0, end=None):
-		"""
-		Find the index of a subsequence
+		"""Return the index of a subsequence
 
 		This runs in O(len(sub))
-		Raises ValueError if the subsequence doesn't exist.
-		Raises TypeError if sub isn't a Sequence.
+
+		Args:
+			sub (Iterable): An Iterable to search for
+		Returns:
+			int: The index of the first element of sub
+		Raises:
+			ValueError: If sub isn't a subsequence
+			TypeError: If sub isn't iterable
+			IndexError: If start or end are out of range
 		"""
 		start_index = self.index(sub[0], start, end)
 		end = self._fix_end_index(end)
 		if start_index + len(sub) > end:
 			raise ValueError
 		for i in range(1, len(sub)):
-			try:
-				if sub[i] != self[start_index+i]:
-					raise ValueError
-			except IndexError:
+			if sub[i] != self[start_index + i]:
 				raise ValueError
 		return start_index
+
+	def copy(self):
+		return self.__class__(self)
 
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
 	""" A mutable (unhashable) setlist that inherits from _basesetlist.
 	"""
 
-	## Implement MutableSequence
+	# Implement MutableSequence
 	def __setitem__(self, index, value):
 		if isinstance(index, slice):
 			old_values = self[index]
@@ -172,12 +200,18 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		else:
 			index = self._fix_neg_index(index)
 			value = self._list[index]
-			del self._dict[value]
-			for elem in self._list[index+1:]:
-				self._dict[elem] -= 1
-			del self._list[index]
+			self.remove(value)
 
 	def insert(self, index, value):
+		'''Insert value at index.
+
+		Args:
+			index (int): Index to insert value at
+			value: Value to insert
+		Raises:
+			ValueError: If value already in self
+			IndexError: If start or end are out of range
+		'''
 		if value in self:
 			raise ValueError
 		index = self._fix_neg_index(index)
@@ -187,6 +221,13 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		self._list.insert(index, value)
 
 	def append(self, value):
+		'''Append value to the end.
+
+		Args:
+			value: Value to append
+		Raises:
+			ValueError: If value alread in self
+		'''
 		if value in self:
 			raise ValueError
 		else:
@@ -195,6 +236,16 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			self._list.append(value)
 
 	def extend(self, values):
+		'''Append all values to the end.
+
+		This should be atomic, if any of the values are present, ValueError will
+		be raised and none of the values will be appended.
+
+		Args:
+			values (Iterable): Values to append
+		Raises:
+			ValueError: If any values are already present
+		'''
 		if not self.isdisjoint(values):
 			raise ValueError
 		for value in values:
@@ -206,9 +257,15 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		return self
 
 	def remove(self, value):
-		if value not in self:
+		try:
+			index = self._dict[value]
+		except KeyError:
 			raise ValueError
-		del self[self._dict[value]]
+		else:
+			del self._dict[value]
+			for elem in self._list[index + 1:]:
+				self._dict[elem] -= 1
+			del self._list[index]
 
 	def remove_all(self, elems_to_delete):
 		""" Remove all the elements from iterable.
@@ -228,14 +285,32 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 				new_index = i - deleted_count
 				self._list[new_index] = elem
 				self._dict[elem] = new_index
-		## Now remove deleted_count items from the end of the list
+		# Now remove deleted_count items from the end of the list
 		self._list = self._list[:-deleted_count]
 
-	## Implement MutableSet
+	# Implement MutableSet
 	def add(self, item):
-		self.append(item)
+		'''Add an item.
+
+		Note:
+			This does not raise a ValueError for an already present value like
+			append does. This is to match the behavior of set.add
+		Args:
+			item: Item to add
+		Raises:
+		'''
+		try:
+			self.append(item)
+		except ValueError:
+			pass
 
 	def discard(self, value):
+		'''Discard an item.
+
+		Note:
+			This does not raise a ValueError for a missing value like remove does.
+			This is to match the behavior of set.discard
+		'''
 		try:
 			self.remove(value)
 		except ValueError:
@@ -245,7 +320,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		self._dict = dict()
 		self._list = list()
 
-	## New methods
+	# New methods
 	def shuffle(self, random=None):
 		random_.shuffle(self._list, random=random)
 		for i, elem in enumerate(self._list):
@@ -256,4 +331,4 @@ class frozensetlist(_basesetlist, Hashable):
 	""" An immutable (hashable) setlist that inherits from _basesetlist. """
 
 	def __hash__(self):
-		return self._list.__hash__() ^ self._dict.__hash__()
+		return Set._hash(self)

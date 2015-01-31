@@ -4,12 +4,13 @@ from collections import Sized, Iterable, Container, Hashable
 
 from . import _compat
 
+
 class _basebag(Sized, Iterable, Container):
 	"""
 	Base class for bag and frozenbag.	Is not mutable and not hashable, so there's
 	no reason to use this instead of either bag or frozenbag.
 	"""
-	## Basic object methods
+	# Basic object methods
 
 	def __init__(self, iterable=None):
 		"""Create a new basebag.
@@ -61,7 +62,7 @@ class _basebag(Sized, Iterable, Container):
 					strings.append(format_single.format(elem=elem))
 			return '{%s}' % ', '.join(strings)
 
-	## Internal methods
+	# Internal methods
 
 	def _set(self, elem, value):
 		"""Set the multiplicity of elem to count.
@@ -85,7 +86,7 @@ class _basebag(Sized, Iterable, Container):
 		"""
 		self._set(elem, self.count(elem) + count)
 
-	## New public methods (not overriding/implementing anything)
+	# New public methods (not overriding/implementing anything)
 
 	def num_unique_elements(self):
 		"""Returns the number of unique elements.
@@ -97,23 +98,36 @@ class _basebag(Sized, Iterable, Container):
 	def unique_elements(self):
 		"""Returns a view of unique elements in this bag.
 
-		This runs in O(1) time
+		In Python 3:
+			This runs in O(1) time and returns a view of the unique elements
+		In Python 2:
+			This runs in O(n) and returns set of the current elements.
 		"""
 		return _compat.keys_set(self._dict)
 
 	def count(self, value):
-		"""Return the multiplicity of value.  If value is not in the bag no Error is
-		raised, instead 0 is returned.
+		"""Return the number of value present in this bag.
+
+		If value is not in the bag no Error is raised, instead 0 is returned.
 
 		This runs in O(1) time
+
+		Args:
+			value: The element of self to get the count of
+		Returns:
+			int: The count of value in self
 		"""
 		return self._dict.get(value, 0)
 
 	def nlargest(self, n=None):
-		"""List the n most common elements and their counts from the most
+		"""List the n most common elements and their counts.
+
+		List is from the most
 		common to the least.  If n is None, the list all element counts.
 
 		Run time should be O(m log m) where m is len(self)
+		Args:
+			n (int): The number of elements to return
 		"""
 		if n is None:
 			return sorted(self._dict.items(), key=itemgetter(1), reverse=True)
@@ -143,7 +157,7 @@ class _basebag(Sized, Iterable, Container):
 		"""
 		return self._from_map(self._dict)
 
-	## implementing Sized methods
+	# implementing Sized methods
 
 	def __len__(self):
 		"""Returns the cardinality of the bag.
@@ -152,7 +166,7 @@ class _basebag(Sized, Iterable, Container):
 		"""
 		return self._size
 
-	## implementing Container methods
+	# implementing Container methods
 
 	def __contains__(self, value):
 		"""Returns the multiplicity of the element.
@@ -161,7 +175,7 @@ class _basebag(Sized, Iterable, Container):
 		"""
 		return self.count(value)
 
-	## implementing Iterable methods
+	# implementing Iterable methods
 
 	def __iter__(self):
 		"""Iterate through all elements.
@@ -172,7 +186,7 @@ class _basebag(Sized, Iterable, Container):
 			for i in range(count):
 				yield(value)
 
-	## Comparison methods
+	# Comparison methods
 
 	def __le__(self, other):
 		"""Tests if self <= other where other is another bag
@@ -185,7 +199,7 @@ class _basebag(Sized, Iterable, Container):
 				l = len(other)
 		"""
 		if not isinstance(other, _basebag):
-			return NotImplemented
+			raise TypeError
 		if len(self) > len(other):
 			return False
 		for elem in self.unique_elements():
@@ -210,7 +224,7 @@ class _basebag(Sized, Iterable, Container):
 	def __ne__(self, other):
 		return not (self == other)
 
-	## Operations - &, |, +, -, ^, * and isdisjoint
+	# Operations - &, |, +, -, ^, * and isdisjoint
 
 	def __and__(self, other):
 		"""Intersection is the minimum of corresponding counts.
@@ -358,7 +372,7 @@ class bag(_basebag):
 		self._dict = dict()
 		self._size = 0
 
-	## In-place operations
+	# In-place operations
 
 	def __ior__(self, other):
 		"""

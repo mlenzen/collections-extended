@@ -13,7 +13,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/mlenzen/python-data-structures/issues.
+Report bugs at https://github.com/mlenzen/collections-extended/issues.
 
 If you are reporting a bug, please include:
 
@@ -43,7 +43,7 @@ articles, and such.
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/mlenzen/python-data-structures/issues.
+The best way to send feedback is to file an issue at https://github.com/mlenzen/collections-extended/issues.
 
 If you are proposing a feature:
 
@@ -61,20 +61,20 @@ Useful Reading
 https://docs.python.org/3/reference/datamodel.html#emulating-container-types
 https://docs.python.org/3/library/collections.abc.html
 
-Ready to contribute? Here's how to set up `python-data-structures` for local development.
+Ready to contribute? Here's how to set up `collections-extended` for local development.
 
-1. Fork the `python-data-structures` repo on GitHub.
+1. Fork the `collections-extended` repo on GitHub.
 2. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/python-data-structures.git
+    $ git clone git@github.com:your_name_here/collections-extended.git
 
 3. Install your local copy into a virtualenv.
 
-    $ cd python-data-structures
+    $ cd collections-extended
     $ pyvenv env
     $ . env/bin/activate
     $ pip install -r requirements-dev.txt
-    $ pip install --editable .
+    $ python setup.py develop
 
 4. Create a branch for local development::
 
@@ -106,7 +106,7 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
 3. The pull request should work for Python 2.7, 3.3, and 3.4, and for PyPy. Check
-   https://travis-ci.org/mlenzen/python-data-structures/pull_requests
+   https://travis-ci.org/mlenzen/collections-extended/pull_requests
    and make sure that the tests pass for all supported Python versions.
 
 Tips
