@@ -48,6 +48,16 @@ Aside from the methods expected from Sequence and Set, this provides:
 - ``setlist.shuffle(random=None)``
   Because random.shuffle(setlist) doesn't work, this is provided to do the same.
 
+``ValueError``s
+---------------
+``setlist``s will raise ``ValueError`` when appending an already present element or
+removing a non-existent element. However, the methods inherited from ``Set``
+(``add`` and ``discard``) are silent in the same circumstances. This matches the
+behavior of ``list`` and ``set``.
+
+The setlist constructor does not raise ``ValueError`` on duplicate values
+because I had to choose one or the other and I have code assuming it doesn't.
+
 Quirks
 ------
 * Swapping elements, eg. `sl[0], sl[1] = sl[1], sl[0]`, doesn't work because
