@@ -21,4 +21,9 @@ def test_bijection():
 	assert b == b.copy()
 	del b['a']
 	assert b == bijection()
-	assert bijection(a=1, b=2, c=3) == bijection({'a':1, 'b': 2, 'c': 3})
+	assert bijection(a=1, b=2, c=3) == bijection({'a': 1, 'b': 2, 'c': 3})
+	b['a'] = 1
+	b.inverse[1] = 'b'
+	assert 'b' in b
+	assert b['b'] == 1
+	assert 'a' not in b
