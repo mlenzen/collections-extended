@@ -4,34 +4,29 @@
 
 #. Run the tests::
 
-    python setup.py test
-    tox
-
-#. Commit the changes::
-
-    git add .
-    git commit -m "Release x.y.z"
+	python setup.py test
+	tox
 
 #. Build the source distribution: ``python setup.py sdist``
 
 #. Test that the sdist installs::
 
-    mktmpenv
-    cd dist
-    tar xzvf collections-extended-x.y.z.tar.gz
-    cd my_project-x.y.z/
-    python setup.py install
-    <try out my_project>
-    deactivate
+	mktmpenv
+	cd dist
+	tar xzvf collections-extended-x.y.z.tar.gz
+	cd my_project-x.y.z/
+	python setup.py install
+	<try out my_project>
+	deactivate
 
-#. ``invoke publish``
+#. ``make publish``
 
 #. Test that it pip installs::
 
-    mktmpenv
-    pip install collections-extended
-    <try out my_project>
-    deactivate
+	mktmpenv
+	pip install collections-extended
+	<try out my_project>
+	deactivate
 
 #. Tag the last git commit with the version number: ``git tag -a x.y.z``
 
