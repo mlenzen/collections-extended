@@ -5,7 +5,8 @@ TODO write long desc
 This implementation kinda sucks because it stores everything twice.
 """
 
-from collections import MutableMapping
+from collections import MutableMapping, Mapping
+
 
 class bijection(MutableMapping):
 	"""
@@ -27,7 +28,7 @@ class bijection(MutableMapping):
 					self[pair[0]] = pair[1]
 		for key, value in kwarg.items():
 			self[key] = value
-	
+
 	# Required for MutableMapping
 	def __len__(self):
 		return len(self._data)
@@ -35,7 +36,7 @@ class bijection(MutableMapping):
 	# Required for MutableMapping
 	def __getitem__(self, key):
 		return self._data[key]
-	
+
 	# Required for MutableMapping
 	def __setitem__(self, key, value):
 		if key in self:
@@ -49,7 +50,7 @@ class bijection(MutableMapping):
 	def __delitem__(self, key):
 		value = self._data.pop(key)
 		del self.inverse._data[value]
-	
+
 	# Required for MutableMapping
 	def __iter__(self):
 		return iter(self._data)
@@ -64,7 +65,7 @@ class bijection(MutableMapping):
 
 	def copy(self):
 		return bijection(self)
-	
+
 	def items(self):
 		return self._data.items()
 
@@ -76,8 +77,3 @@ class bijection(MutableMapping):
 
 	def __eq__(self, other):
 		return isinstance(other, bijection) and self._data == other._data
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
-
