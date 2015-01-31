@@ -10,15 +10,12 @@ from collections import MutableMapping, Mapping
 
 class bijection(MutableMapping):
 	"""
-
-	TODO write unit tests for bijection including dict methods like copy
 	"""
-	def __init__(self, iterable=None, inverse=None, **kwarg):
+	def __init__(self, iterable=None, **kwarg):
 		self._data = {}
-		if inverse is not None:
-			self.inverse = inverse
-		else:
-			self.inverse = bijection(inverse=self)
+		self.__inverse = self.__new__(bijection)
+		self.__inverse._data = {}
+		self.__inverse.__inverse = self
 		if iterable is not None:
 			if isinstance(iterable, Mapping):
 				for key, value in iterable.items():
@@ -28,6 +25,10 @@ class bijection(MutableMapping):
 					self[pair[0]] = pair[1]
 		for key, value in kwarg.items():
 			self[key] = value
+
+	@property
+	def inverse(self):
+		return self.__inverse
 
 	# Required for MutableMapping
 	def __len__(self):
