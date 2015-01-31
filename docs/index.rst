@@ -1,10 +1,11 @@
 collections_extended's documentation
 ====================================
 
-This package includes one module - ``collections_extended``.  This
-module provides a ``bag`` class,
-AKA **multiset**, and a ``setlist`` class, which is a **unique list** or
-**ordered set**.  There are also frozen (hashable) varieties of each included.
+``collections_extended``, provides
+a ``bag`` class, AKA **multiset**,
+a ``setlist`` class, which is a **unique list** or **ordered set**,
+and a ``bijection`` class.
+There are also frozen (hashable) varieties of bags and setlists.
 
 It is `tested against`_ Python 2.6, 2.7, 3.2, 3.3, 3.4 & PyPy.
 

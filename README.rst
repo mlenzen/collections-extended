@@ -19,10 +19,11 @@ PyPI: https://pypi.python.org/pypi/collections-extended
 Overview
 ========
 
-This package includes one module - ``collections_extended``.  This
-module provides a ``bag`` class,
-AKA **multiset**, and a ``setlist`` class, which is a **unique list** or
-**ordered set**.  There are also frozen (hashable) varieties of each included.
+``collections_extended``, provides
+a ``bag`` class, AKA **multiset**,
+a ``setlist`` class, which is a **unique list** or **ordered set**,
+and a ``bijection`` class.
+There are also frozen (hashable) varieties of bags and setlists.
 
 Tested against Python 2.6, 2.7, 3.2, 3.3, 3.4 & PyPy.
 
@@ -31,7 +32,7 @@ Getting Started
 
 .. code:: python
 
-	>>> from collections_extended import bag, setlist
+	>>> from collections_extended import bag, setlist, bijection
 	>>> b = bag('abracadabra')
 	>>> b.count('a')
 	5
@@ -67,6 +68,16 @@ Getting Started
 	>>> sl.index('d')
 	4
 
+	>>> bij = bijection({'a': 1, 'b': 2, 'c': 3})
+	>>> bij.inverse[2]
+	'b'
+	>>> bij['a'] = 2
+	>>> bij == bijection({'a': 2, 'c': 3})
+	True
+	>>> bij.inverse[1] = 'a'
+	>>> bij == bijection({'a': 1, 'c': 3})
+	True
+
 Installation
 ============
 
@@ -74,25 +85,30 @@ Installation
 
 Usage
 =====
-	``from collections_extended import bag, frozenbag, setlist, frozensetlist``
+	``from collections_extended import bag, frozenbag, setlist, frozensetlist, bijection``
 
 Classes
 =======
-There are four new classes provided:
+There are five new classes provided:
 
-bags
+Bags
 ----
 bag
 	This is a bag AKA multiset.
 frozenbag
 	This is a frozen (hashable) version of a bag.
 
-setlists
+Setlists
 --------
 setlist
 	An ordered set or a list of unique elements depending on how you look at it.
 frozensetlist
 	This is a frozen (hashable) version of a setlist.
+
+Mappings
+--------
+bijection
+  A one-to-one mapping.
 
 Collection Factory
 ==================

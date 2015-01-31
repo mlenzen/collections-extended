@@ -8,14 +8,14 @@ Installation
 
 Usage
 -----
-  ``from collections_extended import bag, frozenbag, setlist, frozensetlist``
+  ``from collections_extended import bag, frozenbag, setlist, frozensetlist, bijection``
 
 Examples
 --------
 
 .. code:: python
 
-	>>> from collections_extended import bag, setlist
+	>>> from collections_extended import bag, setlist, bijection
 	>>> b = bag('abracadabra')
 	>>> b.count('a')
 	5
@@ -51,3 +51,13 @@ Examples
 	ValueError
 	>>> sl.index('d')
 	4
+
+	>>> bij = bijection({'a': 1, 'b': 2, 'c': 3})
+	>>> bij.inverse[2]
+	'b'
+	>>> bij['a'] = 2
+	>>> bij == bijection({'a': 2, 'c': 3})
+	True
+	>>> bij.inverse[1] = 'a'
+	>>> bij == bijection({'a': 1, 'c': 3})
+	True

@@ -40,7 +40,7 @@ publish:
 docs:
 	rm -f docs/collections_extended.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ collections_extended
+	#sphinx-apidoc -o docs/ collections_extended
 	make -C docs clean
 	make -C docs html
-	open docs/_build/html/index.html
+	xdg-open docs/_build/html/index.html

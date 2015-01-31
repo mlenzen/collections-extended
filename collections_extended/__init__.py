@@ -4,8 +4,9 @@ __version__ = '0.3.1'
 
 from .bags import bag, frozenbag
 from .setlists import setlist, frozensetlist
+from .bijection import bijection
 
-__all__ = ['collection', 'setlist', 'frozensetlist', 'bag', 'frozenbag']
+__all__ = ['collection', 'setlist', 'frozensetlist', 'bag', 'frozenbag', 'bijection']
 
 
 def collection(it=(), mutable=True, ordered=False, unique=False):
