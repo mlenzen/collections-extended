@@ -1,11 +1,11 @@
 import heapq
 from operator import itemgetter
-from collections import Sized, Iterable, Container, Hashable
+from collections import Set, MutableSet, Hashable
 
 from . import _compat
 
 
-class _basebag(Sized, Iterable, Container):
+class _basebag(Set):
 	"""
 	Base class for bag and frozenbag.	Is not mutable and not hashable, so there's
 	no reason to use this instead of either bag or frozenbag.
@@ -340,7 +340,7 @@ class _basebag(Sized, Iterable, Container):
 		return (self - other) | (other - self)
 
 
-class bag(_basebag):
+class bag(_basebag, MutableSet):
 	"""bag is a mutable _basebag.
 
 	Thus not hashable and unusable for dict keys or in other sets.
@@ -458,19 +458,4 @@ class frozenbag(_basebag, Hashable):
 		is identical to _abcoll.Set._hash
 		We can't call it directly because Python2 raises a TypeError.
 		"""
-		MAX = _compat.maxint
-		MASK = 2 * MAX + 1
-		n = len(self)
-		h = 1927868237 * (n + 1)
-		h &= MASK
-		for x in self:
-			hx = hash(x)
-			h ^= (hx ^ (hx << 16) ^ 89869747) * 3644798167
-			h &= MASK
-		h = h * 69069 + 907133923
-		h &= MASK
-		if h > MAX:
-			h -= MASK + 1
-		if h == -1:
-			h = 590923713
-		return h
+		return self._hash()
