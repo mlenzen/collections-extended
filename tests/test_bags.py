@@ -232,3 +232,35 @@ def test_pop():
 	assert b.pop() == 'a'
 	with pytest.raises(KeyError):
 		b.pop()
+
+
+def test_hashability():
+	"""
+	Since Multiset is mutable and FronzeMultiset is hashable, the second
+	should be usable for dictionary keys and the second should raise a key
+	or value error when used as a key or placed in a set.
+	"""
+	a = bag([1, 2, 3])  # Mutable multiset.
+	b = frozenbag([1, 1, 2, 3])	 # prototypical frozen multiset.
+
+	c = frozenbag([4, 4, 5, 5, b, b])  # make sure we can nest them
+	d = frozenbag([4, frozenbag([1, 3, 2, 1]), 4, 5, b, 5])
+	# c and d are the same; make sure nothing weird happes to hashes.
+	assert c == d  # Make sure both constructions work.
+
+	dic = {}
+	dic[b] = 3
+	dic[c] = 5
+	dic[d] = 7
+	assert len(dic) == 2  # Make sure no duplicates in dictionary.
+	# Make sure TypeErrors are raised when using mutable bags for keys.
+	with pytest.raises(TypeError):
+		dic[a] = 4
+	with pytest.raises(TypeError):
+		set([a])
+	with pytest.raises(TypeError):
+		frozenbag([a, 1])
+	with pytest.raises(TypeError):
+		bag([a, 1])
+	# test commutativity of multiset instantiation.
+	assert bag([4, 4, 5, 5, c]) == bag([4, 5, d, 4, 5])
