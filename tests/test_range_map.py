@@ -1,4 +1,6 @@
 
+from datetime import date
+
 import pytest
 
 from collections_extended.range_map import RangeMap
@@ -127,3 +129,13 @@ def test_alter_beg():
 	assert rm[3] == 'c'
 	assert rm[4] == 'd'
 	assert rm[5] == 'e'
+
+
+def test_dates():
+	rm = RangeMap()
+	rm[date(1936, 12, 11):] = 'b'
+	rm[date(1952, 2, 6):] = 'a'
+	assert rm[date(1945, 1, 1)] == 'b'
+	assert rm[date(1965, 4, 6)] == 'a'
+	with pytest.raises(KeyError):
+		rm[date(1900, 1, 1)]
