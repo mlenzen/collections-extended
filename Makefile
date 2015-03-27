@@ -1,4 +1,4 @@
-.PHONY: docs test
+.PHONY: docs tests
 
 help:
 	@echo "  clean       remove unwanted files like .pyc's"
