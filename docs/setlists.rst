@@ -45,12 +45,11 @@ setlist vs. set
 New Methods
 -----------
 Aside from the methods expected from Sequence and Set, this provides:
-- ``setlist.shuffle(random=None)``
-  Because random.shuffle(setlist) doesn't work, this is provided to do the same.
+- ``setlist.shuffle(random=None)`` Because random.shuffle(setlist) doesn't work, this is provided to do the same.
 
-``ValueError``s
----------------
-``setlist``s will raise ``ValueError`` when appending an already present element or
+ValueErrors
+-----------
+setlists will raise ``ValueError`` when appending an already present element or
 removing a non-existent element. However, the methods inherited from ``Set``
 (``add`` and ``discard``) are silent in the same circumstances. This matches the
 behavior of ``list`` and ``set``.
