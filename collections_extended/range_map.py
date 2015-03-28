@@ -69,19 +69,6 @@ class RangeMap():
 			else:
 				return self.key_mapping[self.ordered_keys[loc-1]]
 
-	def __getitem__(self, key):
-		if isinstance(key, slice):
-			if key.step:
-				raise ValueError('Steps aren\'t allowed')
-			# return a RangeMap
-			return self.get_range(key.start, key.stop)
-		else:
-			value = self.__getitem(key)
-			if value is _empty:
-				raise KeyError()
-			else:
-				return value
-
 	def get(self, key, restval=None):
 		value = self.__getitem(key)
 		if value is _empty:
@@ -91,27 +78,6 @@ class RangeMap():
 
 	def get_range(self, start=None, stop=None):
 		raise NotImplementedError('yet')
-
-	# Python2 - override slice methods
-	def __setslice__(self, i, j, value):
-		'''Implement __setslice__ to override behavior in Python 2.
-		This is required because empty slices pass integers in python2 as opposed
-		to None in python 3.
-		'''
-		raise SyntaxError('Assigning slices doesn\t work in Python 2, use set')
-
-	def __delslice__(self, i, j):
-		raise SyntaxError('Deleting slices doesn\t work in Python 2, use delete')
-
-	def __getslice__(self, i, j):
-		raise SyntaxError('Getting slices doesn\t work in Python 2, use get_range.')
-
-	def __setitem__(self, key, value):
-		if not isinstance(key, slice):
-			raise ValueError('Can only set slices')
-		if key.step is not None:
-			raise ValueError('Steps aren\'t allowed')
-		self.set(value, key.start, key.stop)
 
 	def set(self, value, start=None, stop=None):
 		if start is None:
@@ -146,13 +112,6 @@ class RangeMap():
 	def delete(self, start=None, stop=None):
 		self.set(_empty, start=start, stop=stop)
 
-	def __delitem__(self, index):
-		if not isinstance(index, slice):
-			raise ValueError('Can only delete slices')
-		if index.step is not None:
-			raise ValueError('Steps aren\'t allowed')
-		self.delete(index.start, index.stop)
-
 	def __eq__(self, other):
 		if isinstance(other, RangeMap):
 			return (
@@ -161,3 +120,44 @@ class RangeMap():
 				)
 		else:
 			return NotImplemented
+
+	def __getitem__(self, key):
+		if isinstance(key, slice):
+			if key.step:
+				raise ValueError('Steps aren\'t allowed')
+			# return a RangeMap
+			return self.get_range(key.start, key.stop)
+		else:
+			value = self.__getitem(key)
+			if value is _empty:
+				raise KeyError()
+			else:
+				return value
+
+	def __setitem__(self, key, value):
+		if not isinstance(key, slice):
+			raise ValueError('Can only set slices')
+		if key.step is not None:
+			raise ValueError('Steps aren\'t allowed')
+		self.set(value, key.start, key.stop)
+
+	def __delitem__(self, index):
+		if not isinstance(index, slice):
+			raise ValueError('Can only delete slices')
+		if index.step is not None:
+			raise ValueError('Steps aren\'t allowed')
+		self.delete(index.start, index.stop)
+
+	# Python2 - override slice methods
+	def __setslice__(self, i, j, value):
+		'''Implement __setslice__ to override behavior in Python 2.
+		This is required because empty slices pass integers in python2 as opposed
+		to None in python 3.
+		'''
+		raise SyntaxError('Assigning slices doesn\t work in Python 2, use set')
+
+	def __delslice__(self, i, j):
+		raise SyntaxError('Deleting slices doesn\t work in Python 2, use delete')
+
+	def __getslice__(self, i, j):
+		raise SyntaxError('Getting slices doesn\t work in Python 2, use get_range.')
