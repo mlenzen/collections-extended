@@ -3,6 +3,7 @@ from datetime import date
 
 import pytest
 
+from collections_extended._compat import is_py2
 from collections_extended.range_map import RangeMap
 
 
@@ -139,3 +140,17 @@ def test_dates():
 	assert rm[date(1965, 4, 6)] == 'a'
 	with pytest.raises(KeyError):
 		rm[date(1900, 1, 1)]
+
+
+def test_version_differences():
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+	if is_py2:
+		with pytest.raises(SyntaxError):
+			rm[3:] = 'a'
+		with pytest.raises(SyntaxError):
+			del rm[4:5]
+		with pytest.raises(SyntaxError):
+			assert rm[2:] == RangeMap({2: 'b', 3: 'a'})
+	else:
+		rm[3:] = 'a'
+		assert rm == RangeMap({1: 'a', 2: 'b', 3: 'a'})

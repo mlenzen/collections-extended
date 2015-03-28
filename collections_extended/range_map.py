@@ -65,13 +65,13 @@ class RangeMap():
 		This is required because empty slices pass integers in python2 as opposed
 		to None in python 3.
 		'''
-		raise NotImplementedError('Assigning slices doesn\t work in Python 2, use set')
+		raise SyntaxError('Assigning slices doesn\t work in Python 2, use set')
 
 	def __delslice__(self, i, j):
-		raise NotImplementedError('Deleting slices doesn\t work in Python 2, use delete')
+		raise SyntaxError('Deleting slices doesn\t work in Python 2, use delete')
 
 	def __getslice__(self, i, j):
-		raise NotImplementedError('Getting slices doesn\t work in Python 2, use get_range.')
+		raise SyntaxError('Getting slices doesn\t work in Python 2, use get_range.')
 
 	def __setitem__(self, key, value):
 		if not isinstance(key, slice):
