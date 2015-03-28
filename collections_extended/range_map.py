@@ -1,6 +1,6 @@
 import bisect
 
-# Singleton to mark
+# Singleton to mark unmapped ranges
 _empty = object()
 
 
@@ -24,6 +24,39 @@ class RangeMap():
 		if mapping:
 			for key, value in sorted(mapping.items()):
 				self.set(value, key)
+
+	def __repr__(self):
+		return 'RangeMap(%s)' % ', '.join(['({start}, {stop}): {value}'.format(
+			start=item[0],
+			stop=item[1],
+			value=repr(item[2]),
+			) for item in self.iter_ranges()])
+
+	@classmethod
+	def from_iterable(cls, iterable):
+		'''Create a RangeMap from an iterable where each item is a tuple
+		(start, stop, value)
+		'''
+		obj = cls()
+		for start, stop, value in iterable:
+			obj.set(value, start=start, stop=stop)
+		return obj
+
+	def iter_ranges(self):
+		'''Generate (start, stop, value) tuples for all mapped ranges.'''
+		if len(self.ordered_keys) == 0:
+			if self._left_value is not _empty:
+				yield None, None, self._left_value
+		else:
+			if self._left_value is not _empty:
+				yield None, self.ordered_keys[0], self._left_value
+			for i, start_key in enumerate(self.ordered_keys[:-1]):
+				value = self.key_mapping[start_key]
+				if value is not _empty:
+					yield start_key, self.ordered_keys[i+1], value
+			last_value = self.key_mapping[self.ordered_keys[-1]]
+			if last_value is not _empty:
+				yield self.ordered_keys[-1], None, last_value
 
 	def __getitem(self, key):
 		'''Helper method.'''
@@ -56,7 +89,7 @@ class RangeMap():
 		else:
 			return value
 
-	def get_range(self, start, stop):
+	def get_range(self, start=None, stop=None):
 		raise NotImplementedError('yet')
 
 	# Python2 - override slice methods
@@ -89,7 +122,10 @@ class RangeMap():
 				stop_index = bisect.bisect_left(self.ordered_keys, stop)
 				self.key_mapping[stop] = self.__getitem(stop)
 				_remove_all(self.key_mapping, self.ordered_keys[:stop_index])
-				self.ordered_keys[:stop_index] = [stop]
+				if stop_index < len(self.ordered_keys) and self.ordered_keys[stop_index] == stop:
+					self.ordered_keys[:stop_index+1] = [stop]
+				else:
+					self.ordered_keys[:stop_index] = [stop]
 			self._left_value = value
 		else:
 			start_index = bisect.bisect_left(self.ordered_keys, start)
@@ -101,21 +137,27 @@ class RangeMap():
 				self.key_mapping[stop] = self.__getitem(stop)
 				new_keys = [start, stop]
 			_remove_all(self.key_mapping, self.ordered_keys[start_index:stop_index])
-			self.ordered_keys[start_index:stop_index] = new_keys
+			if stop_index < len(self.ordered_keys) and self.ordered_keys[stop_index] == stop:
+				self.ordered_keys[start_index:stop_index+1] = new_keys
+			else:
+				self.ordered_keys[start_index:stop_index] = new_keys
 			self.key_mapping[start] = value
 
 	def delete(self, start=None, stop=None):
-		raise NotImplementedError('yet')
+		self.set(_empty, start=start, stop=stop)
 
 	def __delitem__(self, index):
 		if not isinstance(index, slice):
-			raise IndexError('Can only delete slices')
+			raise ValueError('Can only delete slices')
+		if index.step is not None:
+			raise ValueError('Steps aren\'t allowed')
 		self.delete(index.start, index.stop)
 
 	def __eq__(self, other):
-		return (
-			self.__class__ == other.__class__ and
-			self.ordered_keys == other.ordered_keys and
-			self.key_mapping == other.key_mapping and
-			self._left_value == other._left_value
-			)
+		if isinstance(other, RangeMap):
+			return (
+				self.key_mapping == other.key_mapping and
+				self._left_value == other._left_value
+				)
+		else:
+			return NotImplemented
