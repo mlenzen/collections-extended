@@ -1,7 +1,10 @@
 import bisect
+from collections import namedtuple, Container
 
 # Singleton to mark unmapped ranges
 _empty = object()
+
+MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
 
 def _remove_all(mapping, keys):
@@ -10,7 +13,7 @@ def _remove_all(mapping, keys):
 		del mapping[key]
 
 
-class RangeMap():
+class RangeMap(Container):
 
 	def __init__(self, mapping=None, default_value=_empty):
 		'''
@@ -27,10 +30,10 @@ class RangeMap():
 
 	def __repr__(self):
 		return 'RangeMap(%s)' % ', '.join(['({start}, {stop}): {value}'.format(
-			start=item[0],
-			stop=item[1],
-			value=repr(item[2]),
-			) for item in self.iter_ranges()])
+			start=item.start,
+			stop=item.stop,
+			value=repr(item.value),
+			) for item in self.ranges()])
 
 	@classmethod
 	def from_iterable(cls, iterable):
@@ -42,21 +45,24 @@ class RangeMap():
 			obj.set(value, start=start, stop=stop)
 		return obj
 
-	def iter_ranges(self):
-		'''Generate (start, stop, value) tuples for all mapped ranges.'''
+	def ranges(self):
+		'''Generate MappedRanges for all mapped ranges.'''
 		if len(self.ordered_keys) == 0:
 			if self._left_value is not _empty:
-				yield None, None, self._left_value
+				yield MappedRange(None, None, self._left_value)
 		else:
 			if self._left_value is not _empty:
-				yield None, self.ordered_keys[0], self._left_value
+				yield MappedRange(None, self.ordered_keys[0], self._left_value)
 			for i, start_key in enumerate(self.ordered_keys[:-1]):
 				value = self.key_mapping[start_key]
 				if value is not _empty:
-					yield start_key, self.ordered_keys[i+1], value
+					yield MappedRange(start_key, self.ordered_keys[i+1], value)
 			last_value = self.key_mapping[self.ordered_keys[-1]]
 			if last_value is not _empty:
-				yield self.ordered_keys[-1], None, last_value
+				yield MappedRange(self.ordered_keys[-1], None, last_value)
+
+	def __contains__(self, value):
+		return self.__getitem(value) is not _empty
 
 	def __getitem(self, key):
 		'''Helper method.'''

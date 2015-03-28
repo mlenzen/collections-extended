@@ -194,3 +194,11 @@ def test_eq():
 	assert RangeMap() != RangeMap(default_value='z')
 	assert RangeMap({1: 'a'}, default_value='z') != RangeMap({1: 'a'})
 	assert RangeMap(default_value='z') != RangeMap(default_value='a')
+
+
+def test_contains():
+	assert 1 not in RangeMap()
+	assert 1 in RangeMap(default_value=1)
+	assert 1 in RangeMap({1: 'a'})
+	assert 2 in RangeMap({1: 'a'})
+	assert 0 not in RangeMap({1: 'a'})
