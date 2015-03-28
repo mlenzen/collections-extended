@@ -39,7 +39,7 @@ class RangeMap():
 	def __getitem__(self, key):
 		if isinstance(key, slice):
 			if key.step:
-				raise IndexError('Steps aren\'t allowed')
+				raise ValueError('Steps aren\'t allowed')
 			# return a RangeMap
 			return self.get_range(key.start, key.stop)
 		else:
@@ -75,9 +75,9 @@ class RangeMap():
 
 	def __setitem__(self, key, value):
 		if not isinstance(key, slice):
-			raise IndexError('Can only set slices')
+			raise ValueError('Can only set slices')
 		if key.step is not None:
-			raise IndexError('Steps aren\'t allowed')
+			raise ValueError('Steps aren\'t allowed')
 		self.set(value, key.start, key.stop)
 
 	def set(self, value, start=None, stop=None):

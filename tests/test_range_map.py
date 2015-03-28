@@ -154,3 +154,13 @@ def test_version_differences():
 	else:
 		rm[3:] = 'a'
 		assert rm == RangeMap({1: 'a', 2: 'b', 3: 'a'})
+
+
+def test_slice_errors():
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+	with pytest.raises(ValueError):
+		rm[2:5:2]
+	with pytest.raises(ValueError):
+		rm[3] = 'z'
+	with pytest.raises(ValueError):
+		rm[3:5:2] = 'z'
