@@ -21,8 +21,8 @@ class RangeMap(Container):
 			mapping: A Mapping from range start dates to values. The end of each
 				range is the beginning of the next
 		'''
-		self.ordered_keys = []
-		self.key_mapping = {}
+		self._ordered_keys = []
+		self._key_mapping = {}
 		self._left_value = default_value
 		if mapping:
 			for key, value in sorted(mapping.items()):
@@ -47,33 +47,33 @@ class RangeMap(Container):
 
 	def ranges(self):
 		'''Generate MappedRanges for all mapped ranges.'''
-		if len(self.ordered_keys) == 0:
+		if len(self._ordered_keys) == 0:
 			if self._left_value is not _empty:
 				yield MappedRange(None, None, self._left_value)
 		else:
 			if self._left_value is not _empty:
-				yield MappedRange(None, self.ordered_keys[0], self._left_value)
-			for i, start_key in enumerate(self.ordered_keys[:-1]):
-				value = self.key_mapping[start_key]
+				yield MappedRange(None, self._ordered_keys[0], self._left_value)
+			for i, start_key in enumerate(self._ordered_keys[:-1]):
+				value = self._key_mapping[start_key]
 				if value is not _empty:
-					yield MappedRange(start_key, self.ordered_keys[i+1], value)
-			last_value = self.key_mapping[self.ordered_keys[-1]]
+					yield MappedRange(start_key, self._ordered_keys[i+1], value)
+			last_value = self._key_mapping[self._ordered_keys[-1]]
 			if last_value is not _empty:
-				yield MappedRange(self.ordered_keys[-1], None, last_value)
+				yield MappedRange(self._ordered_keys[-1], None, last_value)
 
 	def __contains__(self, value):
 		return self.__getitem(value) is not _empty
 
 	def __getitem(self, key):
 		'''Helper method.'''
-		loc = bisect.bisect_left(self.ordered_keys, key)
-		if loc == 0 and (len(self.ordered_keys) == 0 or key < self.ordered_keys[loc]):
+		loc = bisect.bisect_left(self._ordered_keys, key)
+		if loc == 0 and (len(self._ordered_keys) == 0 or key < self._ordered_keys[loc]):
 			return self._left_value
 		else:
-			if loc < len(self.ordered_keys) and key == self.ordered_keys[loc]:
-				return self.key_mapping[self.ordered_keys[loc]]
+			if loc < len(self._ordered_keys) and key == self._ordered_keys[loc]:
+				return self._key_mapping[self._ordered_keys[loc]]
 			else:
-				return self.key_mapping[self.ordered_keys[loc-1]]
+				return self._key_mapping[self._ordered_keys[loc-1]]
 
 	def get(self, key, restval=None):
 		value = self.__getitem(key)
@@ -88,32 +88,32 @@ class RangeMap(Container):
 	def set(self, value, start=None, stop=None):
 		if start is None:
 			if stop is None:
-				self.ordered_keys = []
-				self.key_mapping = {}
+				self._ordered_keys = []
+				self._key_mapping = {}
 			else:
-				stop_index = bisect.bisect_left(self.ordered_keys, stop)
-				self.key_mapping[stop] = self.__getitem(stop)
-				_remove_all(self.key_mapping, self.ordered_keys[:stop_index])
-				if stop_index < len(self.ordered_keys) and self.ordered_keys[stop_index] == stop:
-					self.ordered_keys[:stop_index+1] = [stop]
+				stop_index = bisect.bisect_left(self._ordered_keys, stop)
+				self._key_mapping[stop] = self.__getitem(stop)
+				_remove_all(self._key_mapping, self._ordered_keys[:stop_index])
+				if stop_index < len(self._ordered_keys) and self._ordered_keys[stop_index] == stop:
+					self._ordered_keys[:stop_index+1] = [stop]
 				else:
-					self.ordered_keys[:stop_index] = [stop]
+					self._ordered_keys[:stop_index] = [stop]
 			self._left_value = value
 		else:
-			start_index = bisect.bisect_left(self.ordered_keys, start)
+			start_index = bisect.bisect_left(self._ordered_keys, start)
 			if stop is None:
-				stop_index = len(self.ordered_keys)
+				stop_index = len(self._ordered_keys)
 				new_keys = [start]
 			else:
-				stop_index = bisect.bisect_left(self.ordered_keys, stop)
-				self.key_mapping[stop] = self.__getitem(stop)
+				stop_index = bisect.bisect_left(self._ordered_keys, stop)
+				self._key_mapping[stop] = self.__getitem(stop)
 				new_keys = [start, stop]
-			_remove_all(self.key_mapping, self.ordered_keys[start_index:stop_index])
-			if stop_index < len(self.ordered_keys) and self.ordered_keys[stop_index] == stop:
-				self.ordered_keys[start_index:stop_index+1] = new_keys
+			_remove_all(self._key_mapping, self._ordered_keys[start_index:stop_index])
+			if stop_index < len(self._ordered_keys) and self._ordered_keys[stop_index] == stop:
+				self._ordered_keys[start_index:stop_index+1] = new_keys
 			else:
-				self.ordered_keys[start_index:stop_index] = new_keys
-			self.key_mapping[start] = value
+				self._ordered_keys[start_index:stop_index] = new_keys
+			self._key_mapping[start] = value
 
 	def delete(self, start=None, stop=None):
 		self.set(_empty, start=start, stop=stop)
@@ -121,7 +121,7 @@ class RangeMap(Container):
 	def __eq__(self, other):
 		if isinstance(other, RangeMap):
 			return (
-				self.key_mapping == other.key_mapping and
+				self._key_mapping == other._key_mapping and
 				self._left_value == other._left_value
 				)
 		else:
