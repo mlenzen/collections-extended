@@ -60,7 +60,7 @@ because I had to choose one or the other and I have code assuming it doesn't.
 Quirks
 ------
 * Swapping elements, eg. `sl[0], sl[1] = sl[1], sl[0]`, doesn't work because
-  it is implemented by first inserting one element then the other. But since
-  the first element it tries to insert is still in the setlist, nothing happens.
+  it is implemented by first setting one element then the other. But since
+  the first element it tries to set is still in the setlist, nothing happens.
   This causes random.shuffle not to work on a setlist.
 

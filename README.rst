@@ -22,7 +22,7 @@ Overview
 ``collections_extended``, provides
 a ``bag`` class, AKA **multiset**,
 a ``setlist`` class, which is a **unique list** or **ordered set**,
-and a ``bijection`` class.
+a ``bijection`` class and ``RangeMap`` which is a mapping from ranges to values.
 There are also frozen (hashable) varieties of bags and setlists.
 
 Tested against Python 2.6, 2.7, 3.2, 3.3, 3.4 & PyPy.
@@ -32,7 +32,8 @@ Getting Started
 
 .. code:: python
 
-	>>> from collections_extended import bag, setlist, bijection
+	>>> from collections_extended import bag, setlist, bijection, RangeMap
+	>>> from datetime import date
 	>>> b = bag('abracadabra')
 	>>> b.count('a')
 	5
@@ -78,6 +79,20 @@ Getting Started
 	>>> bij == bijection({'a': 1, 'c': 3})
 	True
 
+	>>> us_presidents = RangeMap()
+	>>> us_presidents[date(1993, 1, 20):date(2001, 1, 20)] = 'Bill Clinton'
+	>>> us_presidents[date(2001, 1, 20):date(2009, 1, 20)] = 'George W. Bush'
+	>>> us_presidents[date(2009, 1, 20):] = 'Barack Obama'
+	>>> us_presidents[date(1995, 5, 10)]
+	'Bill Clinton'
+	>>> us_presidents[date(2001, 1, 20)]
+	'George W. Bush'
+	>>> us_presidents[date(2021, 3, 1)]
+	'Barack Obama'
+	>>> us_presidents[date(2017, 1, 20):] = 'Someone New'
+	>>> us_presidents[date(2021, 3, 1)]
+	'Someone New'
+
 Installation
 ============
 
@@ -89,7 +104,7 @@ Usage
 
 Classes
 =======
-There are five new classes provided:
+There are six new classes provided:
 
 Bags
 ----
@@ -109,15 +124,8 @@ Mappings
 --------
 bijection
   A one-to-one mapping.
-
-Collection Factory
-==================
-A Collection factory is provided where you can specify whether you want the
-Collection returned to be mutable, have unique elements and/or be ordered.  If
-an Iterable object is passed the Collection will be filled from it, otherwise
-it will be empty.
-
-``collection(it = None, mutable=True, unique=False, ordered=False)``
+RangeMap
+  A mapping from ranges (of numbers/dates/etc)
 
 :Author: Michael Lenzen
 :Copyright: 2015 Michael Lenzen

@@ -5,8 +5,9 @@ __version__ = '0.3.1'
 from .bags import bag, frozenbag
 from .setlists import setlist, frozensetlist
 from .bijection import bijection
+from .range_map import RangeMap, MappedRange
 
-__all__ = ['collection', 'setlist', 'frozensetlist', 'bag', 'frozenbag', 'bijection']
+__all__ = ['collection', 'setlist', 'frozensetlist', 'bag', 'frozenbag', 'bijection', 'RangeMap', 'MappedRange']
 
 
 def collection(it=(), mutable=True, ordered=False, unique=False):

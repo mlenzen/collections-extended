@@ -14,6 +14,8 @@ class RangeMap(Container):
 		Args:
 			mapping: A Mapping from range start dates to values. The end of each
 				range is the beginning of the next
+			default_value: If passed, the return value for all keys less than the
+				least key in mapping. If no mapping, the return value for all keys.
 		'''
 		self._ordered_keys = [None]
 		self._key_mapping = {None: default_value}
@@ -39,7 +41,10 @@ class RangeMap(Container):
 		return obj
 
 	def ranges(self, start=None, stop=None):
-		'''Generate MappedRanges for all mapped ranges.'''
+		'''Generate MappedRanges for all mapped ranges.
+		Yields:
+			MappedRange
+		'''
 		candidate_keys = self._ordered_keys[:]
 		if stop is not None:
 			stop_loc = bisect_left(self._ordered_keys, stop, lo=1)
@@ -73,6 +78,10 @@ class RangeMap(Container):
 			return value
 
 	def get_range(self, start=None, stop=None):
+		'''
+		Returns:
+			A RangeMap
+		'''
 		return self.from_iterable(self.ranges(start, stop))
 
 	def set(self, value, start=None, stop=None):
