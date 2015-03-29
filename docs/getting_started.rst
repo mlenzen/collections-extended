@@ -8,14 +8,15 @@ Installation
 
 Usage
 -----
-  ``from collections_extended import bag, frozenbag, setlist, frozensetlist, bijection``
+  ``from collections_extended import bag, frozenbag, setlist, frozensetlist, bijection, RangeMap``
 
 Examples
 --------
 
 .. code:: python
 
-	>>> from collections_extended import bag, setlist, bijection
+	>>> from collections_extended import bag, setlist, bijection, RangeMap
+	>>> from datetime import date
 	>>> b = bag('abracadabra')
 	>>> b.count('a')
 	5
@@ -24,7 +25,6 @@ Examples
 	4
 	>>> 'a' in b
 	True
-	>>> from collections_extended import bag
 	>>> b.count('d')
 	1
 	>>> b.remove('d')
@@ -61,3 +61,17 @@ Examples
 	>>> bij.inverse[1] = 'a'
 	>>> bij == bijection({'a': 1, 'c': 3})
 	True
+
+	>>> us_presidents = RangeMap()
+	>>> us_presidents[date(1993, 1, 20):date(2001, 1, 20)] = 'Bill Clinton'
+	>>> us_presidents[date(2001, 1, 20):date(2009, 1, 20)] = 'George W. Bush'
+	>>> us_presidents[date(2009, 1, 20):] = 'Barack Obama'
+	>>> us_presidents[date(1995, 5, 10)]
+	'Bill Clinton'
+	>>> us_presidents[date(2001, 1, 20)]
+	'George W. Bush'
+	>>> us_presidents[date(2021, 3, 1)]
+	'Barack Obama'
+	>>> us_presidents[date(2017, 1, 20):] = 'Someone New'
+	>>> us_presidents[date(2021, 3, 1)]
+	'Someone New'

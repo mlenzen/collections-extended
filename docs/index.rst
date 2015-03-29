@@ -4,7 +4,7 @@ collections_extended's documentation
 ``collections_extended``, provides
 a ``bag`` class, AKA **multiset**,
 a ``setlist`` class, which is a **unique list** or **ordered set**,
-and a ``bijection`` class.
+a ``bijection`` class and ``RangeMap`` which is a mapping from ranges to values.
 There are also frozen (hashable) varieties of bags and setlists.
 
 It is `tested against`_ Python 2.6, 2.7, 3.2, 3.3, 3.4 & PyPy.
