@@ -10,6 +10,7 @@ from collections_extended.range_map import RangeMap
 def test_simple_set():
 	rm = RangeMap()
 	rm.set('a', start=1)
+	print(rm._ordered_keys, rm._key_mapping)
 	assert rm[1] == 'a'
 	assert rm[2] == 'a'
 	with pytest.raises(KeyError):
@@ -23,6 +24,7 @@ def test_simple_set():
 def test_closed():
 	rm = RangeMap()
 	rm.set('a', start=1, stop=2)
+	print(rm._ordered_keys, rm._key_mapping)
 	assert rm[1] == 'a'
 	assert rm[1.9] == 'a'
 	with pytest.raises(KeyError):
@@ -50,6 +52,7 @@ def test_set_closed_interval_end():
 def test_set_existing_interval():
 	rm = RangeMap({1: 'a', 2: 'b'})
 	rm.set('c', start=1, stop=2)
+	print(rm)
 	assert rm[1] == 'c'
 	assert rm[2] == 'b'
 	assert rm[3] == 'b'
@@ -98,9 +101,11 @@ def test_overwrite_all():
 
 def test_default_value():
 	rm = RangeMap(default_value=None)
+	print(rm)
 	assert rm[1] is None
 	assert rm[-2] is None
 	rm.set('a', start=1)
+	print(rm)
 	assert rm[0] is None
 	assert rm[1] == 'a'
 	assert rm[2] == 'a'
