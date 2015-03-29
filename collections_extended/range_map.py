@@ -1,7 +1,5 @@
-import bisect
+from bisect import bisect_left, bisect_right
 from collections import namedtuple, Container
-
-from ._compat import zip_longest
 
 # Used to mark unmapped ranges
 _empty = object()
@@ -40,10 +38,22 @@ class RangeMap(Container):
 			obj.set(value, start=start, stop=stop)
 		return obj
 
-	def ranges(self):
+	def ranges(self, start=None, stop=None):
 		'''Generate MappedRanges for all mapped ranges.'''
-		for start_key, stop_key in zip_longest(self._ordered_keys, self._ordered_keys[1:]):
-			value = self._key_mapping[start_key]
+		candidate_keys = self._ordered_keys[:]
+		if stop is not None:
+			stop_loc = bisect_left(self._ordered_keys, stop, lo=1)
+			candidate_keys = candidate_keys[:stop_loc]
+		if start is not None:
+			start_loc = bisect_right(self._ordered_keys, start, lo=1) - 1
+			candidate_keys = candidate_keys[start_loc:]
+		candidate_keys[0] = start
+		candidate_keys.append(stop)
+		for start_key, stop_key in zip(candidate_keys[:-1], candidate_keys[1:]):
+			try:
+				value = self._key_mapping[start_key]
+			except KeyError:
+				value = self.__getitem(start_key)
 			if value is not _empty:
 				yield MappedRange(start_key, stop_key, value)
 
@@ -52,7 +62,7 @@ class RangeMap(Container):
 
 	def __getitem(self, key):
 		'''Helper method.'''
-		loc = bisect.bisect_right(self._ordered_keys, key, lo=1) - 1
+		loc = bisect_right(self._ordered_keys, key, lo=1) - 1
 		return self._key_mapping[self._ordered_keys[loc]]
 
 	def get(self, key, restval=None):
@@ -63,18 +73,18 @@ class RangeMap(Container):
 			return value
 
 	def get_range(self, start=None, stop=None):
-		raise NotImplementedError('yet')
+		return self.from_iterable(self.ranges(start, stop))
 
 	def set(self, value, start=None, stop=None):
 		if start is None:
 			start_index = 0
 		else:
-			start_index = bisect.bisect_left(self._ordered_keys, start, 1)
+			start_index = bisect_left(self._ordered_keys, start, 1)
 		if stop is None:
 			stop_index = len(self._ordered_keys)
 			new_keys = [start]
 		else:
-			stop_index = bisect.bisect_right(self._ordered_keys, stop, 1)
+			stop_index = bisect_right(self._ordered_keys, stop, 1)
 			new_keys = [start, stop]
 			stop_value = self.__getitem(stop)
 		for key in self._ordered_keys[start_index:stop_index]:

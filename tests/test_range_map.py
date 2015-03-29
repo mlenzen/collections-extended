@@ -207,3 +207,11 @@ def test_contains():
 	assert 1 in RangeMap({1: 'a'})
 	assert 2 in RangeMap({1: 'a'})
 	assert 0 not in RangeMap({1: 'a'})
+
+
+def test_get_range():
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
+	assert rm[1:3] == RangeMap.from_iterable(((1, 2, 'a'), (2, 3, 'b')))
+	assert rm[1.5:3] == RangeMap.from_iterable(((1.5, 2, 'a'), (2, 3, 'b')))
+	assert rm[3:] == RangeMap({3: 'c', 4: 'd', 5: 'e'})
+	assert rm[:3] == RangeMap.from_iterable(((None, 1, 'z'), (1, 2, 'a'), (2, 3, 'b')))
