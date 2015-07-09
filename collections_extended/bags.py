@@ -1,4 +1,5 @@
 import heapq
+import itertools
 from operator import itemgetter
 from collections import Set, MutableSet, Hashable
 
@@ -200,26 +201,52 @@ class _basebag(Set):
 		"""
 		if not isinstance(other, _basebag):
 			raise TypeError
-		if len(self) > len(other):
+		if not len(self) <= len(other):
 			return False
-		for elem in self.unique_elements():
-			if self.count(elem) > other.count(elem):
+		for elem in itertools.chain(self._dict, other._dict):
+			if not self.count(elem) <= other.count(elem):
 				return False
 		return True
 
 	def __lt__(self, other):
-		return self <= other and len(self) < len(other)
+		if not isinstance(other, _basebag):
+			raise TypeError
+		if not len(self) < len(other):
+			return False
+		for elem in itertools.chain(self._dict, other._dict):
+			if not self.count(elem) <= other.count(elem):
+				return False
+		return True
 
 	def __gt__(self, other):
-		return other < self
+		if not isinstance(other, _basebag):
+			raise TypeError
+		if not len(self) > len(other):
+			return False
+		for elem in itertools.chain(self._dict, other._dict):
+			if not self.count(elem) >= other.count(elem):
+				return False
+		return True
 
 	def __ge__(self, other):
-		return other <= self
+		if not isinstance(other, _basebag):
+			raise TypeError
+		if not len(self) >= len(other):
+			return False
+		for elem in itertools.chain(self._dict, other._dict):
+			if not self.count(elem) >= other.count(elem):
+				return False
+		return True
 
 	def __eq__(self, other):
 		if not isinstance(other, _basebag):
 			return False
-		return len(self) == len(other) and self <= other
+		if not len(self) == len(other):
+			return False
+		for elem in itertools.chain(self._dict, other._dict):
+			if not self.count(elem) == other.count(elem):
+				return False
+		return True
 
 	def __ne__(self, other):
 		return not (self == other)

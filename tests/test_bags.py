@@ -78,14 +78,73 @@ def test_contains():
 	assert 'a' not in _basebag('missing letter')
 
 
-def test_le():
+def test_rich_comp_equal():
 	assert _basebag() <= _basebag()
-	assert _basebag() <= _basebag('a')
-	assert _basebag('abc') <= _basebag('aabbbc')
-	assert not _basebag('abbc') <= _basebag('abc')
+	assert not _basebag() < _basebag()
+	assert _basebag() >= _basebag()
+	assert not _basebag() > _basebag()
+	b1 = _basebag('aabc')
+	b2 = _basebag('aabc')
+	assert not b2 > b1
+	assert b2 >= b1
+	assert not b2 < b1
+	assert b2 <= b1
+
+
+def test_rich_comp_superset():
+	b1 = _basebag('aabc')
+	b2 = _basebag('abc')
+	assert b1 > b2
+	assert b1 >= b2
+	assert not b1 < b2
+	assert not b1 <= b2
+
+
+def test_rich_comp_subset():
+	b1 = _basebag('abc')
+	b2 = _basebag('aabc')
+	assert not b1 > b2
+	assert not b1 >= b2
+	assert b1 < b2
+	assert b1 <= b2
+
+
+def test_rich_comp_unorderable_eq_len():
+	b1 = _basebag('abb')
+	b2 = _basebag('abc')
+	assert not b1 < b2
+	assert not b1 <= b2
+	assert not b1 > b2
+	assert not b1 >= b2
+	assert not b1 == b2
+	assert b1 != b2
+
+
+def test_rich_comp_unorderable_diff_len():
+	b1 = _basebag('abd')
+	b2 = _basebag('aabc')
+	assert not b1 > b2
+	assert not b1 >= b2
+	assert not b1 < b2
+	assert not b1 <= b2
+	assert not b2 > b1
+	assert not b2 >= b1
+	assert not b2 < b1
+	assert not b2 <= b1
+	assert not b1 == b2
+	assert b1 != b2
+
+
+def test_rich_comp_type_mismatch():
 	with pytest.raises(TypeError):
-		bag('abc') < set('abc')
-	assert not bag('aabc') < bag('abc')
+		bag('abc') < 'abc'
+	with pytest.raises(TypeError):
+		bag('abc') <= 'abc'
+	with pytest.raises(TypeError):
+		bag('abc') > 'abc'
+	with pytest.raises(TypeError):
+		bag('abc') >= 'abc'
+	assert not bag('abc') == 'abc'
 
 
 def test_and():
