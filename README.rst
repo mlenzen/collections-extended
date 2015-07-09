@@ -25,7 +25,7 @@ a ``setlist`` class, which is a **unique list** or **ordered set**,
 a ``bijection`` class and ``RangeMap`` which is a mapping from ranges to values.
 There are also frozen (hashable) varieties of bags and setlists.
 
-Tested against Python 2.6, 2.7, 3.1, 3.2, 3.3, 3.4 PyPy & PyPy3.
+Tested against Python 2.6, 2.7, 3.1, 3.2, 3.3, 3.4, PyPy & PyPy3.
 
 Getting Started
 ===============
