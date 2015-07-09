@@ -17,6 +17,7 @@ Contents:
 	getting_started
 	setlists
 	bags
+	range_map
 	api
 	contributing
 

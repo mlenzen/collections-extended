@@ -3,6 +3,26 @@ range_map
 A RangeMap maps ranges to values. Keys must be hashable and comparable to all
 other keys (but not necessarily the same type).
 
+Examples
+--------
+
+.. code:: python
+
+	>>> from collections_extended import RangeMap
+	>>> us_presidents = RangeMap()
+	>>> us_presidents[date(1993, 1, 20):date(2001, 1, 20)] = 'Bill Clinton'
+	>>> us_presidents[date(2001, 1, 20):date(2009, 1, 20)] = 'George W. Bush'
+	>>> us_presidents[date(2009, 1, 20):] = 'Barack Obama'
+	>>> us_presidents[date(1995, 5, 10)]
+	'Bill Clinton'
+	>>> us_presidents[date(2001, 1, 20)]
+	'George W. Bush'
+	>>> us_presidents[date(2021, 3, 1)]
+	'Barack Obama'
+	>>> us_presidents[date(2017, 1, 20):] = 'Someone New'
+	>>> us_presidents[date(2021, 3, 1)]
+	'Someone New'
+
 Creating RangeMaps
 ------------------
 RangeMaps can be passed a mapping upon creation. Each key, value pair is
