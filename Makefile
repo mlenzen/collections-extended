@@ -31,7 +31,7 @@ coverage:
 	coverage run --source collections_extended setup.py test
 	coverage report -m
 	coverage html
-	open htmlcov/index.html
+	xdg-open htmlcov/index.html
 
 publish:
 	python setup.py sdist upload

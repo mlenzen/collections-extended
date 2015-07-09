@@ -24,6 +24,7 @@ pip-log.txt
 
 # Unit test / coverage reports
 .coverage
+htmlcov
 .tox
 nosetests.xml
 
@@ -49,4 +50,3 @@ MANIFEST
 
 env
 dev-env
-htmlcov
