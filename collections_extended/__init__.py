@@ -1,6 +1,6 @@
 '''collections_extended contains a few extra basic data structures'''
 
-__version__ = '0.5.2'
+__version__ = '0.6.0'
 
 from .bags import bag, frozenbag
 from .setlists import setlist, frozensetlist
