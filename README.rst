@@ -27,6 +27,9 @@ There are also frozen (hashable) varieties of bags and setlists.
 
 Tested against Python 2.6, 2.7, 3.1, 3.2, 3.3, 3.4, 3.5, PyPy & PyPy3.
 
+Python 3.1 and 3.2 are unsupported by coverage so they are not included in
+Travis CI.
+
 Getting Started
 ===============
 
