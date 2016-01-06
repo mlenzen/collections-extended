@@ -1,3 +1,4 @@
+"""RangeMap class definition."""
 from bisect import bisect_left, bisect_right
 from collections import namedtuple, Container
 
@@ -8,15 +9,20 @@ MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
 
 class RangeMap(Container):
+	"""Map ranges of orderable elements to values."""
 
 	def __init__(self, mapping=None, default_value=_empty):
-		'''
+		"""Create a RangeMap.
+
+		If mapping is passed, it is interpreted as a mapping from range start
+		indices to values.
+
 		Args:
 			mapping: A Mapping from range start dates to values. The end of each
 				range is the beginning of the next
 			default_value: If passed, the return value for all keys less than the
 				least key in mapping. If no mapping, the return value for all keys.
-		'''
+		"""
 		self._ordered_keys = [None]
 		self._key_mapping = {None: default_value}
 		if mapping:
@@ -32,19 +38,21 @@ class RangeMap(Container):
 
 	@classmethod
 	def from_iterable(cls, iterable):
-		'''Create a RangeMap from an iterable where each item is a tuple
-		(start, stop, value)
-		'''
+		"""Create a RangeMap from an iterable of tuples defining each range.
+
+		Each element of the iterable is a tuple (start, stop, value).
+		"""
 		obj = cls()
 		for start, stop, value in iterable:
 			obj.set(value, start=start, stop=stop)
 		return obj
 
 	def ranges(self, start=None, stop=None):
-		'''Generate MappedRanges for all mapped ranges.
+		"""Generate MappedRanges for all mapped ranges.
+
 		Yields:
 			MappedRange
-		'''
+		"""
 		candidate_keys = self._ordered_keys[:]
 		if stop is not None:
 			stop_loc = bisect_left(self._ordered_keys, stop, lo=1)
@@ -66,11 +74,12 @@ class RangeMap(Container):
 		return self.__getitem(value) is not _empty
 
 	def __getitem(self, key):
-		'''Helper method.'''
+		"""Helper method."""
 		loc = bisect_right(self._ordered_keys, key, lo=1) - 1
 		return self._key_mapping[self._ordered_keys[loc]]
 
 	def get(self, key, restval=None):
+		"""Get the value of the range containing key, otherwise return restval."""
 		value = self.__getitem(key)
 		if value is _empty:
 			return restval
@@ -78,13 +87,15 @@ class RangeMap(Container):
 			return value
 
 	def get_range(self, start=None, stop=None):
-		'''
+		"""Return a RangeMap for the range start to stop.
+
 		Returns:
 			A RangeMap
-		'''
+		"""
 		return self.from_iterable(self.ranges(start, stop))
 
 	def set(self, value, start=None, stop=None):
+		"""Set the range from start to stop to value."""
 		if start is None:
 			start_index = 0
 		else:
@@ -104,6 +115,7 @@ class RangeMap(Container):
 		self._key_mapping[start] = value
 
 	def delete(self, start=None, stop=None):
+		"""Delete the range from start to stop from self."""
 		self.set(_empty, start=start, stop=stop)
 
 	def __eq__(self, other):
@@ -141,10 +153,11 @@ class RangeMap(Container):
 
 	# Python2 - override slice methods
 	def __setslice__(self, i, j, value):
-		'''Implement __setslice__ to override behavior in Python 2.
+		"""Implement __setslice__ to override behavior in Python 2.
+
 		This is required because empty slices pass integers in python2 as opposed
 		to None in python 3.
-		'''
+		"""
 		raise SyntaxError('Assigning slices doesn\t work in Python 2, use set')
 
 	def __delslice__(self, i, j):

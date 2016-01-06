@@ -1,4 +1,4 @@
-
+"""Tests for RangeMap class."""
 from datetime import date
 
 import pytest
@@ -8,6 +8,7 @@ from collections_extended.range_map import RangeMap
 
 
 def test_simple_set():
+	"""Test set."""
 	rm = RangeMap()
 	rm.set('a', start=1)
 	print(rm._ordered_keys, rm._key_mapping)
@@ -22,6 +23,7 @@ def test_simple_set():
 
 
 def test_closed():
+	"""Test a closed RangeMap."""
 	rm = RangeMap()
 	rm.set('a', start=1, stop=2)
 	print(rm._ordered_keys, rm._key_mapping)
@@ -34,6 +36,7 @@ def test_closed():
 
 
 def test_from_mapping():
+	"""Test creating a RangeMap from a mapping."""
 	rm = RangeMap()
 	rm.set('a', start=1)
 	rm.set('b', start=2)
@@ -41,6 +44,7 @@ def test_from_mapping():
 
 
 def test_set_closed_interval_end():
+	"""Test setting a closed range on the end."""
 	rm = RangeMap({1: 'a', 2: 'b'})
 	rm.set('c', start=3, stop=4)
 	assert rm[1] == 'a'
@@ -50,6 +54,7 @@ def test_set_closed_interval_end():
 
 
 def test_set_existing_interval():
+	"""Test setting an exact existing range."""
 	rm = RangeMap({1: 'a', 2: 'b'})
 	rm.set('c', start=1, stop=2)
 	print(rm)
@@ -61,6 +66,7 @@ def test_set_existing_interval():
 
 
 def test_break_up_existing_open_end_interval():
+	"""Test breaking up an existing open interval at the end."""
 	rm = RangeMap({1: 'a', 2: 'b'})
 	rm.set('d', start=2, stop=2.5)
 	assert rm[1] == 'a'
@@ -70,6 +76,7 @@ def test_break_up_existing_open_end_interval():
 
 
 def test_break_up_existing_internal_interval():
+	"""Test breaking up an existing interval."""
 	rm = RangeMap({1: 'a', 2: 'b'})
 	rm.set('d', start=1, stop=1.5)
 	assert rm[1] == 'd'
@@ -79,6 +86,7 @@ def test_break_up_existing_internal_interval():
 
 
 def test_overwrite_multiple_internal():
+	"""Test overwriting multiple adjoining intervals."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	rm.set('z', start=2, stop=5)
 	assert rm[1] == 'a'
@@ -89,6 +97,7 @@ def test_overwrite_multiple_internal():
 
 
 def test_overwrite_all():
+	"""Test overwriting the entire mapping."""
 	rm = RangeMap({1: 'a', 2: 'b'})
 	rm.set('z', start=0)
 	with pytest.raises(KeyError):
@@ -100,6 +109,7 @@ def test_overwrite_all():
 
 
 def test_default_value():
+	"""Test setting just a default value."""
 	rm = RangeMap(default_value=None)
 	print(rm)
 	assert rm[1] is None
@@ -112,6 +122,7 @@ def test_default_value():
 
 
 def test_whole_range():
+	"""Test setting the whole range."""
 	rm = RangeMap()
 	rm.set('a')
 	assert rm[1] == 'a'
@@ -119,6 +130,7 @@ def test_whole_range():
 
 
 def test_set_beg():
+	"""Test setting the beginning."""
 	rm = RangeMap()
 	rm.set('a', stop=4)
 	with pytest.raises(KeyError):
@@ -127,6 +139,7 @@ def test_set_beg():
 
 
 def test_alter_beg():
+	"""Test altering the beginning."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	rm.set('z', stop=3)
 	assert rm[0] == 'z'
@@ -140,6 +153,7 @@ def test_alter_beg():
 
 
 def test_dates():
+	"""Test using dates."""
 	rm = RangeMap()
 	rm.set('b', date(1936, 12, 11))
 	rm.set('a', date(1952, 2, 6))
@@ -150,6 +164,7 @@ def test_dates():
 
 
 def test_version_differences():
+	"""Test python 2 and 3 differences."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	if is_py2:
 		with pytest.raises(SyntaxError):
@@ -164,6 +179,7 @@ def test_version_differences():
 
 
 def test_slice_errors():
+	"""Test slicing errors."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	with pytest.raises(ValueError):
 		rm[2:5:2]
@@ -174,6 +190,7 @@ def test_slice_errors():
 
 
 def test_delete():
+	"""Test deleting."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
 	rm.delete(stop=1)
 	assert rm == RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
@@ -188,6 +205,7 @@ def test_delete():
 
 
 def test_str():
+	"""Test __str__."""
 	assert str(RangeMap()) == 'RangeMap()'
 	assert str(RangeMap(default_value='a')) == "RangeMap((None, None): 'a')"
 	assert str(RangeMap({1: 'b'})) == "RangeMap((1, None): 'b')"
@@ -198,6 +216,7 @@ def test_str():
 
 
 def test_eq():
+	"""Test __eq__."""
 	assert RangeMap() == RangeMap()
 	assert RangeMap({1: 'a'}) == RangeMap({1: 'a'})
 	assert (
@@ -215,6 +234,7 @@ def test_eq():
 
 
 def test_contains():
+	"""Test __contains__."""
 	assert 1 not in RangeMap()
 	assert 1 in RangeMap(default_value=1)
 	assert 1 in RangeMap({1: 'a'})
@@ -223,6 +243,7 @@ def test_contains():
 
 
 def test_get_range():
+	"""Test get_range."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
 	assert (
 		rm.get_range(1, 3) ==

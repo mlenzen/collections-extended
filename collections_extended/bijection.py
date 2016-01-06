@@ -1,17 +1,16 @@
-""" bijection - a one-to-one onto mapping, a dict with unique values
-
-TODO write long desc
-
-This implementation kinda sucks because it stores everything twice.
-"""
+"""Class definition for bijection."""
 
 from collections import MutableMapping, Mapping
 
 
 class bijection(MutableMapping):
-	"""
-	"""
+	"""A one-to-one onto mapping, a dict with unique values."""
+
 	def __init__(self, iterable=None, **kwarg):
+		"""Create a bijection from an iterable.
+
+		Matches dict.__init__.
+		"""
 		self._data = {}
 		self.__inverse = self.__new__(bijection)
 		self.__inverse._data = {}
@@ -28,6 +27,7 @@ class bijection(MutableMapping):
 
 	@property
 	def inverse(self):
+		"""The inverse of this bijection."""
 		return self.__inverse
 
 	# Required for MutableMapping
@@ -60,20 +60,24 @@ class bijection(MutableMapping):
 		return key in self._data
 
 	def clear(self):
-		""" This should be more efficient than MutableMapping.clear """
+		"""Remove everything from this bijection."""
 		self._data.clear()
 		self.inverse._data.clear()
 
 	def copy(self):
+		"""Return a copy of this bijection."""
 		return bijection(self)
 
 	def items(self):
+		"""See Mapping.items."""
 		return self._data.items()
 
 	def keys(self):
+		"""See Mapping.keys."""
 		return self._data.keys()
 
 	def values(self):
+		"""See Mapping.values."""
 		return self.inverse.keys()
 
 	def __eq__(self, other):

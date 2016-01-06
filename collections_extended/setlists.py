@@ -1,4 +1,4 @@
-
+"""Setlist class definitions."""
 import random as random_
 
 from collections import (
@@ -11,7 +11,8 @@ from collections import (
 
 
 class _basesetlist(Sequence, Set):
-	""" A setlist is an ordered Collection of unique elements.
+	"""A setlist is an ordered Collection of unique elements.
+
 	_basesetlist is the superclass of setlist and frozensetlist.  It is immutable
 	and unhashable.
 	"""
@@ -139,7 +140,7 @@ class _basesetlist(Sequence, Set):
 	# New methods
 
 	def sub_index(self, sub, start=0, end=None):
-		"""Return the index of a subsequence
+		"""Return the index of a subsequence.
 
 		This runs in O(len(sub))
 
@@ -166,8 +167,7 @@ class _basesetlist(Sequence, Set):
 
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
-	""" A mutable (unhashable) setlist that inherits from _basesetlist.
-	"""
+	"""A mutable (unhashable) setlist that inherits from _basesetlist."""
 
 	# Implement MutableSequence
 	def __setitem__(self, index, value):
@@ -203,7 +203,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			self.remove(value)
 
 	def insert(self, index, value):
-		'''Insert value at index.
+		"""Insert value at index.
 
 		Args:
 			index (int): Index to insert value at
@@ -211,7 +211,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		Raises:
 			ValueError: If value already in self
 			IndexError: If start or end are out of range
-		'''
+		"""
 		if value in self:
 			raise ValueError
 		index = self._fix_neg_index(index)
@@ -221,13 +221,13 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		self._list.insert(index, value)
 
 	def append(self, value):
-		'''Append value to the end.
+		"""Append value to the end.
 
 		Args:
 			value: Value to append
 		Raises:
 			ValueError: If value alread in self
-		'''
+		"""
 		if value in self:
 			raise ValueError
 		else:
@@ -236,7 +236,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			self._list.append(value)
 
 	def extend(self, values):
-		'''Append all values to the end.
+		"""Append all values to the end.
 
 		This should be atomic, if any of the values are present, ValueError will
 		be raised and none of the values will be appended.
@@ -245,18 +245,31 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			values (Iterable): Values to append
 		Raises:
 			ValueError: If any values are already present
-		'''
+		"""
 		if not self.isdisjoint(values):
 			raise ValueError
 		for value in values:
 			self.append(value)
 
 	def __iadd__(self, values):
-		""" This will quietly not add values that are already present. """
+		"""Add all values to the end of self.
+
+		Args:
+			values (Iterable): Values to append
+		Raises:
+			ValueError: If any values are already present
+		"""
 		self.extend(values)
 		return self
 
 	def remove(self, value):
+		"""Remove value from self.
+
+		Args:
+			value: Element to remove from self
+		Raises:
+			ValueError: if element is already present
+		"""
 		try:
 			index = self._dict[value]
 		except KeyError:
@@ -268,7 +281,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			del self._list[index]
 
 	def remove_all(self, elems_to_delete):
-		""" Remove all the elements from iterable.
+		"""Remove all the elements from elems_to_delete.
+
 		This is much faster than removing them one by one.
 		This runs in O(len(self) + len(elems_to_delete))
 		"""
@@ -290,7 +304,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 	# Implement MutableSet
 	def add(self, item):
-		'''Add an item.
+		"""Add an item.
 
 		Note:
 			This does not raise a ValueError for an already present value like
@@ -298,37 +312,39 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		Args:
 			item: Item to add
 		Raises:
-		'''
+		"""
 		try:
 			self.append(item)
 		except ValueError:
 			pass
 
 	def discard(self, value):
-		'''Discard an item.
+		"""Discard an item.
 
 		Note:
 			This does not raise a ValueError for a missing value like remove does.
 			This is to match the behavior of set.discard
-		'''
+		"""
 		try:
 			self.remove(value)
 		except ValueError:
 			pass
 
 	def clear(self):
+		"""Remove all elements from self."""
 		self._dict = dict()
 		self._list = list()
 
 	# New methods
 	def shuffle(self, random=None):
+		"""Shuffle all of the elements in self randomly."""
 		random_.shuffle(self._list, random=random)
 		for i, elem in enumerate(self._list):
 			self._dict[elem] = i
 
 
 class frozensetlist(_basesetlist, Hashable):
-	""" An immutable (hashable) setlist that inherits from _basesetlist. """
+	"""An immutable (hashable) setlist that inherits from _basesetlist."""
 
 	def __hash__(self):
 		return Set._hash(self)

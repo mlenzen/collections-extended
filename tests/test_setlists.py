@@ -1,10 +1,11 @@
-
+"""Test for setlist classes."""
 import pytest
 
 from collections_extended.setlists import setlist, frozensetlist
 
 
 def test_count():
+	"""Test count."""
 	sl = setlist('abcdea')
 	assert sl.count('a') == 1
 	assert sl.count('f') == 0
@@ -13,6 +14,7 @@ def test_count():
 
 
 def test_index():
+	"""Test index."""
 	sl = setlist('abcdef')
 	assert sl.index('a') == 0
 	assert sl.index('f') == 5
@@ -27,6 +29,7 @@ def test_index():
 
 
 def test_sub_index():
+	"""Test sub_index."""
 	sl = setlist('abcdef')
 	assert sl.sub_index('ef') == 4
 	with pytest.raises(ValueError):
@@ -42,6 +45,7 @@ def test_sub_index():
 
 
 def test_setlist():
+	"""General setlist tests."""
 	sl = setlist('abcde')
 	sl[0] = 5
 	assert sl == setlist((5, 'b', 'c', 'd', 'e'))
@@ -76,12 +80,14 @@ def test_setlist():
 
 
 def test_removeall():
+	"""Test remove_all."""
 	sl = setlist('abcdefgh')
 	sl.remove_all(set('acdh'))
 	assert sl == setlist(('befg'))
 
 
 def test_len():
+	"""Test __len__."""
 	assert len(setlist()) == 0
 	assert len(setlist('a')) == 1
 	assert len(setlist('ab')) == 2
@@ -89,12 +95,14 @@ def test_len():
 
 
 def test_shuffle():
+	"""Test shuffle."""
 	sl = setlist(range(100))
 	sl.shuffle()
 	assert sl != setlist(range(100))
 
 
 def test_del():
+	"""Test __delitem__."""
 	sl = setlist('abcde')
 	del sl[1]
 	assert sl == setlist('acde')
@@ -109,6 +117,7 @@ def test_del():
 
 
 def test_getitem():
+	"""Test __getitem__."""
 	sl = setlist(range(10))
 	assert sl[0] == 0
 	assert sl[5] == 5
@@ -124,6 +133,13 @@ def test_getitem():
 
 
 def test_setitem():
+	"""Test __setitem__."""
+	def compare_set_slice_to_list(slice_, replacement):
+		sl = setlist(range(10))
+		sl[slice_] = replacement
+		l = list(range(10))
+		l[slice_] = replacement
+		assert sl == setlist(l)
 	sl = setlist('abc')
 	sl[0] = 'd'
 	assert sl == setlist('dbc')
@@ -165,15 +181,8 @@ def test_setitem():
 		sl[-1:0:-2] = ['a', 'b']
 
 
-def compare_set_slice_to_list(slice_, replacement):
-	sl = setlist(range(10))
-	sl[slice_] = replacement
-	l = list(range(10))
-	l[slice_] = replacement
-	assert sl == setlist(l)
-
-
 def test_delitem():
+	"""Test __delitem__."""
 	sl = setlist(range(10))
 	del sl[9]
 	assert sl == setlist(range(9))
@@ -183,6 +192,13 @@ def test_delitem():
 	assert sl == setlist(range(1, 8))
 	with pytest.raises(IndexError):
 		del sl[10]
+
+	def compare_del_slice_to_list(slice_):
+		sl = setlist(range(10))
+		del sl[slice_]
+		l = list(range(10))
+		del l[slice_]
+		assert sl == setlist(l)
 	compare_del_slice_to_list(slice(0, 2))
 	compare_del_slice_to_list(slice(6, 9))
 	compare_del_slice_to_list(slice(3, 7))
@@ -190,15 +206,8 @@ def test_delitem():
 	compare_del_slice_to_list(slice(0, 7, 2))
 
 
-def compare_del_slice_to_list(slice_):
-	sl = setlist(range(10))
-	del sl[slice_]
-	l = list(range(10))
-	del l[slice_]
-	assert sl == setlist(l)
-
-
 def test_extend():
+	"""Test extend."""
 	sl = setlist(range(10))
 	sl.extend([10, 11])
 	assert sl == setlist(range(12))
@@ -211,17 +220,20 @@ def test_extend():
 
 
 def test_hash():
+	"""Test __hash__."""
 	assert hash(frozensetlist('abc')) == hash(frozensetlist('abc'))
 	assert hash(frozensetlist()) == hash(frozensetlist())
 
 
 def test_clear():
+	"""Test clear."""
 	sl = setlist(range(10))
 	sl.clear()
 	assert sl == setlist()
 
 
 def test_discard():
+	"""Test discard."""
 	sl = setlist(range(10))
 	sl.discard(9)
 	assert sl == setlist(range(9))
@@ -230,6 +242,7 @@ def test_discard():
 
 
 def test_add():
+	"""Test add."""
 	sl = setlist(range(10))
 	sl.add(10)
 	assert sl == setlist(range(11))
@@ -238,6 +251,7 @@ def test_add():
 
 
 def test_remove():
+	"""Test remove."""
 	sl = setlist(range(10))
 	sl.remove(9)
 	assert sl == setlist(range(9))
@@ -246,21 +260,25 @@ def test_remove():
 
 
 def test_eq():
+	"""Test __eq__."""
 	assert not setlist(range(10)) == list(range(10))
 	assert not setlist(range(10)) == setlist(range(9))
 
 
 def test_str():
+	"""Test __str__."""
 	assert str(setlist()) == str(list())
 	assert str(setlist('abc')) == str(list('abc'))
 
 
 def test_repr():
+	"""Test __repr."""
 	assert repr(setlist()) == 'setlist()'
 	assert repr(setlist(range(4))) == 'setlist((0, 1, 2, 3))'
 
 
 def test_copy():
+	"""Test copy."""
 	sl = setlist(range(10))
 	copy = sl.copy()
 	assert sl == copy

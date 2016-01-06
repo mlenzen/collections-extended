@@ -1,3 +1,4 @@
+"""Test for collections_extended factory."""
 
 from collections_extended import (
 	collection,
@@ -9,6 +10,7 @@ from collections_extended import (
 
 
 def test_collection_factory():
+	"""Test collection factory."""
 	assert type(collection()) == bag
 	assert type(collection(ordered=True)) == list
 	assert type(collection(unique=True)) == set

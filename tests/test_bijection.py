@@ -1,10 +1,11 @@
-
+"""Test bijection class."""
 import pytest
 
 from collections_extended.bijection import bijection
 
 
 def test_bijection():
+	"""General tests for bijection."""
 	b = bijection()
 	assert len(b) == 0
 	b['a'] = 1

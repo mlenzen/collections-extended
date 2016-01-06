@@ -1,4 +1,4 @@
-'''collections_extended contains a few extra basic data structures'''
+"""collections_extended contains a few extra basic data structures."""
 
 __version__ = '0.6.0'
 
@@ -7,7 +7,7 @@ from .setlists import setlist, frozensetlist
 from .bijection import bijection
 from .range_map import RangeMap, MappedRange
 
-__all__ = [
+__all__ = (
 	'collection',
 	'setlist',
 	'frozensetlist',
@@ -16,13 +16,11 @@ __all__ = [
 	'bijection',
 	'RangeMap',
 	'MappedRange',
-	]
+	)
 
 
 def collection(it=(), mutable=True, ordered=False, unique=False):
-	""" Return a Collection with the specified properties.
-
-	"""
+	"""Return a Collection with the specified properties."""
 	if unique:
 		if ordered:
 			if mutable:

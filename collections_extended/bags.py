@@ -1,3 +1,4 @@
+"""Bag class definitions."""
 import heapq
 import itertools
 from operator import itemgetter
@@ -7,10 +8,12 @@ from . import _compat
 
 
 class _basebag(Set):
-	"""
+	"""Base class for bag classes.
+
 	Base class for bag and frozenbag.	Is not mutable and not hashable, so there's
 	no reason to use this instead of either bag or frozenbag.
 	"""
+
 	# Basic object methods
 
 	def __init__(self, iterable=None):
@@ -33,11 +36,6 @@ class _basebag(Set):
 					self._inc(value)
 
 	def __repr__(self):
-		"""The string representation is a call to the constructor given a tuple
-		containing all of the elements.
-
-		This runs in whatever tuple(self) does, I'm assuming O(len(self))
-		"""
 		if self._size == 0:
 			return '{0}()'.format(self.__class__.__name__)
 		else:
@@ -45,11 +43,6 @@ class _basebag(Set):
 			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
 
 	def __str__(self):
-		"""The printable string appears just like a set, except that each element
-		is raised to the power of the multiplicity if it is greater than 1.
-
-		This runs in O(self.num_unique_elements())
-		"""
 		if self._size == 0:
 			return '{class_name}()'.format(class_name=self.__class__.__name__)
 		else:
@@ -90,14 +83,14 @@ class _basebag(Set):
 	# New public methods (not overriding/implementing anything)
 
 	def num_unique_elements(self):
-		"""Returns the number of unique elements.
+		"""Return the number of unique elements.
 
 		This runs in O(1) time
 		"""
 		return len(self._dict)
 
 	def unique_elements(self):
-		"""Returns a view of unique elements in this bag.
+		"""Return a view of unique elements in this bag.
 
 		In Python 3:
 			This runs in O(1) time and returns a view of the unique elements
@@ -141,10 +134,9 @@ class _basebag(Set):
 
 	@classmethod
 	def _from_map(cls, map):
-		"""Creates a bag from a dict of elem->count.  Each key in the dict
-		is added if the value is > 0.
+		"""Create a bag from a dict of elem->count.
 
-		This runs in O(len(map))
+		Each key in the dict is added if the value is > 0.
 		"""
 		out = cls()
 		for elem, count in map.items():
@@ -161,7 +153,7 @@ class _basebag(Set):
 	# implementing Sized methods
 
 	def __len__(self):
-		"""Returns the cardinality of the bag.
+		"""Return the cardinality of the bag.
 
 		This runs in O(1)
 		"""
@@ -170,7 +162,7 @@ class _basebag(Set):
 	# implementing Container methods
 
 	def __contains__(self, value):
-		"""Returns the multiplicity of the element.
+		"""Return the multiplicity of the element.
 
 		This runs in O(1)
 		"""
@@ -190,7 +182,7 @@ class _basebag(Set):
 	# Comparison methods
 
 	def __le__(self, other):
-		"""Tests if self <= other where other is another bag
+		"""Test if self <= other where other is another bag.
 
 		This runs in O(l + n) where:
 			n is self.num_unique_elements()
@@ -271,7 +263,9 @@ class _basebag(Set):
 		return self._from_map(values)
 
 	def isdisjoint(self, other):
-		"""This runs in O(len(other))
+		"""Return if this bag is disjoint with the passed collection.
+
+		This runs in O(len(other))
 
 		TODO move isdisjoint somewhere more appropriate
 		"""
@@ -298,13 +292,15 @@ class _basebag(Set):
 		return self._from_map(values)
 
 	def __add__(self, other):
-		"""
-		other can be any iterable.
+		"""Return a new bag also containing all the elements of other.
+
 		self + other = self & other + self | other
 
 		This runs in O(m + n) where:
 			n is self.num_unique_elements()
 			m is len(other)
+		Args:
+			other (Iterable): elements to add to self
 		"""
 		out = self.copy()
 		for value in other:
@@ -313,13 +309,15 @@ class _basebag(Set):
 
 	def __sub__(self, other):
 		"""Difference between the sets.
-		other can be any iterable.
+
 		For normal sets this is all s.t. x in self and x not in other.
 		For bags this is count(x) = max(0, self.count(x)-other.count(x))
 
 		This runs in O(m + n) where:
 			n is self.num_unique_elements()
 			m is len(other)
+		Args:
+			other (Iterable): elements to remove
 		"""
 		out = self.copy()
 		for value in other:
@@ -331,6 +329,7 @@ class _basebag(Set):
 
 	def __mul__(self, other):
 		"""Cartesian product of the two sets.
+
 		other can be any iterable.
 		Both self and other must contain elements that can be added together.
 
@@ -358,6 +357,7 @@ class _basebag(Set):
 
 	def __xor__(self, other):
 		"""Symmetric difference between the sets.
+
 		other can be any iterable.
 
 		This runs in O(m + n) where:
@@ -374,6 +374,7 @@ class bag(_basebag, MutableSet):
 	"""
 
 	def pop(self):
+		"""Remove and return an element of self."""
 		# TODO can this be done more efficiently (no need to create an iterator)?
 		it = iter(self)
 		try:
@@ -384,25 +385,36 @@ class bag(_basebag, MutableSet):
 		return value
 
 	def add(self, elem):
+		"""Add elem to self."""
 		self._inc(elem, 1)
 
 	def discard(self, elem):
+		"""Remove elem from this bag, silent if it isn't present."""
 		try:
 			self.remove(elem)
 		except ValueError:
 			pass
 
 	def remove(self, elem):
+		"""Remove elem from this bag, raising a ValueError if it isn't present.
+
+		Args:
+			elem: object to remove from self
+		Raises:
+			ValueError: if the elem isn't present
+		"""
 		self._inc(elem, -1)
 
 	def clear(self):
+		"""Remove all elements from this bag."""
 		self._dict = dict()
 		self._size = 0
 
 	# In-place operations
 
 	def __ior__(self, other):
-		"""
+		"""Set multiplicity of each element to the maximum of the two collections.
+
 		if isinstance(other, _basebag):
 			This runs in O(other.num_unique_elements())
 		else:
@@ -416,7 +428,8 @@ class bag(_basebag, MutableSet):
 		return self
 
 	def __iand__(self, other):
-		"""
+		"""Add all of the elements of other to self.
+
 		if isinstance(other, _basebag):
 			This runs in O(other.num_unique_elements())
 		else:
@@ -430,7 +443,8 @@ class bag(_basebag, MutableSet):
 		return self
 
 	def __ixor__(self, other):
-		"""
+		"""Set self to the symmetric difference between the sets.
+
 		if isinstance(other, _basebag):
 			This runs in O(other.num_unique_elements())
 		else:
@@ -444,7 +458,11 @@ class bag(_basebag, MutableSet):
 		return self
 
 	def __isub__(self, other):
-		"""
+		"""Remove the elements of other from self.
+
+		Raises:
+			ValueError: if an element of other isn't present in self
+
 		if isinstance(it, _basebag):
 			This runs in O(it.num_unique_elements())
 		else:
@@ -460,7 +478,8 @@ class bag(_basebag, MutableSet):
 		return self
 
 	def __iadd__(self, other):
-		"""
+		"""Add all of the elements of other to self.
+
 		if isinstance(it, _basebag):
 			This runs in O(it.num_unique_elements())
 		else:
@@ -478,6 +497,7 @@ class frozenbag(_basebag, Hashable):
 
 	Thus it is Hashable and usable for dict keys
 	"""
+
 	def __hash__(self):
 		"""Compute the hash value of a frozenbag.
 

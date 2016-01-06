@@ -1,10 +1,11 @@
-
+"""Test for bag classes."""
 import pytest
 
 from collections_extended.bags import _basebag, bag, frozenbag, _compat
 
 
 def test_init():
+	"""Test __init__."""
 	b = _basebag('abracadabra')
 	assert b.count('a') == 5
 	assert b.count('b') == 2
@@ -16,18 +17,18 @@ def test_init():
 
 
 def test_repr():
+	"""Test __repr__."""
 	ms = _basebag()
 	assert ms == eval(ms.__repr__())
 	ms = _basebag('abracadabra')
 	assert ms == eval(ms.__repr__())
 
 
-def compare_bag_string(b):
-	s = str(b)
-	return set(s.lstrip('{').rstrip('}').split(', '))
-
-
 def test_str():
+	"""Test __str__."""
+	def compare_bag_string(b):
+		s = str(b)
+		return set(s.lstrip('{').rstrip('}').split(', '))
 	assert str(_basebag()) == '_basebag()'
 	assert "'a'^5" in str(_basebag('abracadabra'))
 	assert "'b'^2" in str(_basebag('abracadabra'))
@@ -39,12 +40,14 @@ def test_str():
 
 
 def test_count():
+	"""Test count."""
 	ms = _basebag('abracadabra')
 	assert ms.count('a') == 5
 	assert ms.count('x') == 0
 
 
 def test_nlargest():
+	"""Test nlargest."""
 	abra = _basebag('abracadabra')
 	sort_key = lambda e: (-e[1], e[0])
 	abra_counts = [('a', 5), ('b', 2), ('r', 2), ('c', 1), ('d', 1)]
@@ -54,10 +57,12 @@ def test_nlargest():
 
 
 def test_from_map():
+	"""Test _from_map."""
 	assert _basebag._from_map({'a': 1, 'b': 2}) == _basebag('abb')
 
 
 def test_copy():
+	"""Test copy."""
 	b = _basebag()
 	assert b.copy() == b
 	assert b.copy() is not b
@@ -67,18 +72,21 @@ def test_copy():
 
 
 def test_len():
+	"""Test __len__."""
 	assert len(_basebag()) == 0
 	assert len(_basebag('abc')) == 3
 	assert len(_basebag('aaba')) == 4
 
 
 def test_contains():
+	"""Test __contains__."""
 	assert 'a' in _basebag('bbac')
 	assert 'a' not in _basebag()
 	assert 'a' not in _basebag('missing letter')
 
 
 def test_rich_comp_equal():
+	"""Test rich comparisons for equal bags."""
 	assert _basebag() <= _basebag()
 	assert not _basebag() < _basebag()
 	assert _basebag() >= _basebag()
@@ -92,6 +100,7 @@ def test_rich_comp_equal():
 
 
 def test_rich_comp_superset():
+	"""Test rich comparisons for bags that are supersets of other bags."""
 	b1 = _basebag('aabc')
 	b2 = _basebag('abc')
 	assert b1 > b2
@@ -101,6 +110,7 @@ def test_rich_comp_superset():
 
 
 def test_rich_comp_subset():
+	"""Test rich comparisons for bags that are subsets of other bags."""
 	b1 = _basebag('abc')
 	b2 = _basebag('aabc')
 	assert not b1 > b2
@@ -110,6 +120,7 @@ def test_rich_comp_subset():
 
 
 def test_rich_comp_unorderable_eq_len():
+	"""Test rich comparisons for bags of equal length but unorderable."""
 	b1 = _basebag('abb')
 	b2 = _basebag('abc')
 	assert not b1 < b2
@@ -121,6 +132,7 @@ def test_rich_comp_unorderable_eq_len():
 
 
 def test_rich_comp_unorderable_diff_len():
+	"""Test rich comparisons for bags of unequal length and unorderable."""
 	b1 = _basebag('abd')
 	b2 = _basebag('aabc')
 	assert not b1 > b2
@@ -136,6 +148,7 @@ def test_rich_comp_unorderable_diff_len():
 
 
 def test_rich_comp_type_mismatch():
+	"""Test rich comparisons for bags with type mismatches."""
 	with pytest.raises(TypeError):
 		bag('abc') < 'abc'
 	with pytest.raises(TypeError):
@@ -148,6 +161,7 @@ def test_rich_comp_type_mismatch():
 
 
 def test_and():
+	"""Test __and__."""
 	assert bag('aabc') & bag('aacd') == bag('aac')
 	assert bag() & bag('safgsd') == bag()
 	assert bag('abcc') & bag() == bag()
@@ -156,6 +170,7 @@ def test_and():
 
 
 def test_isdisjoint():
+	"""Test isdisjoint."""
 	assert bag().isdisjoint(bag())
 	assert bag().isdisjoint(bag('abc'))
 	assert not bag('ab').isdisjoint(bag('ac'))
@@ -163,12 +178,14 @@ def test_isdisjoint():
 
 
 def test_or():
+	"""Test __or__."""
 	assert bag('abcc') | bag() == bag('abcc')
 	assert bag('abcc') | bag('aabd') == bag('aabccd')
 	assert bag('aabc') | set('abdd') == bag('aabcd')
 
 
 def test_add_op():
+	"""Test __iadd__."""
 	b1 = bag('abc')
 	result = b1 + bag('ab')
 	assert result == bag('aabbc')
@@ -177,18 +194,21 @@ def test_add_op():
 
 
 def test_add():
+	"""Test __add__."""
 	b = bag('abc')
 	b.add('a')
 	assert b == bag('aabc')
 
 
 def test_clear():
+	"""Test clear."""
 	b = bag('abc')
 	b.clear()
 	assert b == bag()
 
 
 def test_discard():
+	"""Test discard."""
 	b = bag('abc')
 	b.discard('a')
 	assert b == bag('bc')
@@ -197,23 +217,27 @@ def test_discard():
 
 
 def test_sub():
+	"""Test __sub__."""
 	assert bag('abc') - bag() == bag('abc')
 	assert bag('abbc') - bag('bd') == bag('abc')
 
 
 def test_mul():
+	"""Test __mul__."""
 	ms = _basebag('aab')
 	assert ms * set('a') == _basebag(('aa', 'aa', 'ba'))
 	assert ms * set() == _basebag()
 
 
 def test_xor():
+	"""Test __xor__."""
 	assert bag('abc') ^ bag() == bag('abc')
 	assert bag('aabc') ^ bag('ab') == bag('ac')
 	assert bag('aabcc') ^ bag('abcde') == bag('acde')
 
 
 def test_ior():
+	"""Test __ior__."""
 	b = bag()
 	b |= bag()
 	assert b == bag()
@@ -229,6 +253,7 @@ def test_ior():
 
 
 def test_iand():
+	"""Test __iand__."""
 	b = bag()
 	b &= bag()
 	assert b == bag()
@@ -244,6 +269,7 @@ def test_iand():
 
 
 def test_ixor():
+	"""Test __ixor__."""
 	b = bag('abbc')
 	b ^= bag('bg')
 	assert b == bag('abcg')
@@ -253,6 +279,7 @@ def test_ixor():
 
 
 def test_isub():
+	"""Test __isub__."""
 	b = bag('aabbc')
 	b -= bag('bd')
 	assert b == bag('aabc')
@@ -262,6 +289,7 @@ def test_isub():
 
 
 def test_iadd():
+	"""Test __iadd__."""
 	b = bag('abc')
 	b += bag('cde')
 	assert b == bag('abccde')
@@ -271,6 +299,7 @@ def test_iadd():
 
 
 def test_hash():
+	"""Test __hash__ vs an empty bag."""
 	bag_with_empty_tuple = frozenbag([()])
 	assert not hash(frozenbag()) == hash(bag_with_empty_tuple)
 	assert not hash(frozenbag()) == hash(frozenbag((0,)))
@@ -283,10 +312,12 @@ def test_hash():
 
 
 def test_num_unique_elems():
+	"""Test _basebag.num_unique_elements."""
 	assert bag('abracadabra').num_unique_elements() == 5
 
 
 def test_pop():
+	"""Test bag.pop."""
 	b = bag('a')
 	assert b.pop() == 'a'
 	with pytest.raises(KeyError):
@@ -294,7 +325,8 @@ def test_pop():
 
 
 def test_hashability():
-	"""
+	"""Test __hash__ for bags.
+
 	Since Multiset is mutable and FronzeMultiset is hashable, the second
 	should be usable for dictionary keys and the second should raise a key
 	or value error when used as a key or placed in a set.
