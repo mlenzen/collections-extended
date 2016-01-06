@@ -8,3 +8,4 @@ ipython
 flake8
 tox
 coverage
+flake8-docstrings

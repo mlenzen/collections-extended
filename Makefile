@@ -10,7 +10,7 @@ help:
 	@echo "  docs        create HMTL docs (using Sphinx)"
 
 tests:
-	python setup.py test
+	py.test
 
 testall:
 	tox
@@ -25,7 +25,7 @@ clean:
 	find . -name __pycache__ -delete
 
 lint:
-	flake8 collections_extended tests
+	flake8 --statistics
 
 coverage:
 	coverage run --source collections_extended setup.py test
@@ -33,7 +33,7 @@ coverage:
 	coverage html
 	xdg-open htmlcov/index.html
 
-publish:
+publish: testall lint
 	python setup.py sdist upload
 	python setup.py bdist_wheel upload
 
