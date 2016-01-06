@@ -23,6 +23,7 @@ clean:
 	find . -name *.pyo -delete
 	find . -name *~ -delete
 	find . -name __pycache__ -delete
+	find . -name *,cover -delete
 
 lint:
 	flake8 --statistics
@@ -31,11 +32,12 @@ coverage:
 	coverage run --source collections_extended setup.py test
 	coverage report -m
 	coverage html
-	xdg-open htmlcov/index.html
 
-publish: testall lint
+publish: testall lint coverage
 	python setup.py sdist upload
 	python setup.py bdist_wheel upload
+	git push
+	git push --tags
 
 docs:
 	rm -f docs/collections_extended.rst

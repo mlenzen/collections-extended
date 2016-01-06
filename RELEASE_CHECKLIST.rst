@@ -31,10 +31,6 @@ Release Checklist
 	<try it out>
 	deactivate
 
-#. Push: ``git push``
-
-#. Push tags: ``git push --tags``
-
 #. Check the PyPI listing page to make sure that the README, release notes, and roadmap display properly. If not, copy and paste the RestructuredText into http://rst.ninjs.org/ to find out what broke the formatting.
 
 New Python Versions
