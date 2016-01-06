@@ -178,7 +178,11 @@ def test_delete():
 	rm.delete(stop=1)
 	assert rm == RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	rm.delete(start=2, stop=4)
-	assert rm == RangeMap.from_iterable(((1, 2, 'a'), (4, 5, 'd'), (5, None, 'e')))
+	assert rm == RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
 	rm.delete(start=5)
 	assert rm == RangeMap.from_iterable(((1, 2, 'a'), (4, 5, 'd')))
 
@@ -187,15 +191,24 @@ def test_str():
 	assert str(RangeMap()) == 'RangeMap()'
 	assert str(RangeMap(default_value='a')) == "RangeMap((None, None): 'a')"
 	assert str(RangeMap({1: 'b'})) == "RangeMap((1, None): 'b')"
-	assert str(RangeMap({1: 'b'}, default_value='a')) == "RangeMap((None, 1): 'a', (1, None): 'b')"
+	assert (
+		str(RangeMap({1: 'b'}, default_value='a')) ==
+		"RangeMap((None, 1): 'a', (1, None): 'b')"
+		)
 
 
 def test_eq():
 	assert RangeMap() == RangeMap()
 	assert RangeMap({1: 'a'}) == RangeMap({1: 'a'})
-	assert RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}) == RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+	assert (
+		RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}) ==
+		RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+		)
 	assert RangeMap(default_value='z') == RangeMap(default_value='z')
-	assert RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z') == RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
+	assert (
+		RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z') ==
+		RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
+		)
 	assert RangeMap() != RangeMap(default_value='z')
 	assert RangeMap({1: 'a'}, default_value='z') != RangeMap({1: 'a'})
 	assert RangeMap(default_value='z') != RangeMap(default_value='a')
@@ -211,7 +224,16 @@ def test_contains():
 
 def test_get_range():
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
-	assert rm.get_range(1, 3) == RangeMap.from_iterable(((1, 2, 'a'), (2, 3, 'b')))
-	assert rm.get_range(1.5, 3) == RangeMap.from_iterable(((1.5, 2, 'a'), (2, 3, 'b')))
+	assert (
+		rm.get_range(1, 3) ==
+		RangeMap.from_iterable(((1, 2, 'a'), (2, 3, 'b')))
+		)
+	assert (
+		rm.get_range(1.5, 3) ==
+		RangeMap.from_iterable(((1.5, 2, 'a'), (2, 3, 'b')))
+		)
 	assert rm.get_range(start=3) == RangeMap({3: 'c', 4: 'd', 5: 'e'})
-	assert rm.get_range(stop=3) == RangeMap.from_iterable(((None, 1, 'z'), (1, 2, 'a'), (2, 3, 'b')))
+	assert (
+		rm.get_range(stop=3) ==
+		RangeMap.from_iterable(((None, 1, 'z'), (1, 2, 'a'), (2, 3, 'b')))
+		)

@@ -264,9 +264,9 @@ def test_copy():
 	sl = setlist(range(10))
 	copy = sl.copy()
 	assert sl == copy
-	assert not sl is copy
+	assert sl is not copy
 	sl = setlist(('1', (0, 1)))
 	copy = sl.copy()
 	assert sl == copy
-	assert not sl is copy
+	assert sl is not copy
 	assert sl[1] is copy[1]

@@ -16,4 +16,7 @@ def test_collection_factory():
 	assert type(collection(mutable=False)) == frozenbag
 	assert type(collection(mutable=False, ordered=True)) == tuple
 	assert type(collection(mutable=False, unique=True)) == frozenset
-	assert type(collection(mutable=False, unique=True, ordered=True)) == frozensetlist
+	assert (
+		type(collection(mutable=False, unique=True, ordered=True)) ==
+		frozensetlist
+		)
