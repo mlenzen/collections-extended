@@ -26,7 +26,7 @@ clean:
 	find . -name *,cover -delete
 
 lint:
-	flake8 --statistics
+	flake8 --statistics --count
 
 coverage:
 	coverage run --source collections_extended setup.py test
