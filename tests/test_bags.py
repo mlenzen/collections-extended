@@ -170,7 +170,16 @@ def test_rich_comp_type_mismatch():
 		bag('abc') > 'abc'
 	with pytest.raises(TypeError):
 		bag('abc') >= 'abc'
+	with pytest.raises(TypeError):
+		'abc' < bag('abc')
+	with pytest.raises(TypeError):
+		'abc' <= bag('abc')
+	with pytest.raises(TypeError):
+		'abc' > bag('abc')
+	with pytest.raises(TypeError):
+		'abc' >= bag('abc')
 	assert not bag('abc') == 'abc'
+	assert not 'abc' == bag('abc')
 
 
 def test_and():
