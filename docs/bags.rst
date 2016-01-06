@@ -13,6 +13,37 @@ There are two classes provided:
 
 Both classes implement :class:`collections.abc.Sized`, :class:`collections.abc.Iterable` and :class:`collections.abc.Container`.
 
+Rich Comparison Methods
+-----------------------
+Bags comparison methods are implemented when other is a Set. If other isn't
+a bag, then it's assumed that it is a set that contains at most one of each
+element.
+
+.. testsetup::
+
+  >>> from collections_extended import bag
+
+.. code:: python
+
+  >>> bag() == set()
+  True
+  >>> bag('a') == set('a')
+  True
+  >>> bag('ab') == set('a')
+  False
+  >>> bag('a') == set('ab')
+  False
+  >>> bag('aa') == set('a')
+  False
+  >>> bag('aa') == set('ab')
+  False
+  >>> bag('ac') == set('ab')
+  False
+  >>> bag('ac') <= set('ab')
+  False
+  >>> bag('ac') >= set('ab')
+  False
+
 Compared to existing similar implementations
 --------------------------------------------
 
@@ -29,7 +60,7 @@ Counters don't really behave like "collections" (Sized, Iterable, Container)
 Adding and Removing
 """""""""""""""""""
 
-::
+.. code:: python
 
 	>>> c = Counter()
 	>>> c['a'] += 1
@@ -47,7 +78,7 @@ Adding and Removing
 ``len``
 """""""
 
-::
+.. code:: python
 
 	>>> c = Counter()
 	>>> c['a'] += 1
@@ -74,7 +105,7 @@ Adding and Removing
 Iterating
 """""""""
 
-::
+.. code:: python
 
 	>>> for item in Counter('aaa'): print(item)
 	a

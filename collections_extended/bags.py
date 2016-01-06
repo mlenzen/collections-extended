@@ -181,62 +181,67 @@ class _basebag(Set):
 
 	# Comparison methods
 
-	def __le__(self, other):
-		"""Test if self <= other where other is another bag.
+	def _check_elems_le(self, other):
+		"""Check that every element in self has a count <= in other.
 
-		This runs in O(l + n) where:
-			n is self.num_unique_elements()
-			if other is a bag:
-				l = 1
-			else:
-				l = len(other)
+		Args:
+			other (Set)
 		"""
-		if not isinstance(other, _basebag):
-			raise TypeError
-		if not len(self) <= len(other):
-			return False
-		for elem in itertools.chain(self._dict, other._dict):
-			if not self.count(elem) <= other.count(elem):
-				return False
+		if isinstance(other, _basebag):
+			for elem, count in self._dict.items():
+				if not count <= other.count(elem):
+					return False
+		else:
+			for elem in self:
+				if self.count(elem) > 1 or elem not in other:
+					return False
 		return True
+
+	def _check_elems_ge(self, other):
+		"""Check that every element in self has a count >= in other.
+
+		Args:
+			other (Set)
+		"""
+		if isinstance(other, _basebag):
+			for elem, count in other._dict.items():
+				if not self.count(elem) >= count:
+					return False
+		else:
+			for elem in other:
+				if elem not in self:
+					return False
+		return True
+
+	def __le__(self, other):
+		if not isinstance(other, Set):
+			return NotImplemented
+		return len(self) <= len(other) and self._check_elems_le(other)
 
 	def __lt__(self, other):
-		if not isinstance(other, _basebag):
-			raise TypeError
-		if not len(self) < len(other):
-			return False
-		for elem in itertools.chain(self._dict, other._dict):
-			if not self.count(elem) <= other.count(elem):
-				return False
-		return True
+		if not isinstance(other, Set):
+			return NotImplemented
+		return len(self) < len(other) and self._check_elems_le(other)
 
 	def __gt__(self, other):
-		if not isinstance(other, _basebag):
-			raise TypeError
-		if not len(self) > len(other):
-			return False
-		for elem in itertools.chain(self._dict, other._dict):
-			if not self.count(elem) >= other.count(elem):
-				return False
-		return True
+		if not isinstance(other, Set):
+			return NotImplemented
+		return len(self) > len(other) and self._check_elems_ge(other)
 
 	def __ge__(self, other):
-		if not isinstance(other, _basebag):
-			raise TypeError
-		if not len(self) >= len(other):
-			return False
-		for elem in itertools.chain(self._dict, other._dict):
-			if not self.count(elem) >= other.count(elem):
-				return False
-		return True
+		if not isinstance(other, Set):
+			return NotImplemented
+		return len(self) >= len(other) and self._check_elems_ge(other)
 
 	def __eq__(self, other):
-		if not isinstance(other, _basebag):
-			return False
+		if not isinstance(other, Set):
+			return NotImplemented
+		if isinstance(other, _basebag):
+			return self._dict == other._dict
 		if not len(self) == len(other):
 			return False
-		for elem in itertools.chain(self._dict, other._dict):
-			if not self.count(elem) == other.count(elem):
+		for elem in other:
+			if self.count(elem) != 1:
 				return False
 		return True
 
