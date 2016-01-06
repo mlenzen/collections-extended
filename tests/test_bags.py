@@ -57,8 +57,8 @@ def test_nlargest():
 
 
 def test_from_map():
-	"""Test _from_map."""
-	assert _basebag._from_map({'a': 1, 'b': 2}) == _basebag('abb')
+	"""Test from_mapping."""
+	assert _basebag.from_mapping({'a': 1, 'b': 2}) == _basebag('abb')
 
 
 def test_copy():

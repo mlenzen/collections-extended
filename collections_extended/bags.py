@@ -132,7 +132,7 @@ class _basebag(Set):
 		return cls(it)
 
 	@classmethod
-	def _from_map(cls, map):
+	def from_mapping(cls, map):
 		"""Create a bag from a dict of elem->count.
 
 		Each key in the dict is added if the value is > 0.
@@ -147,7 +147,7 @@ class _basebag(Set):
 
 		This runs in O(len(self.num_unique_elements()))
 		"""
-		return self._from_map(self._dict)
+		return self.from_mapping(self._dict)
 
 	# implementing Sized methods
 
@@ -264,7 +264,7 @@ class _basebag(Set):
 		values = dict()
 		for elem in self._dict:
 			values[elem] = min(other.count(elem), self.count(elem))
-		return self._from_map(values)
+		return self.from_mapping(values)
 
 	def isdisjoint(self, other):
 		"""Return if this bag is disjoint with the passed collection.
@@ -293,7 +293,7 @@ class _basebag(Set):
 		values = dict()
 		for elem in self.unique_elements() | other.unique_elements():
 			values[elem] = max(self.count(elem), other.count(elem))
-		return self._from_map(values)
+		return self.from_mapping(values)
 
 	def __add__(self, other):
 		"""Return a new bag also containing all the elements of other.
@@ -357,7 +357,7 @@ class _basebag(Set):
 				new_elem = elem + other_elem
 				new_count = count * other_count
 				values[new_elem] = new_count
-		return self._from_map(values)
+		return self.from_mapping(values)
 
 	def __xor__(self, other):
 		"""Symmetric difference between the sets.

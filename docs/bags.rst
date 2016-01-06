@@ -144,6 +144,8 @@ New Methods
 	Returns a shallow copy of self.  O(self.num_unique_elements())
 ``isdisjoint(other: Iterable)``
 	Tests if self is disjoint with any other Iterable.  O(len(other))
+``from_mapping(map: Mapping)``
+  Classmethod to create a bag from a Mapping that maps elements to counts.
 
 The following are only for mutable bags (not frozenbags).
 
