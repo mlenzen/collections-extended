@@ -1,6 +1,5 @@
 """Bag class definitions."""
 import heapq
-import itertools
 from operator import itemgetter
 from collections import Set, MutableSet, Hashable
 
@@ -215,27 +214,27 @@ class _basebag(Set):
 
 	def __le__(self, other):
 		if not isinstance(other, Set):
-			return NotImplemented
+			return _compat.handle_rich_comp_not_implemented()
 		return len(self) <= len(other) and self._check_elems_le(other)
 
 	def __lt__(self, other):
 		if not isinstance(other, Set):
-			return NotImplemented
+			return _compat.handle_rich_comp_not_implemented()
 		return len(self) < len(other) and self._check_elems_le(other)
 
 	def __gt__(self, other):
 		if not isinstance(other, Set):
-			return NotImplemented
+			return _compat.handle_rich_comp_not_implemented()
 		return len(self) > len(other) and self._check_elems_ge(other)
 
 	def __ge__(self, other):
 		if not isinstance(other, Set):
-			return NotImplemented
+			return _compat.handle_rich_comp_not_implemented()
 		return len(self) >= len(other) and self._check_elems_ge(other)
 
 	def __eq__(self, other):
 		if not isinstance(other, Set):
-			return NotImplemented
+			return False
 		if isinstance(other, _basebag):
 			return self._dict == other._dict
 		if not len(self) == len(other):
