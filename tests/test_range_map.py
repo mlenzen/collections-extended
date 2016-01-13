@@ -222,6 +222,12 @@ def test_str():
 		str(RangeMap({1: 'b'}, default_value='a')) ==
 		"RangeMap((None, 1): 'a', (1, None): 'b')"
 		)
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+	del rm[2:3]
+	with pytest.raises(KeyError):
+		del rm[2:3]
+	with pytest.raises(KeyError):
+		del rm[0:2]
 
 
 def test_eq():
