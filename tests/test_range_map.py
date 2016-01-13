@@ -230,6 +230,20 @@ def test_str():
 		del rm[0:2]
 
 
+def test_empty():
+	"""Test RangeMap.empty."""
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd'})
+	rm.empty(2, 3)
+	rm.empty(2, 3)
+	assert rm == RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(3, 4, 'c'),
+		(4, None, 'd'),
+		))
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd'})
+	assert rm == RangeMap({2: 'b', 3: 'c', 4: 'd'})
+
+
 def test_eq():
 	"""Test __eq__."""
 	assert RangeMap() == RangeMap()
