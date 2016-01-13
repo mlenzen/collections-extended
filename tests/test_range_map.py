@@ -204,6 +204,15 @@ def test_delete():
 	assert rm == RangeMap.from_iterable(((1, 2, 'a'), (4, 5, 'd')))
 
 
+def test_delitem():
+	"""Test RangeMap.__delitem__."""
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+	with pytest.raises(ValueError):
+		del rm[2]
+	with pytest.raises(ValueError):
+		del rm[2:4:2]
+
+
 def test_str():
 	"""Test __str__."""
 	assert str(RangeMap()) == 'RangeMap()'
@@ -259,3 +268,8 @@ def test_get_range():
 		rm.get_range(stop=3) ==
 		RangeMap.from_iterable(((None, 1, 'z'), (1, 2, 'a'), (2, 3, 'b')))
 		)
+	if is_py2:
+		with pytest.raises(SyntaxError):
+			rm[2:3]
+	else:
+		assert rm[2:3] == rm.get_range(2, 3)

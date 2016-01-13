@@ -35,11 +35,19 @@ the iterable's elements are tuples (start, stop, value). A start or stop key
 of None denotes an open range, ie. a start key of None is analgous to -infinity
 if the keys are all numbers.
 
+Quirks
+------
+
 Python 2 vs 3
--------------
+~~~~~~~~~~~~~
 Slice notation is not implented for get, set and delete in python 2 and raises
 a SyntaxError when used. This is because Python 2 assumes slices are integers
 and replaces open slices with 0 and maxint. Instead use ``RangeMap.set``
+
+PyPy
+~~~~
+pypy (not pypy3) cannot accept non-ints in __getitem__ so RangeMap[1.5:3]
+doesn't work.
 
 Implementation
 --------------
