@@ -115,7 +115,18 @@ class RangeMap(Container):
 		self._key_mapping[start] = value
 
 	def delete(self, start=None, stop=None):
-		"""Delete the range from start to stop from self."""
+		"""Delete the range from start to stop from self.
+
+		Raises:
+			KeyError: If part of the passed range isn't mapped.
+		"""
+		self.set(_empty, start=start, stop=stop)
+
+	def empty(self, start=None, stop=None):
+		"""Empty the range from start to stop.
+
+		Like delete, but no Error is raised if the entire range isn't mapped.
+		"""
 		self.set(_empty, start=start, stop=stop)
 
 	def __eq__(self, other):
