@@ -122,7 +122,7 @@ class RangeMap(Container):
 		if isinstance(other, RangeMap):
 			return self._key_mapping == other._key_mapping
 		else:
-			return NotImplemented
+			return False
 
 	def __getitem__(self, key):
 		if isinstance(key, slice):

@@ -231,6 +231,7 @@ def test_eq():
 	assert RangeMap() != RangeMap(default_value='z')
 	assert RangeMap({1: 'a'}, default_value='z') != RangeMap({1: 'a'})
 	assert RangeMap(default_value='z') != RangeMap(default_value='a')
+	assert not RangeMap() == dict()
 
 
 def test_contains():
