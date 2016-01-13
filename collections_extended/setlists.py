@@ -145,7 +145,7 @@ class _basesetlist(Sequence, Set):
 		This runs in O(len(sub))
 
 		Args:
-			sub (Iterable): An Iterable to search for
+			sub (Sequence): An Iterable to search for
 		Returns:
 			int: The index of the first element of sub
 		Raises:
