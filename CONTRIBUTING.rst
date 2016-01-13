@@ -17,7 +17,6 @@ Report bugs at https://github.com/mlenzen/collections-extended/issues.
 
 If you are reporting a bug, please include:
 
-* Your operating system name and version.
 * Any details about your local setup that might be helpful in troubleshooting.
 * Detailed steps to reproduce the bug.
 
@@ -25,12 +24,6 @@ Fix Bugs
 ~~~~~~~~
 
 Look through the GitHub issues for bugs. Anything tagged with "bug"
-is open to whoever wants to implement it.
-
-Implement Features
-~~~~~~~~~~~~~~~~~~
-
-Look through the GitHub issues for features. Anything tagged with "enhancement"
 is open to whoever wants to implement it.
 
 Write Documentation
@@ -105,7 +98,7 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
-3. The pull request should work for Python 2.7, 3.3, and 3.4, and for PyPy. Check
+3. The pull request should work for all supported versions. Check
    https://travis-ci.org/mlenzen/collections-extended/pull_requests
    and make sure that the tests pass for all supported Python versions.
 
