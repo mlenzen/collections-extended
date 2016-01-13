@@ -211,6 +211,11 @@ def test_delitem():
 		del rm[2]
 	with pytest.raises(ValueError):
 		del rm[2:4:2]
+	del rm[1:2]
+	assert rm == RangeMap({2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+	del rm[3:4]
+	del rm[4:5]
+	assert rm == RangeMap({2: 'b', 5: 'e'})
 
 
 def test_str():
