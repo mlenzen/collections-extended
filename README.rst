@@ -131,6 +131,6 @@ RangeMap
   A mapping from ranges (of numbers/dates/etc)
 
 :Author: Michael Lenzen
-:Copyright: 2015 Michael Lenzen
+:Copyright: 2016 Michael Lenzen
 :License: Apache License, Version 2.0
 :Project Homepage: https://github.com/mlenzen/collections-extended
