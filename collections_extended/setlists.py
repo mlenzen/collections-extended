@@ -281,10 +281,32 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			del self._list[index]
 
 	def remove_all(self, elems_to_delete):
-		"""Remove all the elements from elems_to_delete.
+		"""Remove all elements from elems_to_delete, raises ValueErrors.
+
+		Args:
+			elems_to_delete (Iterable): Elements to remove.
+		Raises:
+			ValueError: If the count of any element is greater in
+				elems_to_delete than self.
+		"""
+		removed = set()
+		for element in elems_to_delete:
+			if element not in self:
+				raise ValueError('Cannot remove element that is not present')
+			elif element in removed:
+				raise ValueError('Cannot remove more than one of element')
+			else:
+				removed.add(element)
+		self.discard_all(elems_to_delete)
+
+	def discard_all(self, elems_to_delete):
+		"""Discard all the elements from elems_to_delete.
 
 		This is much faster than removing them one by one.
 		This runs in O(len(self) + len(elems_to_delete))
+
+		Args:
+			elems_to_delete (Iterable): Elements to discard.
 		"""
 		marked_to_delete = object()
 		for elem in elems_to_delete:

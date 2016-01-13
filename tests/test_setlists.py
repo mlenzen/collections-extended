@@ -80,10 +80,14 @@ def test_setlist():
 
 
 def test_removeall():
-	"""Test remove_all."""
+	"""Test remove_all & discard_all."""
 	sl = setlist('abcdefgh')
 	sl.remove_all(set('acdh'))
 	assert sl == setlist(('befg'))
+	with pytest.raises(ValueError):
+		sl.remove('k')
+	with pytest.raises(ValueError):
+		sl.remove('bb')
 
 
 def test_len():
