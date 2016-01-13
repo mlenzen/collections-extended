@@ -2,7 +2,7 @@ setlist
 =======
 
 A ``setlist`` is an ordered, indexed
-collection with unique elements.  It it more than just an **ordered Set**
+collection with unique elements.	It it more than just an **ordered Set**
 in that the elements are accessible by index (ie. not just a linked set).
 
 However, ``setlist``'s are not comparable like sets or lists. Equality
@@ -12,11 +12,38 @@ because we'd have to choose to compare by order or by set comparison.
 There are two classes provided:
 
 :class:`collections_extended.setlist`
-  This is a mutable setlist
+	This is a mutable setlist
 :class:`collections_extended.frozensetlist`
-  This is a frozen (implements :class:`collections.abc.Hashable`) version of a setlist.
+	This is a frozen (implements :class:`collections.abc.Hashable`) version of a setlist.
 
 Both classes implement :class:`collections.abc.Sequence`, :class:`collections.abc.Set`
+
+Examples
+--------
+
+.. code:: python
+
+	>>> from collections_extended import setlist
+	>>> import string
+	>>> sl = setlist(string.ascii_lowercase)
+	>>> sl
+	setlist(('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'))
+	>>> sl[3]
+	'd'
+	>>> sl[-1]
+	'z'
+	>>> 'r' in sl	# testing for inclusion is fast
+	True
+	>>> sl.index('m')	# so is finding the index of an element
+	12
+	>>> sl.insert(1, 'd')	# inserting an element already in raises a ValueError
+	Traceback (most recent call last):
+	...
+		raise ValueError
+	ValueError
+	>>> sl.index('d')
+	3
+
 
 Compared to existing similar implementations
 --------------------------------------------
@@ -39,8 +66,8 @@ setlist vs. set
 
 * Elements are ordered and accessible by index
 * Adding an element is as slow as adding to a list
-  * Amortized O(n) for arbitrary insertions
-  * O(1) for appending
+	* Amortized O(n) for arbitrary insertions
+	* O(1) for appending
 
 New Methods
 -----------
@@ -60,7 +87,6 @@ because I had to choose one or the other and I have code assuming it doesn't.
 Quirks
 ------
 * Swapping elements, eg. `sl[0], sl[1] = sl[1], sl[0]`, doesn't work because
-  it is implemented by first setting one element then the other. But since
-  the first element it tries to set is still in the setlist, nothing happens.
-  This causes random.shuffle not to work on a setlist.
-
+	it is implemented by first setting one element then the other. But since
+	the first element it tries to set is still in the setlist, nothing happens.
+	This causes random.shuffle not to work on a setlist.
