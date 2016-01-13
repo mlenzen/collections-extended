@@ -13,7 +13,7 @@ Usage
 Examples
 --------
 
-.. code:: python
+.. code-block:: python
 
 	>>> from collections_extended import bag, setlist, bijection, RangeMap
 	>>> from datetime import date

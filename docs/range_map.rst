@@ -6,7 +6,7 @@ other keys (but not necessarily the same type).
 Examples
 --------
 
-.. code:: python
+.. code-block:: python
 
 	>>> from collections_extended import RangeMap
 	>>> from datetime import date

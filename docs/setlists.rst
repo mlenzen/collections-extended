@@ -21,7 +21,7 @@ Both classes implement :class:`collections.abc.Sequence`, :class:`collections.ab
 Examples
 --------
 
-.. code:: python
+.. code-block:: python
 
 	>>> from collections_extended import setlist
 	>>> import string

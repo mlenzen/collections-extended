@@ -23,7 +23,7 @@ element.
 
   >>> from collections_extended import bag
 
-.. code:: python
+.. code-block:: python
 
   >>> bag() == set()
   True
@@ -60,7 +60,7 @@ Counters don't really behave like "collections" (Sized, Iterable, Container)
 Adding and Removing
 """""""""""""""""""
 
-.. code:: python
+.. code-block:: python
 
 	>>> c = Counter()
 	>>> c['a'] += 1
@@ -78,7 +78,7 @@ Adding and Removing
 ``len``
 """""""
 
-.. code:: python
+.. code-block:: python
 
 	>>> c = Counter()
 	>>> c['a'] += 1
@@ -105,7 +105,7 @@ Adding and Removing
 Iterating
 """""""""
 
-.. code:: python
+.. code-block:: python
 
 	>>> for item in Counter('aaa'): print(item)
 	a
