@@ -65,11 +65,25 @@ def test_set_existing_interval():
 		rm[0]
 
 
-def test_set_consecutive_eq():
+def test_set_consecutive_before_eq():
 	"""Test setting consecutive ranges to the same value."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
 	rm[1:2] = 'b'
 	assert rm == RangeMap({1: 'b', 3: 'c'})
+
+
+def test_set_consecutive_after_eq():
+	"""Test setting consecutive ranges to the same value."""
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
+	rm[2:3] = 'a'
+	assert rm == RangeMap({1: 'a', 3: 'c'})
+
+
+def test_set_consecutive_between_eq():
+	"""Test setting consecutive ranges to the same value."""
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'b'})
+	rm[3:4] = 'b'
+	assert rm == RangeMap({1: 'a', 2: 'b'})
 
 
 def test_break_up_existing_open_end_interval():

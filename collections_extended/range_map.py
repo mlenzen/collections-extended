@@ -100,6 +100,11 @@ class RangeMap(Container):
 			start_index = 0
 		else:
 			start_index = bisect_left(self._ordered_keys, start, 1)
+			prev_key = self._ordered_keys[start_index - 1]
+			prev_value = self._key_mapping[prev_key]
+			if prev_value == value:
+				start_index -= 1
+				start = prev_key
 		if stop is None:
 			stop_index = len(self._ordered_keys)
 			new_keys = [start]
