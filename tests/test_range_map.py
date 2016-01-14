@@ -65,6 +65,13 @@ def test_set_existing_interval():
 		rm[0]
 
 
+def test_set_consecutive_eq():
+	"""Test setting consecutive ranges to the same value."""
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
+	rm[1:2] = 'b'
+	assert rm == RangeMap({1: 'b', 3: 'c'})
+
+
 def test_break_up_existing_open_end_interval():
 	"""Test breaking up an existing open interval at the end."""
 	rm = RangeMap({1: 'a', 2: 'b'})
@@ -204,8 +211,8 @@ def test_delete():
 	assert rm == RangeMap.from_iterable(((1, 2, 'a'), (4, 5, 'd')))
 
 
-def test_delitem():
-	"""Test RangeMap.__delitem__."""
+def test_delitem_beginning():
+	"""Test RangeMap.__delitem__ at the beginning."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	with pytest.raises(ValueError):
 		del rm[2]
@@ -213,6 +220,11 @@ def test_delitem():
 		del rm[2:4:2]
 	del rm[1:2]
 	assert rm == RangeMap({2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+
+
+def test_delitem_consecutive():
+	"""Test deleting consecutive ranges."""
+	rm = RangeMap({2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	del rm[3:4]
 	del rm[4:5]
 	assert rm == RangeMap({2: 'b', 5: 'e'})
