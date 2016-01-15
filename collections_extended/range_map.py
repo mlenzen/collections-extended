@@ -89,8 +89,8 @@ class RangeMap(Container):
 			default_value: If passed, the return value for all keys less than the
 				least key in mapping. If no mapping, the return value for all keys.
 		"""
-		self._ordered_keys = [_first, _last]
-		self._key_mapping = {_first: default_value, _last: default_value}
+		self._ordered_keys = [_first]
+		self._key_mapping = {_first: default_value}
 		if mapping:
 			for key, value in sorted(mapping.items()):
 				self.set(value, key)
@@ -166,13 +166,18 @@ class RangeMap(Container):
 			if prev_value == value:
 				start_index -= 1
 				start = prev_key
-		stop_index = bisect_right(self._ordered_keys, stop)
-		new_keys = [start, stop]
+		if stop is _last:
+			stop_index = len(self._ordered_keys)
+			new_keys = [start]
+		else:
+			stop_index = bisect_right(self._ordered_keys, stop)
+			new_keys = [start, stop]
 		stop_value = self.__getitem(stop)
 		for key in self._ordered_keys[start_index:stop_index]:
 			del self._key_mapping[key]
+		if stop is not _last:
+			self._key_mapping[stop] = stop_value
 		self._ordered_keys[start_index:stop_index] = new_keys
-		self._key_mapping[stop] = stop_value
 		self._key_mapping[start] = value
 
 	def delete(self, start=None, stop=None):
