@@ -2,8 +2,74 @@
 from bisect import bisect_left, bisect_right
 from collections import namedtuple, Container
 
+
+class First():
+	"""A class that's less than everything."""
+
+	def __eq__(self, other):
+		return isinstance(other, First)
+
+	def __ne__(self, other):
+		return not isinstance(other, First)
+
+	def __lt__(self, other):
+		return self != other
+
+	def __le__(self, other):
+		return True
+
+	def __gt__(self, other):
+		return False
+
+	def __ge__(self, other):
+		return self == other
+
+	def __hash__(self):
+		return 0
+
+	def __repr__(self):
+		return 'First()'
+
+
+class Last():
+	"""A class that's less than everything."""
+
+	def __eq__(self, other):
+		return isinstance(other, Last)
+
+	def __ne__(self, other):
+		return not self == other
+
+	def __lt__(self, other):
+		return False
+
+	def __le__(self, other):
+		return isinstance(other, Last)
+
+	def __gt__(self, other):
+		return self != other
+
+	def __ge__(self, other):
+		return True
+
+	def __hash__(self):
+		return 1
+
+	def __repr__(self):
+		return 'Last()'
+
+
 # Used to mark unmapped ranges
 _empty = object()
+_first = First()
+_last = Last()
+
+def fix_start_stop(start, stop):
+	if start is None:
+		start = _first
+	if stop is None:
+		stop = _last
+	return start, stop
 
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
@@ -23,16 +89,16 @@ class RangeMap(Container):
 			default_value: If passed, the return value for all keys less than the
 				least key in mapping. If no mapping, the return value for all keys.
 		"""
-		self._ordered_keys = [None]
-		self._key_mapping = {None: default_value}
+		self._ordered_keys = [_first, _last]
+		self._key_mapping = {_first: default_value, _last: default_value}
 		if mapping:
 			for key, value in sorted(mapping.items()):
 				self.set(value, key)
 
 	def __repr__(self):
 		return 'RangeMap(%s)' % ', '.join(['({start}, {stop}): {value}'.format(
-			start=item.start,
-			stop=item.stop,
+			start=item.start if item.start != _first else None,
+			stop=item.stop if item.stop != _last else None,
 			value=repr(item.value),
 			) for item in self.ranges()])
 
@@ -53,20 +119,12 @@ class RangeMap(Container):
 		Yields:
 			MappedRange
 		"""
-		candidate_keys = self._ordered_keys[:]
-		if stop is not None:
-			stop_loc = bisect_left(self._ordered_keys, stop, lo=1)
-			candidate_keys = candidate_keys[:stop_loc]
-		if start is not None:
-			start_loc = bisect_right(self._ordered_keys, start, lo=1) - 1
-			candidate_keys = candidate_keys[start_loc:]
-		candidate_keys[0] = start
-		candidate_keys.append(stop)
+		start, stop = fix_start_stop(start, stop)
+		start_loc = bisect_right(self._ordered_keys, start)
+		stop_loc = bisect_left(self._ordered_keys, stop)
+		candidate_keys = [start] + self._ordered_keys[start_loc:stop_loc] + [stop]
 		for start_key, stop_key in zip(candidate_keys[:-1], candidate_keys[1:]):
-			try:
-				value = self._key_mapping[start_key]
-			except KeyError:
-				value = self.__getitem(start_key)
+			value = self.__getitem(start_key)
 			if value is not _empty:
 				yield MappedRange(start_key, stop_key, value)
 
@@ -74,9 +132,12 @@ class RangeMap(Container):
 		return self.__getitem(value) is not _empty
 
 	def __getitem(self, key):
-		"""Helper method."""
-		loc = bisect_right(self._ordered_keys, key, lo=1) - 1
-		return self._key_mapping[self._ordered_keys[loc]]
+		"""Get the value for a key (not a slice)."""
+		try:
+			return self._key_mapping[key]
+		except KeyError:
+			loc = bisect_right(self._ordered_keys, key) - 1
+			return self._key_mapping[self._ordered_keys[loc]]
 
 	def get(self, key, restval=None):
 		"""Get the value of the range containing key, otherwise return restval."""
@@ -96,27 +157,22 @@ class RangeMap(Container):
 
 	def set(self, value, start=None, stop=None):
 		"""Set the range from start to stop to value."""
-		if start is None:
-			start_index = 0
-		else:
-			start_index = bisect_left(self._ordered_keys, start, 1)
+		start, stop = fix_start_stop(start, stop)
+		# start_index is the index of the first element <= start
+		start_index = bisect_left(self._ordered_keys, start)
+		if start_index > 0:
 			prev_key = self._ordered_keys[start_index - 1]
 			prev_value = self._key_mapping[prev_key]
 			if prev_value == value:
 				start_index -= 1
 				start = prev_key
-		if stop is None:
-			stop_index = len(self._ordered_keys)
-			new_keys = [start]
-		else:
-			stop_index = bisect_right(self._ordered_keys, stop, 1)
-			new_keys = [start, stop]
-			stop_value = self.__getitem(stop)
+		stop_index = bisect_right(self._ordered_keys, stop)
+		new_keys = [start, stop]
+		stop_value = self.__getitem(stop)
 		for key in self._ordered_keys[start_index:stop_index]:
 			del self._key_mapping[key]
-		if stop is not None:
-			self._key_mapping[stop] = stop_value
 		self._ordered_keys[start_index:stop_index] = new_keys
+		self._key_mapping[stop] = stop_value
 		self._key_mapping[start] = value
 
 	def delete(self, start=None, stop=None):

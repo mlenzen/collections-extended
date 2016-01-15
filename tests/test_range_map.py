@@ -1,10 +1,36 @@
 """Tests for RangeMap class."""
 from datetime import date
 
+from hypothesis import given
+from hypothesis.strategies import integers
 import pytest
 
 from collections_extended._compat import is_py2
-from collections_extended.range_map import RangeMap
+from collections_extended.range_map import RangeMap, First, Last
+
+
+@given(integers())
+def test_first(i):
+	"""Test _First."""
+	f = First()
+	assert not i < f
+	assert not i <= f
+	assert i > f
+	assert i >= f
+	assert not i == f
+	assert i != f
+
+
+@given(integers())
+def test_last(i):
+	"""Test _Last."""
+	l = Last()
+	assert i < l
+	assert i <= l
+	assert not l > l
+	assert not i >= l
+	assert not i == l
+	assert i != l
 
 
 def test_simple_set():
@@ -241,7 +267,7 @@ def test_delitem_consecutive():
 	rm = RangeMap({2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	del rm[3:4]
 	del rm[4:5]
-	assert rm == RangeMap({2: 'b', 5: 'e'})
+	assert rm == RangeMap.from_iterable(((2, 3, 'b'), (5, None, 'e')))
 
 
 def test_str():
