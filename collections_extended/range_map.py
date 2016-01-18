@@ -89,7 +89,7 @@ class RangeMap(Container):
 			default_value: If passed, the return value for all keys less than the
 				least key in mapping. If no mapping, the return value for all keys.
 		"""
-		self._ordered_keys = [_first]
+		self._ordered_keys = [_first, _last]
 		self._key_mapping = {_first: default_value}
 		if mapping:
 			for key, value in sorted(mapping.items()):
@@ -157,27 +157,32 @@ class RangeMap(Container):
 
 	def set(self, value, start=None, stop=None):
 		"""Set the range from start to stop to value."""
-		start, stop = fix_start_stop(start, stop)
-		# start_index is the index of the first element <= start
-		start_index = bisect_left(self._ordered_keys, start)
-		if start_index > 0:
+		if start is None:
+			start = _first
+			start_index = 0
+		else:
+			start_index = bisect_left(self._ordered_keys, start)
 			prev_key = self._ordered_keys[start_index - 1]
 			prev_value = self._key_mapping[prev_key]
 			if prev_value == value:
 				start_index -= 1
 				start = prev_key
-		if stop is _last:
+		if stop is None:
+			stop = _last
 			stop_index = len(self._ordered_keys)
-			new_keys = [start]
+			keys_to_delete = self._ordered_keys[start_index:stop_index-1]
 		else:
 			stop_index = bisect_right(self._ordered_keys, stop)
-			new_keys = [start, stop]
-		stop_value = self.__getitem(stop)
-		for key in self._ordered_keys[start_index:stop_index]:
-			del self._key_mapping[key]
-		if stop is not _last:
+			stop_value = self.__getitem(stop)
+			next_key = self._ordered_keys[stop_index]
+			next_value = self._key_mapping[next_key]
+			if next_value == stop_value:
+				stop_index += 1
 			self._key_mapping[stop] = stop_value
-		self._ordered_keys[start_index:stop_index] = new_keys
+			keys_to_delete = self._ordered_keys[start_index:stop_index]
+		for key in keys_to_delete:
+			del self._key_mapping[key]
+		self._ordered_keys[start_index:stop_index] = [start, stop]
 		self._key_mapping[start] = value
 
 	def delete(self, start=None, stop=None):
