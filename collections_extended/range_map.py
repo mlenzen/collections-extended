@@ -75,8 +75,11 @@ class RangeMap(Container):
 
 	def __getitem(self, key):
 		"""Helper method."""
-		loc = bisect_right(self._ordered_keys, key, lo=1) - 1
-		return self._key_mapping[self._ordered_keys[loc]]
+		try:
+			return self._key_mapping[key]
+		except KeyError:
+			loc = bisect_right(self._ordered_keys, key, lo=1) - 1
+			return self._key_mapping[self._ordered_keys[loc]]
 
 	def get(self, key, restval=None):
 		"""Get the value of the range containing key, otherwise return restval."""
@@ -99,7 +102,7 @@ class RangeMap(Container):
 		if start is None:
 			start_index = 0
 		else:
-			start_index = bisect_left(self._ordered_keys, start, 1)
+			start_index = bisect_left(self._ordered_keys, start, lo=1)
 			prev_key = self._ordered_keys[start_index - 1]
 			prev_value = self._key_mapping[prev_key]
 			if prev_value == value:
@@ -109,13 +112,11 @@ class RangeMap(Container):
 			stop_index = len(self._ordered_keys)
 			new_keys = [start]
 		else:
-			stop_index = bisect_right(self._ordered_keys, stop, 1)
+			stop_index = bisect_left(self._ordered_keys, stop, lo=1)
 			new_keys = [start, stop]
-			stop_value = self.__getitem(stop)
+			self._key_mapping[stop] = self.__getitem(stop)
 		for key in self._ordered_keys[start_index:stop_index]:
 			del self._key_mapping[key]
-		if stop is not None:
-			self._key_mapping[stop] = stop_value
 		self._ordered_keys[start_index:stop_index] = new_keys
 		self._key_mapping[start] = value
 
