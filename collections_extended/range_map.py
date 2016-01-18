@@ -170,16 +170,20 @@ class RangeMap(Container):
 		if stop is None:
 			stop = _last
 			stop_index = len(self._ordered_keys)
-			keys_to_delete = self._ordered_keys[start_index:stop_index-1]
 		else:
 			stop_index = bisect_right(self._ordered_keys, stop)
 			stop_value = self.__getitem(stop)
 			next_key = self._ordered_keys[stop_index]
-			next_value = self._key_mapping[next_key]
-			if next_value == stop_value:
-				stop_index += 1
-			self._key_mapping[stop] = stop_value
+			if next_key is not _last:
+				next_value = self._key_mapping[next_key]
+				if next_value == stop_value:
+					stop_index += 1
+					stop = next_key
+		if stop is _last:
+			keys_to_delete = self._ordered_keys[start_index:stop_index - 1]
+		else:
 			keys_to_delete = self._ordered_keys[start_index:stop_index]
+			self._key_mapping[stop] = stop_value
 		for key in keys_to_delete:
 			del self._key_mapping[key]
 		self._ordered_keys[start_index:stop_index] = [start, stop]
