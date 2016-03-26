@@ -172,13 +172,15 @@ class RangeMap(Container):
 			stop_index = len(self._ordered_keys)
 		else:
 			stop_index = bisect_left(self._ordered_keys, stop)
-			if stop_index != len(self._ordered_keys) and self._ordered_keys[stop_index] == stop:
-				new_keys = [start]
-				if self._key_mapping[self._ordered_keys[stop_index]] == self._key_mapping[self._ordered_keys[start_index]]:
-					stop_index += 1
-			else:
-				new_keys = [start, stop]
+			new_keys = [start, stop]
 			self._key_mapping[stop] = self.__getitem(stop)
+			if stop_index != len(self._ordered_keys):
+				next_key = self._ordered_keys[stop_index]
+				if next_key == stop:
+					new_keys = [start]
+					next_value = self._key_mapping[next_key]
+					if next_value == value:
+						stop_index += 1
 		for key in self._ordered_keys[start_index:stop_index]:
 			del self._key_mapping[key]
 		self._ordered_keys[start_index:stop_index] = new_keys
