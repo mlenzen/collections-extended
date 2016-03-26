@@ -315,7 +315,6 @@ def test_contains():
 def test_get_range():
 	"""Test get_range."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
-	print(rm.get_range(1, 3))
 	assert (
 		rm.get_range(1, 3) ==
 		RangeMap.from_iterable(((1, 2, 'a'), (2, 3, 'b')))

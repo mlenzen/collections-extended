@@ -64,13 +64,6 @@ _empty = object()
 _first = First()
 _last = Last()
 
-def fix_start_stop(start, stop):
-	if start is None:
-		start = _first
-	if stop is None:
-		stop = _last
-	return start, stop
-
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
 
@@ -89,7 +82,7 @@ class RangeMap(Container):
 			default_value: If passed, the return value for all keys less than the
 				least key in mapping. If no mapping, the return value for all keys.
 		"""
-		self._ordered_keys = [_first, _last]
+		self._ordered_keys = [_first]
 		self._key_mapping = {_first: default_value}
 		if mapping:
 			for key, value in sorted(mapping.items()):
@@ -119,13 +112,20 @@ class RangeMap(Container):
 		Yields:
 			MappedRange
 		"""
-		start, stop = fix_start_stop(start, stop)
+		if start is None:
+			start = _first
+		if stop is None:
+			stop = _last
 		start_loc = bisect_right(self._ordered_keys, start)
 		stop_loc = bisect_left(self._ordered_keys, stop)
 		candidate_keys = [start] + self._ordered_keys[start_loc:stop_loc] + [stop]
 		for start_key, stop_key in zip(candidate_keys[:-1], candidate_keys[1:]):
 			value = self.__getitem(start_key)
 			if value is not _empty:
+				if start_key == _first:
+					start_key = None
+				if stop_key == _last:
+					stop_key = None
 				yield MappedRange(start_key, stop_key, value)
 
 	def __contains__(self, value):
@@ -161,7 +161,7 @@ class RangeMap(Container):
 			start = _first
 			start_index = 0
 		else:
-			start_index = bisect_left(self._ordered_keys, start, lo=1)
+			start_index = bisect_left(self._ordered_keys, start)
 			prev_key = self._ordered_keys[start_index - 1]
 			prev_value = self._key_mapping[prev_key]
 			if prev_value == value:
@@ -169,9 +169,10 @@ class RangeMap(Container):
 				start = prev_key
 		if stop is None:
 			stop = _last
+			new_keys = [start]
 			stop_index = len(self._ordered_keys)
 		else:
-			stop_index = bisect_left(self._ordered_keys, stop, lo=1)
+			stop_index = bisect_left(self._ordered_keys, stop)
 			new_keys = [start, stop]
 			self._key_mapping[stop] = self.__getitem(stop)
 		for key in self._ordered_keys[start_index:stop_index]:
