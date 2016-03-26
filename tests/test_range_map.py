@@ -1,6 +1,8 @@
 """Tests for RangeMap class."""
 from datetime import date
 
+from hypothesis import given
+from hypothesis.strategies import integers
 import pytest
 
 from collections_extended._compat import is_py2
@@ -244,7 +246,7 @@ def test_delitem_consecutive():
 	rm = RangeMap({2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	del rm[3:4]
 	del rm[4:5]
-	assert rm == RangeMap({2: 'b', 5: 'e'})
+	assert rm == RangeMap.from_iterable(((2, 3, 'b'), (5, None, 'e')))
 
 
 def test_str():
