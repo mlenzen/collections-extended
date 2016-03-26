@@ -174,6 +174,8 @@ class RangeMap(Container):
 			stop_index = bisect_left(self._ordered_keys, stop)
 			if stop_index != len(self._ordered_keys) and self._ordered_keys[stop_index] == stop:
 				new_keys = [start]
+				if self._key_mapping[self._ordered_keys[stop_index]] == self._key_mapping[self._ordered_keys[start_index]]:
+					stop_index += 1
 			else:
 				new_keys = [start, stop]
 			self._key_mapping[stop] = self.__getitem(stop)
