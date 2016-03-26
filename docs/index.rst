@@ -1,7 +1,7 @@
 collections_extended's documentation
 ====================================
 
-``collections_extended``, provides
+``collections_extended`` is a Python module providing
 a ``bag`` class, AKA **multiset**,
 a ``setlist`` class, which is a **unique list** or **ordered set**,
 a ``bijection`` class and ``RangeMap`` which is a mapping from ranges to values.

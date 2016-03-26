@@ -87,6 +87,7 @@ def test_set_existing_interval():
 	assert rm[1] == 'c'
 	assert rm[2] == 'b'
 	assert rm[3] == 'b'
+	assert rm == RangeMap({1: 'c', 2: 'b'})
 	with pytest.raises(KeyError):
 		rm[0]
 
@@ -94,8 +95,13 @@ def test_set_existing_interval():
 def test_set_consecutive_before_eq():
 	"""Test setting consecutive ranges to the same value."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
+<<<<<<< HEAD
 	print('setting')
+=======
+	print(rm._ordered_keys, rm._key_mapping)
+>>>>>>> issue-43
 	rm[1:2] = 'b'
+	print(rm._ordered_keys, rm._key_mapping)
 	assert rm == RangeMap({1: 'b', 3: 'c'})
 
 
@@ -313,6 +319,7 @@ def test_contains():
 def test_get_range():
 	"""Test get_range."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
+	print(rm.get_range(1, 3))
 	assert (
 		rm.get_range(1, 3) ==
 		RangeMap.from_iterable(((1, 2, 'a'), (2, 3, 'b')))

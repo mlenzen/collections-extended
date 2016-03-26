@@ -1,4 +1,4 @@
--r requirements.txt
+-r requirements-docs.txt
 bumpversion
 pytest
 sphinx
@@ -9,4 +9,5 @@ ipython
 flake8
 tox
 coverage
+codecov
 flake8-docstrings
