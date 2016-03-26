@@ -33,13 +33,7 @@ sys.path.insert(0, project_root)
 
 import collections_extended
 
-# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+import alabaster
 
 # -- General configuration ---------------------------------------------
 
@@ -53,6 +47,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinxcontrib.napoleon',
     'sphinx.ext.doctest',
+    'alabaster',
     ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -76,7 +71,7 @@ copyright = u'2016, Michael Lenzen'
 # the built documents.
 #
 # The short X.Y version.
-version = collections_extended.__version__
+version = collections_extended.__version__.rsplit(',', 1)[0]
 # The full version, including alpha/beta/rc tags.
 release = collections_extended.__version__
 
@@ -107,7 +102,7 @@ exclude_patterns = ['_build']
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
-#show_authors = False
+show_authors = True
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -124,15 +119,27 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-# html_theme = 'default'
+html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+html_theme_options = {
+    'logo': 'logo.svg',
+    'github_user': 'mlenzen',
+    'github_repo': 'collections-extended',
+    'description': 'Extra Python Collections - bags (multisets), setlists (ordered sets) and RangeMap',
+    'github_banner': True,
+    'travis_button': True,
+    'coveralls_button': True,
+    'analytics_id': 'UA-4495487-4',
+    'extra_nav_links': {
+        'PyPI': 'https://pypi.python.org/pypi/collections-extended',
+        },
+    }
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+html_theme_path = [alabaster.get_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -149,7 +156,7 @@ pygments_style = 'sphinx'
 # The name of an image file (within the static path) to use as favicon
 # of the docs.  This file should be a Windows icon file (.ico) being
 # 16x16 or 32x32 pixels large.
-#html_favicon = None
+html_favicon = 'favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets)
 # here, relative to this directory. They are copied after the builtin
@@ -166,7 +173,15 @@ html_last_updated_fmt = '%Y-%b-%d'
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        'relations.html',
+        'searchbox.html',
+        'donate.html',
+        ]
+    }
 
 # Additional templates that should be rendered to pages, maps page names
 # to template names.
