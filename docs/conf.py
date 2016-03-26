@@ -71,7 +71,7 @@ copyright = u'2016, Michael Lenzen'
 # the built documents.
 #
 # The short X.Y version.
-version = collections_extended.__version__
+version = collections_extended.__version__.rsplit(',', 1)[0]
 # The full version, including alpha/beta/rc tags.
 release = collections_extended.__version__
 
@@ -102,7 +102,7 @@ exclude_patterns = ['_build']
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
-#show_authors = False
+show_authors = True
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -131,7 +131,7 @@ html_theme_options = {
     'description': 'Extra Python Collections - bags (multisets), setlists (ordered sets) and RangeMap',
     'github_banner': True,
     'travis_button': True,
-    # 'codecov_button': True,
+    'coveralls_button': True,
     'analytics_id': 'UA-4495487-4',
     'extra_nav_links': {
         'PyPI': 'https://pypi.python.org/pypi/collections-extended',
