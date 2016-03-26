@@ -61,6 +61,7 @@ def test_set_existing_interval():
 	assert rm[1] == 'c'
 	assert rm[2] == 'b'
 	assert rm[3] == 'b'
+	assert rm == RangeMap({1: 'c', 2: 'b'})
 	with pytest.raises(KeyError):
 		rm[0]
 
