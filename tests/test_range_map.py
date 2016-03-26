@@ -95,11 +95,7 @@ def test_set_existing_interval():
 def test_set_consecutive_before_eq():
 	"""Test setting consecutive ranges to the same value."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
-<<<<<<< HEAD
-	print('setting')
-=======
 	print(rm._ordered_keys, rm._key_mapping)
->>>>>>> issue-43
 	rm[1:2] = 'b'
 	print(rm._ordered_keys, rm._key_mapping)
 	assert rm == RangeMap({1: 'b', 3: 'c'})
