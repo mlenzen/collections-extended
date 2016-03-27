@@ -167,7 +167,7 @@ class _basesetlist(Sequence, Set):
 
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
-	"""A mutable (unhashable) setlist that inherits from _basesetlist."""
+	"""A mutable (unhashable) setlist."""
 
 	# Implement MutableSequence
 	def __setitem__(self, index, value):
@@ -238,7 +238,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 	def extend(self, values):
 		"""Append all values to the end.
 
-		This should be atomic, if any of the values are present, ValueError will
+		If any of the values are present, ValueError will
 		be raised and none of the values will be appended.
 
 		Args:
@@ -283,6 +283,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 	def remove_all(self, elems_to_delete):
 		"""Remove all elements from elems_to_delete, raises ValueErrors.
 
+		See Also:
+			discard_all
 		Args:
 			elems_to_delete (Iterable): Elements to remove.
 		Raises:
@@ -366,7 +368,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 
 class frozensetlist(_basesetlist, Hashable):
-	"""An immutable (hashable) setlist that inherits from _basesetlist."""
+	"""An immutable (hashable) setlist."""
 
 	def __hash__(self):
 		return Set._hash(self)

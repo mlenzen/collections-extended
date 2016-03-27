@@ -37,8 +37,7 @@ class RangeMap(Container):
 
 	@classmethod
 	def from_mapping(cls, mapping):
-		"""Create a RangeMap from a mapping of interval starts to values.
-		"""
+		"""Create a RangeMap from a mapping of interval starts to values."""
 		obj = cls()
 		obj._init_from_mapping(mapping)
 		return obj

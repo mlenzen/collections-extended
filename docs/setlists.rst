@@ -1,5 +1,5 @@
-setlist
-=======
+setlists
+========
 
 A ``setlist`` is an ordered, indexed
 collection with unique elements.	It it more than just an **ordered Set**

@@ -21,19 +21,15 @@ Contents:
 	api
 	contributing
 
+Other Packages of Interest
+==========================
+
+- http://stutzbachenterprises.com/blist/ - b+ trees,
+- https://bitbucket.org/mozman/bintrees - Binary search trees
+- https://bidict.readthedocs.org/en/master/ - bijections
+
 :Author: Michael Lenzen
 :Copyright: 2016 Michael Lenzen
 :License: Apache License, Version 2.0
-:Documentation: http://collections-extended.lenzm.net/
-:GitHub: https://github.com/mlenzen/collections-extended
-:PyPI: https://pypi.python.org/pypi/collections-extended
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 .. _`tested against`: https://travis-ci.org/mlenzen/collections-extended

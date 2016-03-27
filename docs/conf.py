@@ -133,9 +133,7 @@ html_theme_options = {
     'travis_button': True,
     'coveralls_button': True,
     'analytics_id': 'UA-4495487-4',
-    'extra_nav_links': {
-        'PyPI': 'https://pypi.python.org/pypi/collections-extended',
-        },
+    'pypi_name': 'collections-extended',
     }
 
 # Add any paths that contain custom themes here, relative to this directory.
