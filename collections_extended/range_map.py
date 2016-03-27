@@ -31,38 +31,9 @@ class First():
 		return 'First()'
 
 
-class Last():
-	"""A class that's less than everything."""
-
-	def __eq__(self, other):
-		return isinstance(other, Last)
-
-	def __ne__(self, other):
-		return not self == other
-
-	def __lt__(self, other):
-		return False
-
-	def __le__(self, other):
-		return isinstance(other, Last)
-
-	def __gt__(self, other):
-		return self != other
-
-	def __ge__(self, other):
-		return True
-
-	def __hash__(self):
-		return 1
-
-	def __repr__(self):
-		return 'Last()'
-
-
 # Used to mark unmapped ranges
 _empty = object()
 _first = First()
-_last = Last()
 
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
@@ -90,8 +61,8 @@ class RangeMap(Container):
 
 	def __repr__(self):
 		return 'RangeMap(%s)' % ', '.join(['({start}, {stop}): {value}'.format(
-			start=item.start if item.start != _first else None,
-			stop=item.stop if item.stop != _last else None,
+			start=item.start,
+			stop=item.stop,
 			value=repr(item.value),
 			) for item in self.ranges()])
 
@@ -113,18 +84,21 @@ class RangeMap(Container):
 			MappedRange
 		"""
 		if start is None:
+			start_loc = 1
 			start = _first
+		else:
+			start_loc = bisect_right(self._ordered_keys, start)
 		if stop is None:
-			stop = _last
-		start_loc = bisect_right(self._ordered_keys, start)
-		stop_loc = bisect_left(self._ordered_keys, stop)
+			stop_loc = len(self._ordered_keys)
+		else:
+			stop_loc = bisect_left(self._ordered_keys, stop)
 		candidate_keys = [start] + self._ordered_keys[start_loc:stop_loc] + [stop]
 		for start_key, stop_key in zip(candidate_keys[:-1], candidate_keys[1:]):
 			value = self.__getitem(start_key)
 			if value is not _empty:
 				if start_key == _first:
 					start_key = None
-				if stop_key == _last:
+				if stop_key == _first:
 					stop_key = None
 				yield MappedRange(start_key, stop_key, value)
 
@@ -189,6 +163,10 @@ class RangeMap(Container):
 	def delete(self, start=None, stop=None):
 		"""Delete the range from start to stop from self."""
 		self.set(_empty, start=start, stop=stop)
+
+	def clear(self):
+		self._ordered_keys = [_first]
+		self._key_mapping = {_first: _empty}
 
 	def __eq__(self, other):
 		if isinstance(other, RangeMap):

@@ -63,7 +63,7 @@ setup(
 		],
 	long_description = open(join(dirname(__file__), 'README.rst')).read(),
 	install_requires=['setuptools'],
-	tests_require=['pytest', 'hypothesis'],
+	tests_require=['pytest'],
 	package_data={'': ['README.rst', 'LICENSE', 'CONTRIBUTING.rst']},
 	cmdclass={'test': PyTest},
 	)
