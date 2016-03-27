@@ -1,5 +1,5 @@
 """Tests for RangeMap class."""
-from datetime import date
+import datetime
 
 # from hypothesis import given
 # from hypothesis.strategies import integers
@@ -181,12 +181,12 @@ def test_alter_beg():
 def test_dates():
 	"""Test using dates."""
 	rm = RangeMap()
-	rm.set('b', date(1936, 12, 11))
-	rm.set('a', date(1952, 2, 6))
-	assert rm[date(1945, 1, 1)] == 'b'
-	assert rm[date(1965, 4, 6)] == 'a'
+	rm.set('b', datetime.date(1936, 12, 11))
+	rm.set('a', datetime.date(1952, 2, 6))
+	assert rm[datetime.date(1945, 1, 1)] == 'b'
+	assert rm[datetime.date(1965, 4, 6)] == 'a'
 	with pytest.raises(KeyError):
-		rm[date(1900, 1, 1)]
+		rm[datetime.date(1900, 1, 1)]
 
 
 def test_version_differences():
@@ -255,12 +255,28 @@ def test_str():
 	assert str(RangeMap()) == 'RangeMap()'
 	rm = RangeMap(default_value='a')
 	print(rm._ordered_keys, rm._key_mapping)
-	assert str(rm) == "RangeMap((None, None): 'a')"
-	assert str(RangeMap({1: 'b'})) == "RangeMap((1, None): 'b')"
+	assert str(rm) == "RangeMap((None, None): a)"
+	assert str(RangeMap({1: 'b'})) == "RangeMap((1, None): b)"
 	assert (
 		str(RangeMap({1: 'b'}, default_value='a')) ==
-		"RangeMap((None, 1): 'a', (1, None): 'b')"
+		"RangeMap((None, 1): a, (1, None): b)"
 		)
+
+
+def test_repr():
+	test_objects = [
+		RangeMap(),
+		RangeMap(default_value='a'),
+		RangeMap({1: 'a'}),
+		RangeMap([(1, 2, 'a'), (2, 3, 'b')]),
+		RangeMap([(1, 2, 'a'), (3, 4, 'b')]),
+		RangeMap([
+			(datetime.date(2015, 1, 1), datetime.date(2015, 1, 2), 'a'),
+			(datetime.date(2015, 1, 2), datetime.date(2015, 1, 3), 'b'),
+			]),
+		]
+	for obj in test_objects:
+		assert eval(repr(obj)) == obj
 
 
 def test_eq():

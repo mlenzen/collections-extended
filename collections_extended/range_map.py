@@ -31,7 +31,7 @@ class RangeMap(Container):
 		self._key_mapping = {_first: default_value}
 		if iterable:
 			if isinstance(iterable, Mapping):
-				self._init_from_mapping(iterable, default_value=default_value)
+				self._init_from_mapping(iterable)
 			else:
 				self._init_from_iterable(iterable)
 
@@ -61,13 +61,21 @@ class RangeMap(Container):
 		for start, stop, value in iterable:
 			self.set(value, start=start, stop=stop)
 
-	def __repr__(self):
-		values = ', '.join(['({start}, {stop}): {value!r}'.format(
+	def __str__(self):
+		values = ', '.join(['({start}, {stop}): {value}'.format(
 			start=item.start,
 			stop=item.stop,
 			value=item.value,
 			) for item in self.ranges()])
 		return 'RangeMap(%s)' % values
+
+	def __repr__(self):
+		values = ', '.join(['({start!r}, {stop!r}, {value!r})'.format(
+			start=item.start,
+			stop=item.stop,
+			value=item.value,
+			) for item in self.ranges()])
+		return 'RangeMap([%s])' % values
 
 	def _bisect_left(self, key):
 		if key == _first:
