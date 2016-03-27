@@ -19,27 +19,34 @@ __all__ = (
 	)
 
 
-def collection(it=(), mutable=True, ordered=False, unique=False):
-	"""Return a Collection with the specified properties."""
+def collection(iterable=None, mutable=True, ordered=False, unique=False):
+	"""Return a Collection with the specified properties.
+
+	Args:
+		iterable (Iterable): collection to instantiate new collection from.
+		mutable (bool): Whether or not the new collection is mutable.
+		ordered (bool): Whether or not the new collection is ordered.
+		unique (bool): Whether or not the new collection contains only unique values.
+	"""
 	if unique:
 		if ordered:
 			if mutable:
-				return setlist(it)
+				return setlist(iterable)
 			else:
-				return frozensetlist(it)
+				return frozensetlist(iterable)
 		else:
 			if mutable:
-				return set(it)
+				return set(iterable)
 			else:
-				return frozenset(it)
+				return frozenset(iterable)
 	else:
 		if ordered:
 			if mutable:
-				return list(it)
+				return list(iterable)
 			else:
-				return tuple(it)
+				return tuple(iterable)
 		else:
 			if mutable:
-				return bag(it)
+				return bag(iterable)
 			else:
-				return frozenbag(it)
+				return frozenbag(iterable)
