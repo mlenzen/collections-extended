@@ -3,37 +3,9 @@ from bisect import bisect_left, bisect_right
 from collections import namedtuple, Container
 
 
-class First():
-	"""A class that's less than everything."""
-
-	def __eq__(self, other):
-		return isinstance(other, First)
-
-	def __ne__(self, other):
-		return not isinstance(other, First)
-
-	def __lt__(self, other):
-		return self != other
-
-	def __le__(self, other):
-		return True
-
-	def __gt__(self, other):
-		return False
-
-	def __ge__(self, other):
-		return self == other
-
-	def __hash__(self):
-		return 0
-
-	def __repr__(self):
-		return 'First()'
-
-
 # Used to mark unmapped ranges
 _empty = object()
-_first = First()
+_first = object()
 
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
@@ -77,6 +49,18 @@ class RangeMap(Container):
 			obj.set(value, start=start, stop=stop)
 		return obj
 
+	def _bisect_left(self, key):
+		if key == _first:
+			return 0
+		else:
+			return bisect_left(self._ordered_keys, key, lo=1)
+
+	def _bisect_right(self, key):
+		if key == _first:
+			return 0
+		else:
+			return bisect_right(self._ordered_keys, key, lo=1)
+
 	def ranges(self, start=None, stop=None):
 		"""Generate MappedRanges for all mapped ranges.
 
@@ -87,19 +71,17 @@ class RangeMap(Container):
 			start_loc = 1
 			start = _first
 		else:
-			start_loc = bisect_right(self._ordered_keys, start)
+			start_loc = self._bisect_right(start)
 		if stop is None:
 			stop_loc = len(self._ordered_keys)
 		else:
-			stop_loc = bisect_left(self._ordered_keys, stop)
+			stop_loc = self._bisect_left(stop)
 		candidate_keys = [start] + self._ordered_keys[start_loc:stop_loc] + [stop]
 		for start_key, stop_key in zip(candidate_keys[:-1], candidate_keys[1:]):
 			value = self.__getitem(start_key)
 			if value is not _empty:
 				if start_key == _first:
 					start_key = None
-				if stop_key == _first:
-					stop_key = None
 				yield MappedRange(start_key, stop_key, value)
 
 	def __contains__(self, value):
@@ -110,7 +92,7 @@ class RangeMap(Container):
 		try:
 			return self._key_mapping[key]
 		except KeyError:
-			loc = bisect_right(self._ordered_keys, key) - 1
+			loc = self._bisect_right(key) - 1
 			return self._key_mapping[self._ordered_keys[loc]]
 
 	def get(self, key, restval=None):
@@ -135,7 +117,7 @@ class RangeMap(Container):
 			start = _first
 			start_index = 0
 		else:
-			start_index = bisect_left(self._ordered_keys, start)
+			start_index = self._bisect_left(start)
 			prev_key = self._ordered_keys[start_index - 1]
 			prev_value = self._key_mapping[prev_key]
 			if prev_value == value:
@@ -145,10 +127,10 @@ class RangeMap(Container):
 			new_keys = [start]
 			stop_index = len(self._ordered_keys)
 		else:
-			stop_index = bisect_left(self._ordered_keys, stop)
+			stop_index = self._bisect_left(stop)
 			new_keys = [start, stop]
 			self._key_mapping[stop] = self.__getitem(stop)
-			if stop_index != len(self._ordered_keys):
+			if stop_index < len(self._ordered_keys):
 				next_key = self._ordered_keys[stop_index]
 				if next_key == stop:
 					new_keys = [start]
