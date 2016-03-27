@@ -1,6 +1,6 @@
 """RangeMap class definition."""
 from bisect import bisect_left, bisect_right
-from collections import namedtuple, Container
+from collections import namedtuple, Container, Mapping
 
 
 # Used to mark unmapped ranges
@@ -13,30 +13,39 @@ MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 class RangeMap(Container):
 	"""Map ranges of orderable elements to values."""
 
-	def __init__(self, mapping=None, default_value=_empty):
+	def __init__(self, iterable=None, default_value=_empty):
 		"""Create a RangeMap.
 
+		A mapping or other iterable can be passed to initialize the RangeMap.
 		If mapping is passed, it is interpreted as a mapping from range start
 		indices to values.
+		If an iterable is passed, each element will define a range in the
+		RangeMap and should be formatted (start, stop, value).
 
 		Args:
-			mapping: A Mapping from range start dates to values. The end of each
-				range is the beginning of the next
+			iterable: A Mapping or an Iterable to initialize from.
 			default_value: If passed, the return value for all keys less than the
 				least key in mapping. If no mapping, the return value for all keys.
 		"""
 		self._ordered_keys = [_first]
 		self._key_mapping = {_first: default_value}
-		if mapping:
-			for key, value in sorted(mapping.items()):
-				self.set(value, key)
+		if iterable:
+			if isinstance(iterable, Mapping):
+				self._init_from_mapping(iterable, default_value=default_value)
+			else:
+				self._init_from_iterable(iterable)
 
-	def __repr__(self):
-		return 'RangeMap(%s)' % ', '.join(['({start}, {stop}): {value}'.format(
-			start=item.start,
-			stop=item.stop,
-			value=repr(item.value),
-			) for item in self.ranges()])
+	@classmethod
+	def from_mapping(cls, mapping):
+		"""Create a RangeMap from a mapping of interval starts to values.
+		"""
+		obj = cls()
+		obj._init_from_mapping(mapping)
+		return obj
+
+	def _init_from_mapping(self, mapping):
+		for key, value in sorted(mapping.items()):
+			self.set(value, key)
 
 	@classmethod
 	def from_iterable(cls, iterable):
@@ -45,9 +54,20 @@ class RangeMap(Container):
 		Each element of the iterable is a tuple (start, stop, value).
 		"""
 		obj = cls()
-		for start, stop, value in iterable:
-			obj.set(value, start=start, stop=stop)
+		obj._init_from_iterable(iterable)
 		return obj
+
+	def _init_from_iterable(self, iterable):
+		for start, stop, value in iterable:
+			self.set(value, start=start, stop=stop)
+
+	def __repr__(self):
+		values = ', '.join(['({start}, {stop}): {value!r}'.format(
+			start=item.start,
+			stop=item.stop,
+			value=item.value,
+			) for item in self.ranges()])
+		return 'RangeMap(%s)' % values
 
 	def _bisect_left(self, key):
 		if key == _first:
