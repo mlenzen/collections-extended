@@ -187,9 +187,8 @@ class RangeMap(Container):
 			if self.__getitem(start) == _empty:
 				raise KeyError((start, stop))
 		existing_range = self.get_range(start, stop)
-		sub_ranges = list(existing_range.ranges())
-		for sub in sub_ranges[:-1]:
-			if self.__getitem(sub.stop) == _empty:
+		for sub in existing_range.ranges():
+			if sub.stop is not None and self.__getitem(sub.stop) == _empty:
 				raise KeyError((start, stop))
 		self.set(_empty, start=start, stop=stop)
 
