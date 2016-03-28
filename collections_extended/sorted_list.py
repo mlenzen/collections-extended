@@ -3,6 +3,7 @@
 import bisect
 from collections import MutableSequence
 
+from . import _compat
 
 class SortedList(MutableSequence):
 	"""Extends list and keeps values in sorted order.
@@ -16,21 +17,21 @@ class SortedList(MutableSequence):
 	added then modified.
 	"""
 
-	def __init__(self, iterable=None, key=None, reverse=None):
-		self._data = list(sorted(iterable, key=key, reverse=reverse))
+	def __init__(self, iterable=None, key=None, reversed=False):
+		self._data = list(sorted(iterable, key=key, reverse=reversed))
 		# TODO this is inefficient, should only evaluate keys once
-		self._set_key_data(key, reverse)
+		self._set_key_data(key, reversed)
 
-	def sort(self, key=None, reverse=False):
-		self._data.sort(key=key, reverse=reverse)
+	def sort(self, key=None, reversed=False):
+		self._data.sort(key=key, reverse=reversed)
 		# TODO this is inefficient, should only evaluate keys once
-		self._set_key_data(key, reverse)
+		self._set_key_data(key, reversed)
 
-	def _set_key_data(self, key, reverse):
+	def _set_key_data(self, key, reversed):
 		self._key = key
-		self._reverse = reverse
+		self._reversed = reversed
 		if self._key:
-			self._keys = [self.key(v for v in self._data)]
+			self._keys = [self.key(v) for v in self._data]
 		else:
 			self._keys = self._data
 
@@ -44,16 +45,21 @@ class SortedList(MutableSequence):
 	@key.setter
 	def key(self, new_value):
 		if new_value != self._key:
-			self.sort(key=new_value, reverse=self.reverse)
+			self.sort(key=new_value, reversed=self.reversed)
 
 	@property
-	def reverse(self):
-		return self._reverse
+	def reversed(self):
+		return self._reversed
 
-	@reverse.setter
-	def reverse(self, new_value):
-		if new_value != self._reverse:
-			self.sort(key=self.key, reverse=new_value)
+	@reversed.setter
+	def reversed(self, new_value):
+		if new_value != self._reversed:
+			self.reverse()
+
+	def reverse(self):
+		self._data.reverse()
+		self._keys.reverse()
+		self._reversed = not self._reversed
 
 	def __str__(self):
 		return str(self._data)
@@ -145,3 +151,33 @@ class SortedList(MutableSequence):
 		return i
 
 	index = index_left
+
+	def __eq__(self, other):
+		if not isinstance(other, SortedList):
+			return False
+		return self._data == other._data
+
+	def __ne__(self, other):
+		if not isinstance(other, SortedList):
+			return True
+		return self._data != other._data
+
+	def __gt__(self, other):
+		if not isinstance(other, SortedList):
+			_compat.handle_rich_comp_not_implemented()
+		return self._data > other._data
+
+	def __ge__(self, other):
+		if not isinstance(other, SortedList):
+			_compat.handle_rich_comp_not_implemented()
+		return self._data >= other._data
+
+	def __lt__(self, other):
+		if not isinstance(other, SortedList):
+			_compat.handle_rich_comp_not_implemented()
+		return self._data < other._data
+
+	def __le__(self, other):
+		if not isinstance(other, SortedList):
+			_compat.handle_rich_comp_not_implemented()
+		return self._data <= other._data
