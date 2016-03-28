@@ -45,5 +45,26 @@ def test_count():
 	assert sl.count(3) == 2
 	assert sl.count(4) == 1
 	assert sl.count(5) == 0
-	sl = SortedList([1, 2, 4, 2], key=lambda i: i % 2)
+	sl = SortedList([1, 2, 4, 3, 2, 1], key=lambda i: i % 2)
+	print(sl)
 	assert sl.count(2) == 2
+
+def test_insert():
+	sl = SortedList([1, 2, 2, 2, 3, 3, 4])
+	sl.insert(0, 0)
+	assert sl == SortedList([0, 1, 2, 2, 2, 3, 3, 4])
+	sl.insert(1, 1)
+	assert sl == SortedList([0, 1, 1, 2, 2, 2, 3, 3, 4])
+	sl.insert(9, 4)
+	assert sl == SortedList([0, 1, 1, 2, 2, 2, 3, 3, 4, 4])
+	with pytest.raises(ValueError):
+		sl.insert(0, 1)
+	with pytest.raises(ValueError):
+		sl.insert(4, 1)
+	with pytest.raises(ValueError):
+		sl.insert(11, 1)
+	sl = SortedList([4, 3, 2, 1], reversed=True)
+	with pytest.raises(ValueError):
+		sl.insert(0, 1)
+	with pytest.raises(ValueError):
+		sl.insert(1, 2)

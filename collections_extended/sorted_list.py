@@ -6,7 +6,7 @@ from collections import MutableSequence
 from . import _compat
 
 class SortedList(MutableSequence):
-	"""Extends list and keeps values in sorted order.
+	"""A list that keeps values in sorted order.
 
 	A key can be specified like for sorted.
 
@@ -79,10 +79,11 @@ class SortedList(MutableSequence):
 	# Implement Sequence
 	def __getitem__(self, index):
 		return self._data.__getitem__(index)
+		# Have to search a range because multiple values may have the same key value
 
 	def count(self, value, start=0, end=None):
 		out = 0
-		min_i, max_i = self._get_min_max_index(value, start, end)
+		min_i, max_i = self.possible_range(value, start, end)
 		# Have to search a range because multiple values may have the same key value
 		for i in range(min_i, max_i):
 			if self._data[i] == value:
@@ -110,19 +111,43 @@ class SortedList(MutableSequence):
 			self._keys.insert(value_key)
 
 	def insert(self, index, value):
+		"""Insert value at index.
+
+		Args:
+			index (int): Index at which to insert value.
+			value: Value to insert.
+		Raises:
+			ValueError: If the index is not an acceptible place for value.
+		"""
+		if index < 0 or index > len(self):
+			raise ValueError
 		value_key = self.key(value)
-		if index - 1 >= 0 and value_key < self._keys[index - 1]:
-			raise ValueError
-		if index + 1 < len(self) and value_key > self._keys[index + 1]:
-			raise ValueError
+		prev_index = index - 1		# Have to search a range because multiple values may have the same key value
+
+		if prev_index >= 0:
+			if self.reversed:
+				if value_key > self._keys[prev_index]:
+					raise ValueError
+			else:
+				if value_key < self._keys[prev_index]:
+					raise ValueError
+		if index < len(self):
+			if self.reversed:
+				if value_key < self._keys[index]:
+					raise ValueError
+			else:
+				if value_key > self._keys[index]:
+					raise ValueError
 		self._insert(index, value, value_key)
 
 	def add_left(self, value):
+		"""Insert value into the leftmost possible position."""
 		value_key = self.key(value)
 		index = bisect.bisect_left(self._keys, value_key)
 		self._insert(index, value, value_key)
 
 	def add_right(self, value):
+		"""Insert value into the rightmost possible position."""
 		value_key = self.key(value)
 		index = bisect.bisect_right(self._keys, value_key)
 		self._insert(index, value, value_key)
@@ -130,15 +155,22 @@ class SortedList(MutableSequence):
 	add = add_right
 
 	def index(self, value, start=0, stop=None):
-		"""Return the index of the first occurence of value."""
-		min_i, max_i = self._get_min_max_index(value, start, stop)
-		# Have to search a range because multiple values may have the same key value
-		for i in range(min_i, max_i):
-			if self._data[i] == value:
-				return i
-		raise ValueError
+		"""Return the index of the first occurence of value.
 
-	def _get_min_max_index(self, value, start, stop):
+		This is a lot faster than searching a list.
+
+		Args:
+			value: The value to find.
+			start (int): Index to start searching at.
+			stop (int): Index to stop searching at.
+		Raises:
+			ValueError: If the value is not present.
+		"""
+		min_i, max_i = self.possible_range(value, start, stop)
+		return self._data.index(value, min_i, max_i)
+
+	def possible_range(self, value, start=0, stop=None):
+		"""Return the range that might contain value."""
 		value_key = self.key(value)
 		# Can't pass a stop value = None here because of a bug in python
 		if stop is None:
