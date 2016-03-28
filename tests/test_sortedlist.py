@@ -48,6 +48,7 @@ def test_count():
 	sl = SortedList([1, 2, 4, 3, 2, 1], key=lambda i: i % 2)
 	print(sl)
 	assert sl.count(2) == 2
+	assert sl.index(4) == 5
 
 def test_insert():
 	sl = SortedList([1, 2, 2, 2, 3, 3, 4])
