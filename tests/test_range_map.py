@@ -236,8 +236,10 @@ def test_delete():
 	rm.delete(start=5)
 	assert rm == RangeMap.from_iterable(((1, 2, 'a'), (4, 5, 'd')))
 
-	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
 	del rm[2:3]
+	assert rm == RangeMap([(1, 2, 'a'), (3, None, 'c')])
+	print(repr(rm))
 	with pytest.raises(KeyError):
 		del rm[2:3]
 	with pytest.raises(KeyError):

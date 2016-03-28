@@ -180,8 +180,17 @@ class RangeMap(Container):
 		Raises:
 			KeyError: If part of the passed range isn't mapped.
 		"""
-		if self.get_range(start, stop):
-			raise KeyError((start, stop))
+		if start is None:
+			if self.__getitem(_first) == _empty:
+				raise KeyError((start, stop))
+		else:
+			if self.__getitem(start) == _empty:
+				raise KeyError((start, stop))
+		existing_range = self.get_range(start, stop)
+		sub_ranges = list(existing_range.ranges())
+		for sub in sub_ranges[:-1]:
+			if self.__getitem(sub.stop) == _empty:
+				raise KeyError((start, stop))
 		self.set(_empty, start=start, stop=stop)
 
 	def empty(self, start=None, stop=None):
