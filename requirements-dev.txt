@@ -2,8 +2,6 @@
 bumpversion
 pytest
 sphinx
-sphinxcontrib-napoleon
-sphinx-rtd-theme
 wheel
 ipython
 flake8
