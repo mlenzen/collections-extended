@@ -203,6 +203,15 @@ def test_delete():
 	rm.delete(start=5)
 	assert rm == RangeMap.from_iterable(((1, 2, 'a'), (4, 5, 'd')))
 
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+	del rm[2:3]
+	with pytest.raises(KeyError):
+		del rm[2:3]
+	with pytest.raises(KeyError):
+		del rm[0:2]
+	with pytest.raises(KeyError):
+		del rm[2.5:3.5]
+
 
 def test_delitem():
 	"""Test RangeMap.__delitem__."""
@@ -222,13 +231,6 @@ def test_str():
 		str(RangeMap({1: 'b'}, default_value='a')) ==
 		"RangeMap((None, 1): 'a', (1, None): 'b')"
 		)
-	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
-	del rm[2:3]
-	with pytest.raises(KeyError):
-		del rm[2:3]
-	with pytest.raises(KeyError):
-		del rm[0:2]
-
 
 def test_empty():
 	"""Test RangeMap.empty."""
@@ -240,9 +242,12 @@ def test_empty():
 		(3, 4, 'c'),
 		(4, None, 'd'),
 		))
-	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd'})
-	assert rm == RangeMap({2: 'b', 3: 'c', 4: 'd'})
-
+	rm.empty(3.5, 4.5)
+	assert rm == RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(3, 3.5, 'c'),
+		(4.5, None, 'd'),
+		))
 
 def test_eq():
 	"""Test __eq__."""

@@ -120,6 +120,8 @@ class RangeMap(Container):
 		Raises:
 			KeyError: If part of the passed range isn't mapped.
 		"""
+		if self.get_range(start, stop):
+			raise KeyError((start, stop))
 		self.set(_empty, start=start, stop=stop)
 
 	def empty(self, start=None, stop=None):
@@ -144,7 +146,7 @@ class RangeMap(Container):
 		else:
 			value = self.__getitem(key)
 			if value is _empty:
-				raise KeyError()
+				raise KeyError(key)
 			else:
 				return value
 
