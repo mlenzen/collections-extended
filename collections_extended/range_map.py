@@ -114,6 +114,11 @@ class RangeMap(Container):
 	def __contains__(self, value):
 		return self.__getitem(value) is not _empty
 
+	def __bool__(self):
+		return len(self._ordered_keys) > 1 or self._key_mapping[self._ordered_keys[0]] != _empty
+
+	__nonzero__ = __bool__
+
 	def __getitem(self, key):
 		"""Get the value for a key (not a slice)."""
 		try:

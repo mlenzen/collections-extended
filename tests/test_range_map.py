@@ -215,6 +215,13 @@ def test_slice_errors():
 		rm[3:5:2] = 'z'
 
 
+def test_bool():
+	assert not bool(RangeMap())
+	assert bool(RangeMap(default_value='a'))
+	assert bool(RangeMap({1: 1}))
+	assert bool(RangeMap([(1, 2, 3)]))
+
+
 def test_delete():
 	"""Test deleting."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
