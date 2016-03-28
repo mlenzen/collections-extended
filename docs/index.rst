@@ -1,7 +1,7 @@
 collections_extended's documentation
 ====================================
 
-``collections_extended``, provides
+``collections_extended`` is a Python module providing
 a ``bag`` class, AKA **multiset**,
 a ``setlist`` class, which is a **unique list** or **ordered set**,
 a ``bijection`` class and ``RangeMap`` which is a mapping from ranges to values.
@@ -21,19 +21,15 @@ Contents:
 	api
 	contributing
 
+Other Packages of Interest
+==========================
+
+- http://stutzbachenterprises.com/blist/ - b+ trees,
+- https://bitbucket.org/mozman/bintrees - Binary search trees
+- https://bidict.readthedocs.org/en/master/ - bijections
+
 :Author: Michael Lenzen
 :Copyright: 2016 Michael Lenzen
 :License: Apache License, Version 2.0
-:Documentation: http://collections-extended.lenzm.net/
-:GitHub: https://github.com/mlenzen/collections-extended
-:PyPI: https://pypi.python.org/pypi/collections-extended
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 .. _`tested against`: https://travis-ci.org/mlenzen/collections-extended

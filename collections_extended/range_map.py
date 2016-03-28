@@ -1,9 +1,11 @@
 """RangeMap class definition."""
 from bisect import bisect_left, bisect_right
-from collections import namedtuple, Container
+from collections import namedtuple, Container, Mapping
+
 
 # Used to mark unmapped ranges
 _empty = object()
+_first = object()
 
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
@@ -11,30 +13,38 @@ MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 class RangeMap(Container):
 	"""Map ranges of orderable elements to values."""
 
-	def __init__(self, mapping=None, default_value=_empty):
+	def __init__(self, iterable=None, default_value=_empty):
 		"""Create a RangeMap.
 
+		A mapping or other iterable can be passed to initialize the RangeMap.
 		If mapping is passed, it is interpreted as a mapping from range start
 		indices to values.
+		If an iterable is passed, each element will define a range in the
+		RangeMap and should be formatted (start, stop, value).
 
 		Args:
-			mapping: A Mapping from range start dates to values. The end of each
-				range is the beginning of the next
+			iterable: A Mapping or an Iterable to initialize from.
 			default_value: If passed, the return value for all keys less than the
 				least key in mapping. If no mapping, the return value for all keys.
 		"""
-		self._ordered_keys = [None]
-		self._key_mapping = {None: default_value}
-		if mapping:
-			for key, value in sorted(mapping.items()):
-				self.set(value, key)
+		self._ordered_keys = [_first]
+		self._key_mapping = {_first: default_value}
+		if iterable:
+			if isinstance(iterable, Mapping):
+				self._init_from_mapping(iterable)
+			else:
+				self._init_from_iterable(iterable)
 
-	def __repr__(self):
-		return 'RangeMap(%s)' % ', '.join(['({start}, {stop}): {value}'.format(
-			start=item.start,
-			stop=item.stop,
-			value=repr(item.value),
-			) for item in self.ranges()])
+	@classmethod
+	def from_mapping(cls, mapping):
+		"""Create a RangeMap from a mapping of interval starts to values."""
+		obj = cls()
+		obj._init_from_mapping(mapping)
+		return obj
+
+	def _init_from_mapping(self, mapping):
+		for key, value in sorted(mapping.items()):
+			self.set(value, key)
 
 	@classmethod
 	def from_iterable(cls, iterable):
@@ -43,9 +53,40 @@ class RangeMap(Container):
 		Each element of the iterable is a tuple (start, stop, value).
 		"""
 		obj = cls()
-		for start, stop, value in iterable:
-			obj.set(value, start=start, stop=stop)
+		obj._init_from_iterable(iterable)
 		return obj
+
+	def _init_from_iterable(self, iterable):
+		for start, stop, value in iterable:
+			self.set(value, start=start, stop=stop)
+
+	def __str__(self):
+		values = ', '.join(['({start}, {stop}): {value}'.format(
+			start=item.start,
+			stop=item.stop,
+			value=item.value,
+			) for item in self.ranges()])
+		return 'RangeMap(%s)' % values
+
+	def __repr__(self):
+		values = ', '.join(['({start!r}, {stop!r}, {value!r})'.format(
+			start=item.start,
+			stop=item.stop,
+			value=item.value,
+			) for item in self.ranges()])
+		return 'RangeMap([%s])' % values
+
+	def _bisect_left(self, key):
+		if key == _first:
+			return 0
+		else:
+			return bisect_left(self._ordered_keys, key, lo=1)
+
+	def _bisect_right(self, key):
+		if key == _first:
+			return 0
+		else:
+			return bisect_right(self._ordered_keys, key, lo=1)
 
 	def ranges(self, start=None, stop=None):
 		"""Generate MappedRanges for all mapped ranges.
@@ -53,30 +94,38 @@ class RangeMap(Container):
 		Yields:
 			MappedRange
 		"""
-		candidate_keys = self._ordered_keys[:]
-		if stop is not None:
-			stop_loc = bisect_left(self._ordered_keys, stop, lo=1)
-			candidate_keys = candidate_keys[:stop_loc]
-		if start is not None:
-			start_loc = bisect_right(self._ordered_keys, start, lo=1) - 1
-			candidate_keys = candidate_keys[start_loc:]
-		candidate_keys[0] = start
-		candidate_keys.append(stop)
+		if start is None:
+			start_loc = 1
+			start = _first
+		else:
+			start_loc = self._bisect_right(start)
+		if stop is None:
+			stop_loc = len(self._ordered_keys)
+		else:
+			stop_loc = self._bisect_left(stop)
+		candidate_keys = [start] + self._ordered_keys[start_loc:stop_loc] + [stop]
 		for start_key, stop_key in zip(candidate_keys[:-1], candidate_keys[1:]):
-			try:
-				value = self._key_mapping[start_key]
-			except KeyError:
-				value = self.__getitem(start_key)
+			value = self.__getitem(start_key)
 			if value is not _empty:
+				if start_key == _first:
+					start_key = None
 				yield MappedRange(start_key, stop_key, value)
 
 	def __contains__(self, value):
 		return self.__getitem(value) is not _empty
 
+	def __bool__(self):
+		return len(self._ordered_keys) > 1 or self._key_mapping[self._ordered_keys[0]] != _empty
+
+	__nonzero__ = __bool__
+
 	def __getitem(self, key):
-		"""Helper method."""
-		loc = bisect_right(self._ordered_keys, key, lo=1) - 1
-		return self._key_mapping[self._ordered_keys[loc]]
+		"""Get the value for a key (not a slice)."""
+		try:
+			return self._key_mapping[key]
+		except KeyError:
+			loc = self._bisect_right(key) - 1
+			return self._key_mapping[self._ordered_keys[loc]]
 
 	def get(self, key, restval=None):
 		"""Get the value of the range containing key, otherwise return restval."""
@@ -97,20 +146,31 @@ class RangeMap(Container):
 	def set(self, value, start=None, stop=None):
 		"""Set the range from start to stop to value."""
 		if start is None:
+			start = _first
 			start_index = 0
 		else:
-			start_index = bisect_left(self._ordered_keys, start, 1)
+			start_index = self._bisect_left(start)
+			prev_key = self._ordered_keys[start_index - 1]
+			prev_value = self._key_mapping[prev_key]
+			if prev_value == value:
+				start_index -= 1
+				start = prev_key
 		if stop is None:
-			stop_index = len(self._ordered_keys)
 			new_keys = [start]
+			stop_index = len(self._ordered_keys)
 		else:
-			stop_index = bisect_right(self._ordered_keys, stop, 1)
+			stop_index = self._bisect_left(stop)
 			new_keys = [start, stop]
-			stop_value = self.__getitem(stop)
+			self._key_mapping[stop] = self.__getitem(stop)
+			if stop_index < len(self._ordered_keys):
+				next_key = self._ordered_keys[stop_index]
+				if next_key == stop:
+					new_keys = [start]
+					next_value = self._key_mapping[next_key]
+					if next_value == value:
+						stop_index += 1
 		for key in self._ordered_keys[start_index:stop_index]:
 			del self._key_mapping[key]
-		if stop is not None:
-			self._key_mapping[stop] = stop_value
 		self._ordered_keys[start_index:stop_index] = new_keys
 		self._key_mapping[start] = value
 
@@ -130,6 +190,10 @@ class RangeMap(Container):
 		Like delete, but no Error is raised if the entire range isn't mapped.
 		"""
 		self.set(_empty, start=start, stop=stop)
+
+	def clear(self):
+		self._ordered_keys = [_first]
+		self._key_mapping = {_first: _empty}
 
 	def __eq__(self, other):
 		if isinstance(other, RangeMap):

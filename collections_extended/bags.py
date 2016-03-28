@@ -372,10 +372,7 @@ class _basebag(Set):
 
 
 class bag(_basebag, MutableSet):
-	"""bag is a mutable _basebag.
-
-	Thus not hashable and unusable for dict keys or in other sets.
-	"""
+	"""bag is a mutable unhashable bag."""
 
 	def pop(self):
 		"""Remove and return an element of self."""
@@ -497,10 +494,7 @@ class bag(_basebag, MutableSet):
 
 
 class frozenbag(_basebag, Hashable):
-	"""frozenbag is an immutable _basebag.
-
-	Thus it is Hashable and usable for dict keys
-	"""
+	"""frozenbag is an immutable, hashable bab."""
 
 	def __hash__(self):
 		"""Compute the hash value of a frozenbag.

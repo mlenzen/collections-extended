@@ -27,6 +27,7 @@ pip-log.txt
 htmlcov
 .tox
 nosetests.xml
+.hypothesis
 
 # Translations
 *.mo
@@ -52,3 +53,4 @@ env
 dev-env
 
 .cache
+.hypothesis

@@ -1,6 +1,8 @@
 """Tests for RangeMap class."""
-from datetime import date
+import datetime
 
+# from hypothesis import given
+# from hypothesis.strategies import integers
 import pytest
 
 from collections_extended._compat import is_py2
@@ -61,8 +63,32 @@ def test_set_existing_interval():
 	assert rm[1] == 'c'
 	assert rm[2] == 'b'
 	assert rm[3] == 'b'
+	assert rm == RangeMap({1: 'c', 2: 'b'})
 	with pytest.raises(KeyError):
 		rm[0]
+
+
+def test_set_consecutive_before_eq():
+	"""Test setting consecutive ranges to the same value."""
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
+	print(rm._ordered_keys, rm._key_mapping)
+	rm.set('b', 1, 2)
+	print(rm._ordered_keys, rm._key_mapping)
+	assert rm == RangeMap({1: 'b', 3: 'c'})
+
+
+def test_set_consecutive_after_eq():
+	"""Test setting consecutive ranges to the same value."""
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
+	rm.set('a', 2, 3)
+	assert rm == RangeMap({1: 'a', 3: 'c'})
+
+
+def test_set_consecutive_between_eq():
+	"""Test setting consecutive ranges to the same value."""
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'b'})
+	rm.set('b', 3, 4)
+	assert rm == RangeMap({1: 'a', 2: 'b'})
 
 
 def test_break_up_existing_open_end_interval():
@@ -155,12 +181,12 @@ def test_alter_beg():
 def test_dates():
 	"""Test using dates."""
 	rm = RangeMap()
-	rm.set('b', date(1936, 12, 11))
-	rm.set('a', date(1952, 2, 6))
-	assert rm[date(1945, 1, 1)] == 'b'
-	assert rm[date(1965, 4, 6)] == 'a'
+	rm.set('b', datetime.date(1936, 12, 11))
+	rm.set('a', datetime.date(1952, 2, 6))
+	assert rm[datetime.date(1945, 1, 1)] == 'b'
+	assert rm[datetime.date(1965, 4, 6)] == 'a'
 	with pytest.raises(KeyError):
-		rm[date(1900, 1, 1)]
+		rm[datetime.date(1900, 1, 1)]
 
 
 def test_version_differences():
@@ -189,6 +215,13 @@ def test_slice_errors():
 		rm[3:5:2] = 'z'
 
 
+def test_bool():
+	assert not bool(RangeMap())
+	assert bool(RangeMap(default_value='a'))
+	assert bool(RangeMap({1: 1}))
+	assert bool(RangeMap([(1, 2, 3)]))
+
+
 def test_delete():
 	"""Test deleting."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
@@ -213,23 +246,36 @@ def test_delete():
 		del rm[2.5:3.5]
 
 
-def test_delitem():
-	"""Test RangeMap.__delitem__."""
+def test_delitem_beginning():
+	"""Test RangeMap.__delitem__ at the beginning."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
-	with pytest.raises(ValueError):
-		del rm[2]
-	with pytest.raises(ValueError):
-		del rm[2:4:2]
+	if not is_py2:
+		with pytest.raises(ValueError):
+			del rm[2]
+		with pytest.raises(ValueError):
+			del rm[2:4:2]
+	rm.delete(1, 2)
+	assert rm == RangeMap({2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+
+
+def test_delitem_consecutive():
+	"""Test deleting consecutive ranges."""
+	rm = RangeMap({2: 'b', 3: 'c', 4: 'd', 5: 'e'})
+	rm.delete(3, 4)
+	rm.delete(4, 5)
+	assert rm == RangeMap.from_iterable(((2, 3, 'b'), (5, None, 'e')))
 
 
 def test_str():
 	"""Test __str__."""
 	assert str(RangeMap()) == 'RangeMap()'
-	assert str(RangeMap(default_value='a')) == "RangeMap((None, None): 'a')"
-	assert str(RangeMap({1: 'b'})) == "RangeMap((1, None): 'b')"
+	rm = RangeMap(default_value='a')
+	print(rm._ordered_keys, rm._key_mapping)
+	assert str(rm) == "RangeMap((None, None): a)"
+	assert str(RangeMap({1: 'b'})) == "RangeMap((1, None): b)"
 	assert (
 		str(RangeMap({1: 'b'}, default_value='a')) ==
-		"RangeMap((None, 1): 'a', (1, None): 'b')"
+		"RangeMap((None, 1): a, (1, None): b)"
 		)
 
 def test_empty():
@@ -248,6 +294,22 @@ def test_empty():
 		(3, 3.5, 'c'),
 		(4.5, None, 'd'),
 		))
+
+def test_repr():
+	test_objects = [
+		RangeMap(),
+		RangeMap(default_value='a'),
+		RangeMap({1: 'a'}),
+		RangeMap([(1, 2, 'a'), (2, 3, 'b')]),
+		RangeMap([(1, 2, 'a'), (3, 4, 'b')]),
+		RangeMap([
+			(datetime.date(2015, 1, 1), datetime.date(2015, 1, 2), 'a'),
+			(datetime.date(2015, 1, 2), datetime.date(2015, 1, 3), 'b'),
+			]),
+		]
+	for obj in test_objects:
+		assert eval(repr(obj)) == obj
+
 
 def test_eq():
 	"""Test __eq__."""
@@ -288,6 +350,7 @@ def test_get_range():
 		rm.get_range(1.5, 3) ==
 		RangeMap.from_iterable(((1.5, 2, 'a'), (2, 3, 'b')))
 		)
+	print(rm.get_range(start=3)._key_mapping, rm.get_range(start=3)._ordered_keys)
 	assert rm.get_range(start=3) == RangeMap({3: 'c', 4: 'd', 5: 'e'})
 	assert (
 		rm.get_range(stop=3) ==

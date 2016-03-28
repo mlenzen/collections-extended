@@ -1,2 +1,3 @@
 -r requirements.txt
 sphinxcontrib-napoleon
+git+https://github.com/mlenzen/alabaster.git
