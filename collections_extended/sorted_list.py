@@ -18,19 +18,14 @@ class SortedList(MutableSequence):
 	"""
 
 	def __init__(self, iterable=None, key=None, reversed=False):
-		self._data = list(sorted(iterable, key=key, reverse=reversed))
-		# TODO this is inefficient, should only evaluate keys once
-		self._set_key_data(key, reversed)
+		self._data = list(iterable or [])
+		self.sort(key=key, reversed=reversed)
 
 	def sort(self, key=None, reversed=False):
 		self._data.sort(key=key, reverse=reversed)
-		# TODO this is inefficient, should only evaluate keys once
-		self._set_key_data(key, reversed)
-
-	def _set_key_data(self, key, reversed):
 		self._key = key
 		self._reversed = reversed
-		if self._key:
+		if self._key is not None:
 			self._keys = [self.key(v) for v in self._data]
 		else:
 			self._keys = self._data
@@ -58,7 +53,8 @@ class SortedList(MutableSequence):
 
 	def reverse(self):
 		self._data.reverse()
-		self._keys.reverse()
+		if self._keys is not self._data:
+			self._keys.reverse()
 		self._reversed = not self._reversed
 
 	def __str__(self):
@@ -85,13 +81,12 @@ class SortedList(MutableSequence):
 		return self._data.__getitem__(index)
 
 	def count(self, value, start=0, end=None):
-		first_index = self.index_left(value, start=start, stop=end)
 		out = 0
-		for v in self[first_index:]:
-			if v == value:
+		min_i, max_i = self._get_min_max_index(value, start, end)
+		# Have to search a range because multiple values may have the same key value
+		for i in range(min_i, max_i):
+			if self._data[i] == value:
 				out += 1
-			else:
-				break
 		return out
 
 	# Implement MutableSequence
@@ -134,23 +129,23 @@ class SortedList(MutableSequence):
 
 	add = add_right
 
-	def index_left(self, value, start=0, stop=None):
+	def index(self, value, start=0, stop=None):
 		"""Return the index of the first occurence of value."""
-		value_key = self.key(value)
-		i = bisect.bisect_left(self._keys, value_key, start, stop)
-		if i == len(self._keys) or self._data[i] != value:
-			raise ValueError
-		return i
+		min_i, max_i = self._get_min_max_index(value, start, stop)
+		# Have to search a range because multiple values may have the same key value
+		for i in range(min_i, max_i):
+			if self._data[i] == value:
+				return i
+		raise ValueError
 
-	def index_right(self, value, start=0, stop=None):
-		"""Return the index to the right of the last occurence of value."""
+	def _get_min_max_index(self, value, start, stop):
 		value_key = self.key(value)
-		i = bisect.bisect_right(self._keys, value_key, start, stop)
-		if i == len(self._keys) or self._data[i] != value:
-			raise ValueError
-		return i
-
-	index = index_left
+		# Can't pass a stop value = None here because of a bug in python
+		if stop is None:
+			stop = len(self)
+		min_i = bisect.bisect_left(self._keys, value_key, lo=start, hi=stop)
+		max_i = bisect.bisect_right(self._keys, value_key, lo=start, hi=stop)
+		return min_i, max_i
 
 	def __eq__(self, other):
 		if not isinstance(other, SortedList):
