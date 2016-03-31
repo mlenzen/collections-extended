@@ -176,11 +176,10 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			for v in value:
 				if v in self and v not in old_values:
 					raise ValueError
-			else:
-				self._list[index] = value
-				self._dict = {}
-				for i, v in enumerate(self._list):
-					self._dict[v] = i
+			self._list[index] = value
+			self._dict = {}
+			for i, v in enumerate(self._list):
+				self._dict[v] = i
 		else:
 			index = self._fix_neg_index(index)
 			old_value = self._list[index]
