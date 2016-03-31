@@ -38,8 +38,11 @@ class _basebag(Set):
 		if self._size == 0:
 			return '{0}()'.format(self.__class__.__name__)
 		else:
-			format = '{class_name}({tuple!r})'
-			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
+			repr_format = '{class_name}({values!r})'
+			return repr_format.format(
+				class_name=self.__class__.__name__,
+				values=tuple(self),
+				)
 
 	def __str__(self):
 		if self._size == 0:
