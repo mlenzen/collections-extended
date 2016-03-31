@@ -74,24 +74,19 @@ class _basesetlist(Sequence, Set):
 			return self._from_iterable(self._list[index])
 		return self._list[index]
 
-	def count(self, value, start=0, end=None):
-		"""Return the number of occurences of value between start and end.
-
-		By default, the entire setlist is searched.
+	def count(self, value):
+		"""Return the number of occurences of value in self.
 
 		This runs in O(1)
 
 		Args:
 			value: The value to count
-			start (int): The index to start searching at (defaults to 0)
-			end (int): The index to stop searching at (defaults to the end of the list)
 		Returns:
 			int: 1 if the value is in the setlist, otherwise 0
 		"""
-		try:
-			self.index(value, start, end)
+		if value in self:
 			return 1
-		except ValueError:
+		else:
 			return 0
 
 	def index(self, value, start=0, end=None):
