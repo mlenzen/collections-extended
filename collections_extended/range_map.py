@@ -13,7 +13,7 @@ MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 class RangeMap(Container):
 	"""Map ranges of orderable elements to values."""
 
-	def __init__(self, iterable=None, default_value=_empty):
+	def __init__(self, iterable=None, **kwargs):
 		"""Create a RangeMap.
 
 		A mapping or other iterable can be passed to initialize the RangeMap.
@@ -22,11 +22,18 @@ class RangeMap(Container):
 		If an iterable is passed, each element will define a range in the
 		RangeMap and should be formatted (start, stop, value).
 
+		default_value is a an optional keyword argument that will initialize the
+		entire RangeMap to that value. Any missing ranges will be mapped to that
+		value. However, if ranges are subsequently deleted they will be removed
+		and *not* mapped to the default_value.
+
 		Args:
 			iterable: A Mapping or an Iterable to initialize from.
 			default_value: If passed, the return value for all keys less than the
-				least key in mapping. If no mapping, the return value for all keys.
+				least key in mapping or missing ranges in iterable. If no mapping
+				or iterable, the return value for all keys.
 		"""
+		default_value = kwargs.pop('default_value', _empty)
 		self._ordered_keys = [_first]
 		self._key_mapping = {_first: default_value}
 		if iterable:
