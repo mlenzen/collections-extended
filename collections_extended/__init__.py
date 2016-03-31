@@ -1,12 +1,11 @@
 """collections_extended contains a few extra basic data structures."""
-
-__version__ = '0.7.0'
-
 from .bags import bag, frozenbag
 from .setlists import setlist, frozensetlist
 from .sorted_list import SortedList
 from .bijection import bijection
 from .range_map import RangeMap, MappedRange
+
+__version__ = '0.7.0'
 
 __all__ = (
 	'collection',
