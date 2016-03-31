@@ -280,6 +280,7 @@ def test_str():
 		"RangeMap((None, 1): a, (1, None): b)"
 		)
 
+
 def test_empty():
 	"""Test RangeMap.empty."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd'})
@@ -296,6 +297,7 @@ def test_empty():
 		(3, 3.5, 'c'),
 		(4.5, None, 'd'),
 		))
+
 
 def test_repr():
 	test_objects = [

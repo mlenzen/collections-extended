@@ -115,7 +115,11 @@ class RangeMap(Container):
 		return self.__getitem(value) is not _empty
 
 	def __bool__(self):
-		return len(self._ordered_keys) > 1 or self._key_mapping[self._ordered_keys[0]] != _empty
+		if len(self._ordered_keys) > 1:
+			return True
+		else:
+			single_key = self._key_mapping[self._ordered_keys[0]]
+			return single_key != _empty
 
 	__nonzero__ = __bool__
 
@@ -200,6 +204,7 @@ class RangeMap(Container):
 		self.set(_empty, start=start, stop=stop)
 
 	def clear(self):
+		"""Remove all elements."""
 		self._ordered_keys = [_first]
 		self._key_mapping = {_first: _empty}
 
