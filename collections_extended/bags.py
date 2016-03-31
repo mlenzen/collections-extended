@@ -132,13 +132,13 @@ class _basebag(Set):
 		return cls(it)
 
 	@classmethod
-	def from_mapping(cls, map):
+	def from_mapping(cls, mapping):
 		"""Create a bag from a dict of elem->count.
 
 		Each key in the dict is added if the value is > 0.
 		"""
 		out = cls()
-		for elem, count in map.items():
+		for elem, count in mapping.items():
 			out._inc(elem, count)
 		return out
 
