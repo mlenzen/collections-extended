@@ -34,8 +34,11 @@ class _basesetlist(Sequence, Set):
 		if len(self) == 0:
 			return '{0}()'.format(self.__class__.__name__)
 		else:
-			format = '{class_name}({tuple!r})'
-			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
+			repr_format = '{class_name}({values!r})'
+			return repr_format.format(
+				class_name=self.__class__.__name__,
+				values=tuple(self),
+				)
 
 	# Convenience methods
 	def _fix_neg_index(self, index):
