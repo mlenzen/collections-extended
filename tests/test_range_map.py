@@ -373,3 +373,11 @@ def test_start_gt_stop():
 		rm.set('a', start=3, stop=2)
 	with pytest.raises(ValueError):
 		rm.get_range(start=3, stop=2)
+
+
+def test_init():
+	assert RangeMap(iterable=[]) == RangeMap()
+	rm = RangeMap(((1, 2, 'a'), (2, None, 'b')))
+	assert RangeMap.from_mapping({1: 'a', 2: 'b'}) == rm
+	with pytest.raises(TypeError):
+		RangeMap(foo='bar')

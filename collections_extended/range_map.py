@@ -39,6 +39,8 @@ class RangeMap(Container):
 				or iterable, the return value for all keys.
 		"""
 		default_value = kwargs.pop('default_value', _empty)
+		if kwargs:
+			raise TypeError('Unknown keyword arguments: %s' % ', '.join(kwargs.keys()))
 		self._ordered_keys = [_first]
 		self._key_mapping = {_first: default_value}
 		if iterable:
