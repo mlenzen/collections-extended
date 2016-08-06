@@ -28,6 +28,8 @@ def collection(iterable=None, mutable=True, ordered=False, unique=False):
 		ordered (bool): Whether or not the new collection is ordered.
 		unique (bool): Whether or not the new collection contains only unique values.
 	"""
+	if iterable is None:
+		iterable = tuple()
 	if unique:
 		if ordered:
 			if mutable:
