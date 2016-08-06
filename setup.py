@@ -61,7 +61,7 @@ setup(
 		'Topic :: Software Development :: Libraries',
 		'Topic :: Software Development :: Libraries :: Python Modules',
 		],
-	long_description = open(join(dirname(__file__), 'README.rst')).read(),
+	long_description=open(join(dirname(__file__), 'README.rst')).read(),
 	install_requires=['setuptools'],
 	tests_require=['pytest'],
 	package_data={'': ['README.rst', 'LICENSE', 'CONTRIBUTING.rst']},

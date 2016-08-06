@@ -34,8 +34,11 @@ class _basesetlist(Sequence, Set):
 		if len(self) == 0:
 			return '{0}()'.format(self.__class__.__name__)
 		else:
-			format = '{class_name}({tuple!r})'
-			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
+			repr_format = '{class_name}({values!r})'
+			return repr_format.format(
+				class_name=self.__class__.__name__,
+				values=tuple(self),
+				)
 
 	# Convenience methods
 	def _fix_neg_index(self, index):
@@ -176,11 +179,10 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			for v in value:
 				if v in self and v not in old_values:
 					raise ValueError
-			else:
-				self._list[index] = value
-				self._dict = {}
-				for i, v in enumerate(self._list):
-					self._dict[v] = i
+			self._list[index] = value
+			self._dict = {}
+			for i, v in enumerate(self._list):
+				self._dict[v] = i
 		else:
 			index = self._fix_neg_index(index)
 			old_value = self._list[index]

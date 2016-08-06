@@ -215,6 +215,13 @@ def test_slice_errors():
 		rm[3:5:2] = 'z'
 
 
+def test_bool():
+	assert not bool(RangeMap())
+	assert bool(RangeMap(default_value='a'))
+	assert bool(RangeMap({1: 1}))
+	assert bool(RangeMap([(1, 2, 3)]))
+
+
 def test_delete():
 	"""Test deleting."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
@@ -228,6 +235,17 @@ def test_delete():
 		))
 	rm.delete(start=5)
 	assert rm == RangeMap.from_iterable(((1, 2, 'a'), (4, 5, 'd')))
+
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
+	rm.delete(2, 3)
+	assert rm == RangeMap([(1, 2, 'a'), (3, None, 'c')])
+	print(repr(rm))
+	with pytest.raises(KeyError):
+		rm.delete(2, 3)
+	with pytest.raises(KeyError):
+		rm.delete(0, 2)
+	with pytest.raises(KeyError):
+		rm.delete(2.5, 3.5)
 
 
 def test_delitem_beginning():
@@ -261,6 +279,24 @@ def test_str():
 		str(RangeMap({1: 'b'}, default_value='a')) ==
 		"RangeMap((None, 1): a, (1, None): b)"
 		)
+
+
+def test_empty():
+	"""Test RangeMap.empty."""
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd'})
+	rm.empty(2, 3)
+	rm.empty(2, 3)
+	assert rm == RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(3, 4, 'c'),
+		(4, None, 'd'),
+		))
+	rm.empty(3.5, 4.5)
+	assert rm == RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(3, 3.5, 'c'),
+		(4.5, None, 'd'),
+		))
 
 
 def test_repr():

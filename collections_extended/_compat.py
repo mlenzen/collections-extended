@@ -4,7 +4,9 @@ import sys
 is_py2 = sys.version_info[0] == 2
 
 if is_py2:
-	keys_set = lambda d: set(d.keys())
+	def keys_set(d):
+		"""Return a set of passed dictionary's keys."""
+		return set(d.keys())
 else:
 	keys_set = dict.keys
 

@@ -18,7 +18,7 @@ def _check_start_stop(start, stop):
 class RangeMap(Container):
 	"""Map ranges of orderable elements to values."""
 
-	def __init__(self, iterable=None, default_value=_empty):
+	def __init__(self, iterable=None, **kwargs):
 		"""Create a RangeMap.
 
 		A mapping or other iterable can be passed to initialize the RangeMap.
@@ -27,11 +27,18 @@ class RangeMap(Container):
 		If an iterable is passed, each element will define a range in the
 		RangeMap and should be formatted (start, stop, value).
 
+		default_value is a an optional keyword argument that will initialize the
+		entire RangeMap to that value. Any missing ranges will be mapped to that
+		value. However, if ranges are subsequently deleted they will be removed
+		and *not* mapped to the default_value.
+
 		Args:
 			iterable: A Mapping or an Iterable to initialize from.
 			default_value: If passed, the return value for all keys less than the
-				least key in mapping. If no mapping, the return value for all keys.
+				least key in mapping or missing ranges in iterable. If no mapping
+				or iterable, the return value for all keys.
 		"""
+		default_value = kwargs.pop('default_value', _empty)
 		self._ordered_keys = [_first]
 		self._key_mapping = {_first: default_value}
 		if iterable:
@@ -120,6 +127,15 @@ class RangeMap(Container):
 	def __contains__(self, value):
 		return self.__getitem(value) is not _empty
 
+	def __bool__(self):
+		if len(self._ordered_keys) > 1:
+			return True
+		else:
+			single_key = self._key_mapping[self._ordered_keys[0]]
+			return single_key != _empty
+
+	__nonzero__ = __bool__
+
 	def __getitem(self, key):
 		"""Get the value for a key (not a slice)."""
 		try:
@@ -177,10 +193,32 @@ class RangeMap(Container):
 		self._key_mapping[start] = value
 
 	def delete(self, start=None, stop=None):
-		"""Delete the range from start to stop from self."""
+		"""Delete the range from start to stop from self.
+
+		Raises:
+			KeyError: If part of the passed range isn't mapped.
+		"""
+		if start is None:
+			if self.__getitem(_first) == _empty:
+				raise KeyError((start, stop))
+		else:
+			if self.__getitem(start) == _empty:
+				raise KeyError((start, stop))
+		existing_range = self.get_range(start, stop)
+		for sub in existing_range.ranges():
+			if sub.stop is not None and self.__getitem(sub.stop) == _empty:
+				raise KeyError((start, stop))
+		self.set(_empty, start=start, stop=stop)
+
+	def empty(self, start=None, stop=None):
+		"""Empty the range from start to stop.
+
+		Like delete, but no Error is raised if the entire range isn't mapped.
+		"""
 		self.set(_empty, start=start, stop=stop)
 
 	def clear(self):
+		"""Remove all elements."""
 		self._ordered_keys = [_first]
 		self._key_mapping = {_first: _empty}
 
@@ -199,7 +237,7 @@ class RangeMap(Container):
 		else:
 			value = self.__getitem(key)
 			if value is _empty:
-				raise KeyError()
+				raise KeyError(key)
 			else:
 				return value
 

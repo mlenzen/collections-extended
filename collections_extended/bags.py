@@ -38,8 +38,11 @@ class _basebag(Set):
 		if self._size == 0:
 			return '{0}()'.format(self.__class__.__name__)
 		else:
-			format = '{class_name}({tuple!r})'
-			return format.format(class_name=self.__class__.__name__, tuple=tuple(self))
+			repr_format = '{class_name}({values!r})'
+			return repr_format.format(
+				class_name=self.__class__.__name__,
+				values=tuple(self),
+				)
 
 	def __str__(self):
 		if self._size == 0:
@@ -132,13 +135,13 @@ class _basebag(Set):
 		return cls(it)
 
 	@classmethod
-	def from_mapping(cls, map):
+	def from_mapping(cls, mapping):
 		"""Create a bag from a dict of elem->count.
 
 		Each key in the dict is added if the value is > 0.
 		"""
 		out = cls()
-		for elem, count in map.items():
+		for elem, count in mapping.items():
 			out._inc(elem, count)
 		return out
 
