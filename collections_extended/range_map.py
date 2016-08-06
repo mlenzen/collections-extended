@@ -10,6 +10,11 @@ _first = object()
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
 
+def _check_start_stop(start, stop):
+	if start is not None and stop is not None and stop <= start:
+		raise ValueError('stop must be > start')
+
+
 class RangeMap(Container):
 	"""Map ranges of orderable elements to values."""
 
@@ -94,6 +99,7 @@ class RangeMap(Container):
 		Yields:
 			MappedRange
 		"""
+		_check_start_stop(start, stop)
 		if start is None:
 			start_loc = 1
 			start = _first
@@ -140,6 +146,7 @@ class RangeMap(Container):
 
 	def set(self, value, start=None, stop=None):
 		"""Set the range from start to stop to value."""
+		_check_start_stop(start, stop)
 		if start is None:
 			start = _first
 			start_index = 0

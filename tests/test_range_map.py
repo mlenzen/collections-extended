@@ -329,3 +329,11 @@ def test_get_range():
 			rm[2:3]
 	else:
 		assert rm[2:3] == rm.get_range(2, 3)
+
+
+def test_start_gt_stop():
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
+	with pytest.raises(ValueError):
+		rm.set('a', start=3, stop=2)
+	with pytest.raises(ValueError):
+		rm.get_range(start=3, stop=2)
