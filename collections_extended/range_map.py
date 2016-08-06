@@ -11,8 +11,21 @@ MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
 
 def _check_start_stop(start, stop):
+	"""Check that start and stop are valid - orderable and in the right order.
+
+	Raises:
+		ValueError: if stop <= start
+		TypeError: if unorderable
+	"""
 	if start is not None and stop is not None and stop <= start:
 		raise ValueError('stop must be > start')
+
+
+def _check_key_slice(key):
+	if not isinstance(key, slice):
+		raise TypeError('Can only set and delete slices')
+	if key.step is not None:
+		raise ValueError('Cannot set or delete slices with steps')
 
 
 class RangeMap(Container):
@@ -231,31 +244,25 @@ class RangeMap(Container):
 			return False
 
 	def __getitem__(self, key):
-		if isinstance(key, slice):
-			if key.step:
-				raise ValueError('Steps aren\'t allowed')
-			# return a RangeMap
-			return self.get_range(key.start, key.stop)
-		else:
+		try:
+			_check_key_slice(key)
+		except TypeError:
 			value = self.__getitem(key)
 			if value is _empty:
 				raise KeyError(key)
 			else:
 				return value
+		else:
+			return self.get_range(key.start, key.stop)
+
 
 	def __setitem__(self, key, value):
-		if not isinstance(key, slice):
-			raise ValueError('Can only set slices')
-		if key.step is not None:
-			raise ValueError('Steps aren\'t allowed')
+		_check_key_slice(key)
 		self.set(value, key.start, key.stop)
 
-	def __delitem__(self, index):
-		if not isinstance(index, slice):
-			raise ValueError('Can only delete slices')
-		if index.step is not None:
-			raise ValueError('Steps aren\'t allowed')
-		self.delete(index.start, index.stop)
+	def __delitem__(self, key):
+		_check_key_slice(key)
+		self.delete(key.start, key.stop)
 
 	# Python2 - override slice methods
 	def __setslice__(self, i, j, value):
