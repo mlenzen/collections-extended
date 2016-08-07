@@ -88,19 +88,13 @@ class RangeMap(Container):
 			self.set(value, start=start, stop=stop)
 
 	def __str__(self):
-		values = ', '.join(['({start}, {stop}): {value}'.format(
-			start=item.start,
-			stop=item.stop,
-			value=item.value,
-			) for item in self.ranges()])
+		range_format = '({range.start}, {range.stop}): {range.value}'
+		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
 		return 'RangeMap(%s)' % values
 
 	def __repr__(self):
-		values = ', '.join(['({start!r}, {stop!r}, {value!r})'.format(
-			start=item.start,
-			stop=item.stop,
-			value=item.value,
-			) for item in self.ranges()])
+		range_format = '({range.start!r}, {range.stop!r}, {range.value!r})'
+		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
 		return 'RangeMap([%s])' % values
 
 	def _bisect_left(self, key):
@@ -174,32 +168,34 @@ class RangeMap(Container):
 	def set(self, value, start=None, stop=None):
 		"""Set the range from start to stop to value."""
 		_check_start_stop(start, stop)
+		# start_index, stop_index will denote the sections we are replacing
 		if start is None:
 			start = _first
 			start_index = 0
 		else:
 			start_index = self._bisect_left(start)
-			prev_key = self._ordered_keys[start_index - 1]
 			prev_value = self._values[start_index - 1]
 			if prev_value == value:
+				# We're setting a range where the left range has the same
+				# value, so create one big range
 				start_index -= 1
-				start = prev_key
+				start = self._ordered_keys[start_index]
 		if stop is None:
 			new_keys = [start]
 			new_values = [value]
 			stop_index = len(self._ordered_keys)
 		else:
 			stop_index = self._bisect_left(stop)
-			new_keys = [start, stop]
-			new_values = [value, self.__getitem(stop)]
-			if stop_index < len(self._ordered_keys):
-				next_key = self._ordered_keys[stop_index]
-				if next_key == stop:
-					new_keys = [start]
-					new_values = [value]
-					next_value = self._values[stop_index]
-					if next_value == value:
-						stop_index += 1
+			if stop_index < len(self._ordered_keys) and self._ordered_keys[stop_index] == stop:
+				new_keys = [start]
+				new_values = [value]
+				next_value = self._values[stop_index]
+				if next_value == value:
+					stop_index += 1
+			else:
+				new_keys = [start, stop]
+				stop_value = self._values[stop_index - 1]
+				new_values = [value, stop_value]
 		self._ordered_keys[start_index:stop_index] = new_keys
 		self._values[start_index:stop_index] = new_values
 
