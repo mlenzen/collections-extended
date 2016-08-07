@@ -54,7 +54,7 @@ class RangeMap(Container):
 		default_value = kwargs.pop('default_value', _empty)
 		if kwargs:
 			raise TypeError('Unknown keyword arguments: %s' % ', '.join(kwargs.keys()))
-		self._ordered_keys = [_first]
+		self._keys = [_first]
 		self._values = [default_value]
 		if iterable:
 			if isinstance(iterable, Mapping):
@@ -101,13 +101,13 @@ class RangeMap(Container):
 		if key == _first:
 			return 0
 		else:
-			return bisect_left(self._ordered_keys, key, lo=1)
+			return bisect_left(self._keys, key, lo=1)
 
 	def _bisect_right(self, key):
 		if key == _first:
 			return 0
 		else:
-			return bisect_right(self._ordered_keys, key, lo=1)
+			return bisect_right(self._keys, key, lo=1)
 
 	def ranges(self, start=None, stop=None):
 		"""Generate MappedRanges for all mapped ranges.
@@ -121,11 +121,11 @@ class RangeMap(Container):
 		else:
 			start_loc = self._bisect_right(start)
 		if stop is None:
-			stop_loc = len(self._ordered_keys)
+			stop_loc = len(self._keys)
 		else:
 			stop_loc = self._bisect_left(stop)
 		start_val = self._values[start_loc - 1]
-		candidate_keys = [start] + self._ordered_keys[start_loc:stop_loc] + [stop]
+		candidate_keys = [start] + self._keys[start_loc:stop_loc] + [stop]
 		candidate_values = [start_val] + self._values[start_loc:stop_loc]
 		for i, value in enumerate(candidate_values):
 			if value is not _empty:
@@ -137,7 +137,7 @@ class RangeMap(Container):
 		return self.__getitem(value) is not _empty
 
 	def __bool__(self):
-		if len(self._ordered_keys) > 1:
+		if len(self._keys) > 1:
 			return True
 		else:
 			return self._values[0] != _empty
@@ -179,22 +179,22 @@ class RangeMap(Container):
 				# We're setting a range where the left range has the same
 				# value, so create one big range
 				start_index -= 1
-				start = self._ordered_keys[start_index]
+				start = self._keys[start_index]
 		if stop is None:
 			new_keys = [start]
 			new_values = [value]
-			stop_index = len(self._ordered_keys)
+			stop_index = len(self._keys)
 		else:
 			stop_index = self._bisect_right(stop)
 			stop_value = self._values[stop_index - 1]
-			stop_key = self._ordered_keys[stop_index - 1]
+			stop_key = self._keys[stop_index - 1]
 			if stop_key == stop and stop_value == value:
 				new_keys = [start]
 				new_values = [value]
 			else:
 				new_keys = [start, stop]
 				new_values = [value, stop_value]
-		self._ordered_keys[start_index:stop_index] = new_keys
+		self._keys[start_index:stop_index] = new_keys
 		self._values[start_index:stop_index] = new_values
 
 	def delete(self, start=None, stop=None):
@@ -224,13 +224,13 @@ class RangeMap(Container):
 
 	def clear(self):
 		"""Remove all elements."""
-		self._ordered_keys = [_first]
+		self._keys = [_first]
 		self._values = [_empty]
 
 	def __eq__(self, other):
 		if isinstance(other, RangeMap):
 			return (
-				self._ordered_keys == other._ordered_keys and
+				self._keys == other._keys and
 				self._values == other._values
 				)
 		else:

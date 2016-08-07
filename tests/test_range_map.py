@@ -10,7 +10,7 @@ from collections_extended.range_map import RangeMap
 
 
 def print_underlying(rm):
-	print(rm._ordered_keys, rm._values)
+	print(rm._keys, rm._values)
 
 
 def test_simple_set():
