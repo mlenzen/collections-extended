@@ -5,7 +5,6 @@ from collections import namedtuple, Container, Mapping
 
 # Used to mark unmapped ranges
 _empty = object()
-_first = object()
 
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
@@ -54,7 +53,7 @@ class RangeMap(Container):
 		default_value = kwargs.pop('default_value', _empty)
 		if kwargs:
 			raise TypeError('Unknown keyword arguments: %s' % ', '.join(kwargs.keys()))
-		self._keys = [_first]
+		self._keys = [None]
 		self._values = [default_value]
 		if iterable:
 			if isinstance(iterable, Mapping):
@@ -98,14 +97,16 @@ class RangeMap(Container):
 		return 'RangeMap([%s])' % values
 
 	def _bisect_left(self, key):
-		if key == _first:
+		"""Return the index of the key or the last key < key."""
+		if key == None:
 			return 0
 		else:
 			return bisect_left(self._keys, key, lo=1)
 
 	def _bisect_right(self, key):
-		if key == _first:
-			return 0
+		"""Return the index of the first key > key."""
+		if key == None:
+			return 1
 		else:
 			return bisect_right(self._keys, key, lo=1)
 
@@ -116,10 +117,7 @@ class RangeMap(Container):
 			MappedRange
 		"""
 		_check_start_stop(start, stop)
-		if start is None:
-			start_loc = 1
-		else:
-			start_loc = self._bisect_right(start)
+		start_loc = self._bisect_right(start)
 		if stop is None:
 			stop_loc = len(self._keys)
 		else:
@@ -151,10 +149,7 @@ class RangeMap(Container):
 
 	def __getitem(self, key):
 		"""Get the value for a key (not a slice)."""
-		if key == _first:
-			loc = 0
-		else:
-			loc = self._bisect_right(key) - 1
+		loc = self._bisect_right(key) - 1
 		value = self._values[loc]
 		if value is _empty:
 			raise KeyError(key)
@@ -180,11 +175,8 @@ class RangeMap(Container):
 		"""Set the range from start to stop to value."""
 		_check_start_stop(start, stop)
 		# start_index, stop_index will denote the sections we are replacing
-		if start is None:
-			start = _first
-			start_index = 0
-		else:
-			start_index = self._bisect_left(start)
+		start_index = self._bisect_left(start)
+		if start is not None:  # start_index == 0
 			prev_value = self._values[start_index - 1]
 			if prev_value == value:
 				# We're setting a range where the left range has the same
@@ -215,10 +207,7 @@ class RangeMap(Container):
 			KeyError: If part of the passed range isn't mapped.
 		"""
 		_check_start_stop(start, stop)
-		if start is None:
-			start_loc = 0
-		else:
-			start_loc = self._bisect_right(start) - 1
+		start_loc = self._bisect_right(start) - 1
 		if stop is None:
 			stop_loc = len(self._keys)
 		else:
@@ -237,7 +226,7 @@ class RangeMap(Container):
 
 	def clear(self):
 		"""Remove all elements."""
-		self._keys = [_first]
+		self._keys = [None]
 		self._values = [_empty]
 
 	def __eq__(self, other):
