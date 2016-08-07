@@ -4,7 +4,7 @@ from .setlists import setlist, frozensetlist
 from .bijection import bijection
 from .range_map import RangeMap, MappedRange
 
-__version__ = '0.7.0'
+__version__ = '0.7.1'
 
 __all__ = (
 	'collection',
