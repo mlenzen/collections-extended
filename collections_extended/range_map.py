@@ -134,7 +134,12 @@ class RangeMap(Container):
 				yield MappedRange(start_key, stop_key, value)
 
 	def __contains__(self, value):
-		return self.__getitem(value) is not _empty
+		try:
+			self.__getitem(value) is not _empty
+		except KeyError:
+			return False
+		else:
+			return True
 
 	def __bool__(self):
 		if len(self._keys) > 1:
@@ -146,16 +151,22 @@ class RangeMap(Container):
 
 	def __getitem(self, key):
 		"""Get the value for a key (not a slice)."""
-		loc = self._bisect_right(key) - 1
-		return self._values[loc]
+		if key == _first:
+			loc = 0
+		else:
+			loc = self._bisect_right(key) - 1
+		value = self._values[loc]
+		if value is _empty:
+			raise KeyError(key)
+		else:
+			return value
 
 	def get(self, key, restval=None):
 		"""Get the value of the range containing key, otherwise return restval."""
-		value = self.__getitem(key)
-		if value is _empty:
+		try:
+			return self.__getitem(key)
+		except KeyError:
 			return restval
-		else:
-			return value
 
 	def get_range(self, start=None, stop=None):
 		"""Return a RangeMap for the range start to stop.
@@ -203,17 +214,19 @@ class RangeMap(Container):
 		Raises:
 			KeyError: If part of the passed range isn't mapped.
 		"""
+		_check_start_stop(start, stop)
 		if start is None:
-			if self.__getitem(_first) == _empty:
-				raise KeyError((start, stop))
+			start_loc = 0
 		else:
-			if self.__getitem(start) == _empty:
+			start_loc = self._bisect_right(start) - 1
+		if stop is None:
+			stop_loc = len(self._keys)
+		else:
+			stop_loc = self._bisect_left(stop)
+		for value in self._values[start_loc:stop_loc]:
+			if value is _empty:
 				raise KeyError((start, stop))
-		existing_range = self.get_range(start, stop)
-		for sub in existing_range.ranges():
-			if sub.stop is not None and self.__getitem(sub.stop) == _empty:
-				raise KeyError((start, stop))
-		self.set(_empty, start=start, stop=stop)
+		self.set(_empty, start=start, stop=stop)  # this is inefficient, we've already found the sub ranges
 
 	def empty(self, start=None, stop=None):
 		"""Empty the range from start to stop.
@@ -240,11 +253,7 @@ class RangeMap(Container):
 		try:
 			_check_key_slice(key)
 		except TypeError:
-			value = self.__getitem(key)
-			if value is _empty:
-				raise KeyError(key)
-			else:
-				return value
+			return self.__getitem(key)
 		else:
 			return self.get_range(key.start, key.stop)
 
