@@ -10,7 +10,6 @@ def test_count():
 	assert sl.count('a') == 1
 	assert sl.count('f') == 0
 	assert sl.count('e') == 1
-	assert sl.count('e', end=-2) == 0
 
 
 def test_index():
