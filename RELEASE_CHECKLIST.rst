@@ -7,8 +7,8 @@ Release Checklist
 
 #. Run the tests::
 
-	python setup.py test
 	tox
+	flake8
 
 #. Build the source distribution: ``python setup.py sdist``
 

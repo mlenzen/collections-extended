@@ -98,14 +98,14 @@ class RangeMap(Container):
 
 	def _bisect_left(self, key):
 		"""Return the index of the key or the last key < key."""
-		if key == None:
+		if key is None:
 			return 0
 		else:
 			return bisect_left(self._keys, key, lo=1)
 
 	def _bisect_right(self, key):
 		"""Return the index of the first key > key."""
-		if key == None:
+		if key is None:
 			return 1
 		else:
 			return bisect_right(self._keys, key, lo=1)
@@ -215,7 +215,8 @@ class RangeMap(Container):
 		for value in self._values[start_loc:stop_loc]:
 			if value is _empty:
 				raise KeyError((start, stop))
-		self.set(_empty, start=start, stop=stop)  # this is inefficient, we've already found the sub ranges
+		# this is inefficient, we've already found the sub ranges
+		self.set(_empty, start=start, stop=stop)
 
 	def empty(self, start=None, stop=None):
 		"""Empty the range from start to stop.
