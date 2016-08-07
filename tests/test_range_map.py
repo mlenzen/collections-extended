@@ -209,7 +209,7 @@ def test_slice_errors():
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	with pytest.raises(ValueError):
 		rm[2:5:2]
-	with pytest.raises(ValueError):
+	with pytest.raises(TypeError):
 		rm[3] = 'z'
 	with pytest.raises(ValueError):
 		rm[3:5:2] = 'z'
@@ -252,7 +252,7 @@ def test_delitem_beginning():
 	"""Test RangeMap.__delitem__ at the beginning."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 	if not is_py2:
-		with pytest.raises(ValueError):
+		with pytest.raises(TypeError):
 			del rm[2]
 		with pytest.raises(ValueError):
 			del rm[2:4:2]
@@ -365,3 +365,19 @@ def test_get_range():
 			rm[2:3]
 	else:
 		assert rm[2:3] == rm.get_range(2, 3)
+
+
+def test_start_gt_stop():
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
+	with pytest.raises(ValueError):
+		rm.set('a', start=3, stop=2)
+	with pytest.raises(ValueError):
+		rm.get_range(start=3, stop=2)
+
+
+def test_init():
+	assert RangeMap(iterable=[]) == RangeMap()
+	rm = RangeMap(((1, 2, 'a'), (2, None, 'b')))
+	assert RangeMap.from_mapping({1: 'a', 2: 'b'}) == rm
+	with pytest.raises(TypeError):
+		RangeMap(foo='bar')

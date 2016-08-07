@@ -1,7 +1,8 @@
 range_map
 =========
 A RangeMap maps ranges to values. Keys must be hashable and comparable to all
-other keys (but not necessarily the same type).
+other keys (but not necessarily the same type). Each range `a:b` maps all values
+`a <= x < b` so it includes `a` but not `b`.
 
 Examples
 --------
@@ -14,7 +15,7 @@ Examples
 	>>> us_presidents[date(1993, 1, 20):date(2001, 1, 20)] = 'Bill Clinton'
 	>>> us_presidents[date(2001, 1, 20):date(2009, 1, 20)] = 'George W. Bush'
 	>>> us_presidents[date(2009, 1, 20):] = 'Barack Obama'
-	>>> us_presidents[date(1995, 5, 10)]
+	>>> us_presidents[date(2001, 1, 19)]
 	'Bill Clinton'
 	>>> us_presidents[date(2001, 1, 20)]
 	'George W. Bush'
@@ -42,7 +43,8 @@ Python 2 vs 3
 ~~~~~~~~~~~~~
 Slice notation is not implented for get, set and delete in python 2 and raises
 a SyntaxError when used. This is because Python 2 assumes slices are integers
-and replaces open slices with 0 and maxint. Instead use ``RangeMap.set``
+and replaces open slices with 0 and maxint. Instead use ``RangeMap.set``,
+``RangeMap.delete`` and ``RangeMap.get_range``.
 
 PyPy
 ~~~~
@@ -51,5 +53,5 @@ doesn't work.
 
 Implementation
 --------------
-RangeMaps are backed by lists of the keys, so it's only fast to add/remove to
-the end of the list.
+RangeMaps are backed by lists of the keys, so it's only fast to add/remove the
+greatest values in the range (the end of the list).
