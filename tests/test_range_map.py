@@ -9,11 +9,15 @@ from collections_extended._compat import is_py2
 from collections_extended.range_map import RangeMap
 
 
+def print_underlying(rm):
+	print(rm._ordered_keys, rm._values)
+
+
 def test_simple_set():
 	"""Test set."""
 	rm = RangeMap()
 	rm.set('a', start=1)
-	print(rm._ordered_keys, rm._key_mapping)
+	print_underlying(rm)
 	assert rm[1] == 'a'
 	assert rm[2] == 'a'
 	with pytest.raises(KeyError):
@@ -28,7 +32,7 @@ def test_closed():
 	"""Test a closed RangeMap."""
 	rm = RangeMap()
 	rm.set('a', start=1, stop=2)
-	print(rm._ordered_keys, rm._key_mapping)
+	print_underlying(rm)
 	assert rm[1] == 'a'
 	assert rm[1.9] == 'a'
 	with pytest.raises(KeyError):
@@ -59,7 +63,7 @@ def test_set_existing_interval():
 	"""Test setting an exact existing range."""
 	rm = RangeMap({1: 'a', 2: 'b'})
 	rm.set('c', start=1, stop=2)
-	print(rm)
+	print_underlying(rm)
 	assert rm[1] == 'c'
 	assert rm[2] == 'b'
 	assert rm[3] == 'b'
@@ -71,9 +75,9 @@ def test_set_existing_interval():
 def test_set_consecutive_before_eq():
 	"""Test setting consecutive ranges to the same value."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
-	print(rm._ordered_keys, rm._key_mapping)
+	print_underlying(rm)
 	rm.set('b', 1, 2)
-	print(rm._ordered_keys, rm._key_mapping)
+	print_underlying(rm)
 	assert rm == RangeMap({1: 'b', 3: 'c'})
 
 
@@ -272,7 +276,7 @@ def test_str():
 	"""Test __str__."""
 	assert str(RangeMap()) == 'RangeMap()'
 	rm = RangeMap(default_value='a')
-	print(rm._ordered_keys, rm._key_mapping)
+	print_underlying(rm)
 	assert str(rm) == "RangeMap((None, None): a)"
 	assert str(RangeMap({1: 'b'})) == "RangeMap((1, None): b)"
 	assert (
@@ -346,6 +350,9 @@ def test_contains():
 def test_get_range():
 	"""Test get_range."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'}, default_value='z')
+	print_underlying(rm)
+	print_underlying(rm.get_range(1, 3))
+	print_underlying(RangeMap.from_iterable(((1, 2, 'a'), (2, 3, 'b'))))
 	assert (
 		rm.get_range(1, 3) ==
 		RangeMap.from_iterable(((1, 2, 'a'), (2, 3, 'b')))
@@ -354,7 +361,7 @@ def test_get_range():
 		rm.get_range(1.5, 3) ==
 		RangeMap.from_iterable(((1.5, 2, 'a'), (2, 3, 'b')))
 		)
-	print(rm.get_range(start=3)._key_mapping, rm.get_range(start=3)._ordered_keys)
+	print_underlying(rm.get_range(start=3))
 	assert rm.get_range(start=3) == RangeMap({3: 'c', 4: 'd', 5: 'e'})
 	assert (
 		rm.get_range(stop=3) ==
