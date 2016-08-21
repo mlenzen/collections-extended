@@ -248,6 +248,20 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		for value in values:
 			self.append(value)
 
+	def update(self, values):
+		"""Add all values to the end.
+
+		If any of the values are present, silently ignore
+		them (as opposed to extend which raises an Error).
+
+		See also:
+			extend
+		Args:
+			values (Iterable): Values to add
+		"""
+		for value in values:
+			self.add(value)
+
 	def __iadd__(self, values):
 		"""Add all values to the end of self.
 

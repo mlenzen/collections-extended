@@ -209,7 +209,7 @@ def test_delitem():
 	compare_del_slice_to_list(slice(0, 7, 2))
 
 
-def test_extend():
+def test_extend_update():
 	"""Test extend."""
 	sl = setlist(range(10))
 	sl.extend([10, 11])
@@ -220,6 +220,8 @@ def test_extend():
 	with pytest.raises(ValueError):
 		sl.extend([13, 2])
 	assert sl == setlist(range(12))
+	sl.update([11, 12])
+	assert sl == setlist(range(13))
 
 
 def test_hash():
