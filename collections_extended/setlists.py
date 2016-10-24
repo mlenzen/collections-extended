@@ -98,9 +98,6 @@ class _basesetlist(Sequence, Set):
 		return value in self._dict
 
 	# Iterable we get by inheriting from Sequence
-	def __add__(self, other):
-		if isinstance(other, _basesetlist):
-			return self._from_iterable(itertools.chain(self, other), raise_on_duplicate=True)
 
 	# Implement Sized
 	def __len__(self):
@@ -156,7 +153,39 @@ class _basesetlist(Sequence, Set):
 			else:
 				raise ValueError
 
-	# Nothing needs to be done to implement Set
+	def _check_type(self, other, operand_name):
+		if not isinstance(other, _basesetlist):
+			message = "unsupported operand type(s) for {operand_name}: '{self_type}' and '{other_type}'".format(
+				operand_name=operand_name,
+				self_type=type(self),
+				other_type=type(other),
+				)
+			raise TypeError(message)
+
+	def __add__(self, other):
+		self._check_type(other, '+')
+		return self._from_iterable(itertools.chain(self, other), raise_on_duplicate=True)
+
+	# Implement Set
+
+	def issubset(self, other):
+		return self._dict.keys().issubset(other)
+
+	def issuperset(self, other):
+		return self._dict.keys().issuperset(other)
+
+	def union(self, other):
+		raise NotImplementedError
+
+	def intersection(self, other):
+		raise NotImplementedError
+
+	def difference(self, other):
+		raise NotImplementedError
+
+	def symmetric_difference(self, other):
+		raise NotImplementedError
+
 
 	# Comparison
 
@@ -204,6 +233,48 @@ class _basesetlist(Sequence, Set):
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
 	"""A mutable (unhashable) setlist."""
+
+	# Helper methods
+	def _delete_all(self, elems_to_delete, raise_errors):
+		indices_to_delete = set()
+		for elem in elems_to_delete:
+			try:
+				elem_index = self._dict[elem]
+			except KeyError:
+				if raise_errors:
+					raise ValueError('Passed values contain elements not in self')
+			else:
+				if elem_index in indices_to_delete:
+					if raise_errors:
+						raise ValueError('Passed vales contain duplicates')
+				indices_to_delete.add(elem_index)
+		print(indices_to_delete)
+		self._delete_values_by_index(indices_to_delete)
+
+	def _delete_values_by_index(self, indices_to_delete):
+		deleted_count = 0
+		for i, elem in enumerate(self._list):
+			if i in indices_to_delete:
+				deleted_count += 1
+				del self._dict[elem]
+			else:
+				new_index = i - deleted_count
+				self._list[new_index] = elem
+				self._dict[elem] = new_index
+		# Now remove deleted_count items from the end of the list
+		if deleted_count:
+			self._list = self._list[:-deleted_count]
+
+	# Set/Sequence agnostic
+	def pop(self, index=-1):
+		value = self._list.pop(index)
+		del self._dict[value]
+		return value
+
+	def clear(self):
+		"""Remove all elements from self."""
+		self._dict = dict()
+		self._list = list()
 
 	# Implement MutableSequence
 	def __setitem__(self, index, value):
@@ -284,21 +355,6 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		"""
 		self._extend(values)
 
-	def update(self, values):
-		"""Add all values to the end.
-
-		If any of the values are present, silently ignore
-		them (as opposed to extend which raises an Error).
-
-		See also:
-			extend
-		Args:
-			values (Iterable): Values to add
-		Raises:
-			TypeError: If any of the values are unhashable.
-		"""
-		self._update(values)
-
 	def __iadd__(self, values):
 		"""Add all values to the end of self.
 
@@ -325,36 +381,6 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		else:
 			del self[index]
 
-	def _delete_all(self, elems_to_delete, raise_errors):
-		indices_to_delete = set()
-		for elem in elems_to_delete:
-			try:
-				elem_index = self._dict[elem]
-			except KeyError:
-				if raise_errors:
-					raise ValueError('Passed values contain elements not in self')
-			else:
-				if elem_index in indices_to_delete:
-					if raise_errors:
-						raise ValueError('Passed vales contain duplicates')
-				indices_to_delete.add(elem_index)
-		print(indices_to_delete)
-		self._delete_values_by_index(indices_to_delete)
-
-	def _delete_values_by_index(self, indices_to_delete):
-		deleted_count = 0
-		for i, elem in enumerate(self._list):
-			if i in indices_to_delete:
-				deleted_count += 1
-				del self._dict[elem]
-			else:
-				new_index = i - deleted_count
-				self._list[new_index] = elem
-				self._dict[elem] = new_index
-		# Now remove deleted_count items from the end of the list
-		if deleted_count:
-			self._list = self._list[:-deleted_count]
-
 	def remove_all(self, elems_to_delete):
 		"""Remove all elements from elems_to_delete, raises ValueErrors.
 
@@ -369,20 +395,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		"""
 		self._delete_all(elems_to_delete, raise_errors=True)
 
-	def discard_all(self, elems_to_delete):
-		"""Discard all the elements from elems_to_delete.
-
-		This is much faster than removing them one by one.
-		This runs in O(len(self) + len(elems_to_delete))
-
-		Args:
-			elems_to_delete (Iterable): Elements to discard.
-		Raises:
-			TypeError: If any of the values aren't hashable.
-		"""
-		self._delete_all(elems_to_delete, raise_errors=False)
-
 	# Implement MutableSet
+
 	def add(self, item):
 		"""Add an item.
 
@@ -396,6 +410,34 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		"""
 		self._add(item)
 
+	def update(self, values):
+		"""Add all values to the end.
+
+		If any of the values are present, silently ignore
+		them (as opposed to extend which raises an Error).
+
+		See also:
+			extend
+		Args:
+			values (Iterable): Values to add
+		Raises:
+			TypeError: If any of the values are unhashable.
+		"""
+		self._update(values)
+
+	def discard_all(self, elems_to_delete):
+		"""Discard all the elements from elems_to_delete.
+
+		This is much faster than removing them one by one.
+		This runs in O(len(self) + len(elems_to_delete))
+
+		Args:
+			elems_to_delete (Iterable): Elements to discard.
+		Raises:
+			TypeError: If any of the values aren't hashable.
+		"""
+		self._delete_all(elems_to_delete, raise_errors=False)
+
 	def discard(self, value):
 		"""Discard an item.
 
@@ -408,10 +450,14 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		except ValueError:
 			pass
 
-	def clear(self):
-		"""Remove all elements from self."""
-		self._dict = dict()
-		self._list = list()
+	def difference_update(self, other):
+		raise NotImplementedError
+
+	def intersection_update(self, other):
+		raise NotImplementedError
+
+	def symmetric_difference_update(self, other):
+		raise NotImplementedError
 
 	# New methods
 	def shuffle(self, random=None):
