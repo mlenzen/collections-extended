@@ -226,7 +226,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			ValueError: If value alread in self
 		"""
 		if value in self:
-			raise ValueError
+			raise ValueError('Value "%s" already present' % value)
 		else:
 			# Do this first in case value isn't Hashable
 			self._dict[value] = len(self) + 1
@@ -243,10 +243,16 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		Raises:
 			ValueError: If any values are already present
 		"""
-		if not self.isdisjoint(values):
-			raise ValueError
+		new_setlist = setlist()
 		for value in values:
-			self.append(value)
+			try:
+				new_setlist.append(value)
+			except ValueError:
+				raise ValueError('New values contain duplicates')
+		if not self.isdisjoint(new_setlist):
+			raise ValueError
+		self._list.extend(new_setlist._list)
+		self._dict.update(new_setlist._dict)
 
 	def update(self, values):
 		"""Add all values to the end.
