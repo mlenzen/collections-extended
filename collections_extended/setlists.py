@@ -17,15 +17,18 @@ class _basesetlist(Sequence, Set):
 	and unhashable.
 	"""
 
-	def __init__(self, iterable=None):
+	def __init__(self, iterable=None, raise_on_duplicate=False):
+		"""
+		Args:
+			iterable (Iterable): Values to initialize the setlist with.
+		"""
 		self._list = list()
 		self._dict = dict()
-		if iterable is not None:
-			for value in iterable:
-				if value not in self:
-					index = len(self)
-					self._list.insert(index, value)
-					self._dict[value] = index
+		if iterable:
+			if raise_on_duplicate:
+				self._extend(iterable)
+			else:
+				self._update(iterable)
 
 	def __str__(self):
 		return self._list.__repr__()
@@ -53,6 +56,36 @@ class _basesetlist(Sequence, Set):
 			return len(self)
 		else:
 			return self._fix_neg_index(index)
+
+	def _append(self, value):
+		# Checking value in self will check that value is Hashable
+		if value in self:
+			raise ValueError('Value "%s" already present' % value)
+		else:
+			self._dict[value] = len(self)
+			self._list.append(value)
+
+	def _extend(self, values):
+		new_setlist = setlist()
+		for value in values:
+			try:
+				new_setlist._append(value)
+			except ValueError:
+				raise ValueError('New values contain duplicates')
+		if not self.isdisjoint(new_setlist):
+			raise ValueError
+		self._list.extend(new_setlist._list)
+		self._dict.update(new_setlist._dict)
+
+	def _add(self, item):
+		try:
+			self._append(item)
+		except ValueError:
+			pass
+
+	def _update(self, values):
+		for value in values:
+			self._add(value)
 
 	@classmethod
 	def _from_iterable(cls, it):
@@ -226,12 +259,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			ValueError: If value alread in self
 			TypeError: If value isn't hashable
 		"""
-		# Checking value in self will check that value is Hashable
-		if value in self:
-			raise ValueError('Value "%s" already present' % value)
-		else:
-			self._dict[value] = len(self) + 1
-			self._list.append(value)
+		self._append(value)
 
 	def extend(self, values):
 		"""Append all values to the end.
@@ -246,16 +274,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 				in the passed values.
 			TypeError: If any of the values aren't hashable.
 		"""
-		new_setlist = setlist()
-		for value in values:
-			try:
-				new_setlist.append(value)
-			except ValueError:
-				raise ValueError('New values contain duplicates')
-		if not self.isdisjoint(new_setlist):
-			raise ValueError
-		self._list.extend(new_setlist._list)
-		self._dict.update(new_setlist._dict)
+		self._extend(values)
 
 	def update(self, values):
 		"""Add all values to the end.
@@ -267,9 +286,10 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			extend
 		Args:
 			values (Iterable): Values to add
+		Raises:
+			TypeError: If any of the values are unhashable.
 		"""
-		for value in values:
-			self.add(value)
+		self._update(values)
 
 	def __iadd__(self, values):
 		"""Add all values to the end of self.
@@ -356,11 +376,9 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		Args:
 			item: Item to add
 		Raises:
+			TypeError: If item isn't hashable.
 		"""
-		try:
-			self.append(item)
-		except ValueError:
-			pass
+		self._add(item)
 
 	def discard(self, value):
 		"""Discard an item.

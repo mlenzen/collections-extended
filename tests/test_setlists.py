@@ -4,6 +4,13 @@ import pytest
 from collections_extended.setlists import setlist, frozensetlist
 
 
+def test_init():
+	with pytest.raises(ValueError):
+		setlist('aa', raise_on_duplicate=True)
+	with pytest.raises(ValueError):
+		setlist('aa', True)
+
+
 def test_count():
 	"""Test count."""
 	sl = setlist('abcdea')
