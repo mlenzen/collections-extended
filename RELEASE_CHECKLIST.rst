@@ -1,26 +1,11 @@
 Release Checklist
 -----------------
 
-#. ``bumpversion ...``
+#. Run tests and linter ``make testall`` and ``make lint``
+
+#. ``bumpversion [patch|minor|major]``
 
 #. Install the package again for local development, but with the new version number: ``python setup.py develop``
-
-#. Run the tests::
-
-	tox
-	flake8
-
-#. Build the source distribution: ``python setup.py sdist``
-
-#. Test that the sdist installs::
-
-	mktmpenv
-	cd dist
-	tar xzvf collections-extended-x.y.z.tar.gz
-	cd collections-extended-x.y.z/
-	python setup.py install
-	<try it out>
-	deactivate
 
 #. ``make publish``
 
@@ -31,12 +16,15 @@ Release Checklist
 	<try it out>
 	deactivate
 
-#. Check the PyPI listing page to make sure that the README, release notes, and roadmap display properly. If not, copy and paste the RestructuredText into http://rst.ninjs.org/ to find out what broke the formatting.
+#. Check the PyPI listing page to make sure that the README displays properly.
+   If not, copy and paste the RestructuredText into http://rst.ninjs.org/ to
+   find out what broke the formatting.
 
 New Python Versions
 -------------------
 
-To add support for a new version of python, aside from any new functionality required, add version number to:
+To add support for a new version of python, aside from any new functionality
+required, add version number to:
 
 #. tox.ini envlist
 #. .travis.yml
