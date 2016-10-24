@@ -224,11 +224,12 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			value: Value to append
 		Raises:
 			ValueError: If value alread in self
+			TypeError: If value isn't hashable
 		"""
+		# Checking value in self will check that value is Hashable
 		if value in self:
 			raise ValueError('Value "%s" already present' % value)
 		else:
-			# Do this first in case value isn't Hashable
 			self._dict[value] = len(self) + 1
 			self._list.append(value)
 
@@ -241,7 +242,9 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		Args:
 			values (Iterable): Values to append
 		Raises:
-			ValueError: If any values are already present
+			ValueError: If any values are already present or there are duplicates
+				in the passed values.
+			TypeError: If any of the values aren't hashable.
 		"""
 		new_setlist = setlist()
 		for value in values:
