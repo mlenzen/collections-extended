@@ -85,15 +85,67 @@ def test_setlist():
 	assert sl == setlist(('a', 'c', 'e', 'f', 'g', 'h'))
 
 
-def test_removeall():
-	"""Test remove_all & discard_all."""
+def test_remove_all_works():
 	sl = setlist('abcdefgh')
-	sl.remove_all(set('acdh'))
+	sl.remove_all('acdh')
 	assert sl == setlist(('befg'))
+
+
+def test_remove_all_raises_on_all_missing():
+	sl = setlist(range(5))
 	with pytest.raises(ValueError):
-		sl.remove('k')
+		sl.remove_all([5, 6])
+
+
+def test_remove_all_raises_on_some_missing():
+	sl = setlist(range(5))
 	with pytest.raises(ValueError):
-		sl.remove('bb')
+		sl.remove_all([4, 5])
+	assert sl == setlist(range(5))
+
+
+def test_remove_all_raises_on_duplicates():
+	sl = setlist(range(5))
+	with pytest.raises(ValueError):
+		sl.remove_all([4, 4])
+
+
+def test_discard_all_works():
+	sl = setlist(range(5))
+	sl.discard_all([3, 4])
+	assert sl == setlist(range(3))
+
+
+def test_discard_all_ignores_some_missing_end():
+	sl = setlist(range(5))
+	sl.discard_all([4, 5])
+	assert sl == setlist(range(4))
+
+
+def test_discard_all_ignores_some_missing_beg():
+	sl = setlist(range(5))
+	sl.discard_all([-1, 0])
+	assert sl == setlist([1, 2, 3, 4])
+
+
+def test_discard_all_ignores_all_missing_end():
+	sl = setlist(range(5))
+	sl.discard_all([5, 6])
+	assert sl == setlist(range(5))
+
+
+def test_discard_all_ignores_all_missing_beg():
+	sl = setlist(range(5))
+	sl.discard_all([-2, -1])
+	assert sl == setlist(range(5))
+
+
+def test_discard_all_handles_duplicates():
+	sl = setlist(range(5))
+	sl.discard_all([3, 3])
+	assert sl == setlist([0, 1, 2, 4])
+	sl.discard_all([4, 4])
+	assert sl == setlist([0, 1, 2])
 
 
 def test_len():
