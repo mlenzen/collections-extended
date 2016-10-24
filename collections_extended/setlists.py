@@ -354,7 +354,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		marked_to_delete = object()
 		for elem in elems_to_delete:
 			if elem in self:
-				self._list[self._dict[elem]] = marked_to_delete
+				elem_index = self._dict[elem]
+				self._list[elem_index] = marked_to_delete
 				del self._dict[elem]
 		deleted_count = 0
 		for i, elem in enumerate(self):
@@ -365,7 +366,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 				self._list[new_index] = elem
 				self._dict[elem] = new_index
 		# Now remove deleted_count items from the end of the list
-		self._list = self._list[:-deleted_count]
+		if deleted_count:
+			self._list = self._list[:-deleted_count]
 
 	# Implement MutableSet
 	def add(self, item):
