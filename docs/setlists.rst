@@ -74,15 +74,30 @@ New Methods
 Aside from the methods expected from Sequence and Set, this provides:
 - ``setlist.shuffle(random=None)`` Because random.shuffle(setlist) doesn't work, this is provided to do the same.
 
-ValueErrors
------------
-setlists will raise ``ValueError`` when appending an already present element or
-removing a non-existent element. However, the methods inherited from ``Set``
-(``add`` and ``discard``) are silent in the same circumstances. This matches the
-behavior of ``list`` and ``set``.
+Errors
+------
+Some methods will raise a ``ValueError`` when trying to add or remove elements
+when they respectively already or do not currently exist in the setlist.
+Each method has an analagous version that does/doesn't raise a ValueError.
+Methods implementing the Set methods do not raise ``ValueError`` while the one's
+implementing do. All will raise ``TypeError`` if you use unhashable values.
+The bulk operations are atomic, if any single value is unhashable or a duplicate,
+no changes will be made to the ``setlist``.
 
-The setlist constructor does not raise ``ValueError`` on duplicate values
-because I had to choose one or the other and I have code assuming it doesn't.
+=====================  =======         =============
+Raises ``ValueError``  No              Yes
+=====================  =======         =============
+Interface:             ``Set``         ``Sequence``
+                       ``add``         ``append``
+                       ``update``      ``extend``
+                       ``discard``     ``remove``
+                       ``discard_all`` ``remove_all``
+=====================   ==============  =============
+
+The setlist constructor by defualt does not raise ``ValueError`` on duplicate values
+because we have to choose one or the other and this matches the behavior of Set.
+There is a flag ``raise_on_duplicate`` that can be passed to ``__init__`` to
+raise a ValueError if duplicate values are aoassed.
 
 Quirks
 ------
