@@ -74,7 +74,7 @@ class _basesetlist(Sequence, Set):
 			except ValueError:
 				raise ValueError('New values contain duplicates')
 		if not self.isdisjoint(new_setlist):
-			raise ValueError
+			raise ValueError('New values contain elemnents already present')
 		self._list.extend(new_setlist._list)
 		self._dict.update(new_setlist._dict)
 
@@ -314,12 +314,42 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		try:
 			index = self._dict[value]
 		except KeyError:
-			raise ValueError
+			raise ValueError('Value "%s" is not present.')
 		else:
 			del self._dict[value]
 			for elem in self._list[index + 1:]:
 				self._dict[elem] -= 1
 			del self._list[index]
+
+	def _delete_all(self, elems_to_delete, raise_errors):
+		indices_to_delete = set()
+		for elem in elems_to_delete:
+			try:
+				elem_index = self._dict[elem]
+			except KeyError:
+				if raise_errors:
+					raise ValueError('Passed values contain elements not in self')
+			else:
+				if elem_index in indices_to_delete:
+					if raise_errors:
+						raise ValueError('Passed vales contain duplicates')
+				indices_to_delete.add(elem_index)
+		print(indices_to_delete)
+		self._delete_values_by_index(indices_to_delete)
+
+	def _delete_values_by_index(self, indices_to_delete):
+		deleted_count = 0
+		for i, elem in enumerate(self._list):
+			if i in indices_to_delete:
+				deleted_count += 1
+				del self._dict[elem]
+			else:
+				new_index = i - deleted_count
+				self._list[new_index] = elem
+				self._dict[elem] = new_index
+		# Now remove deleted_count items from the end of the list
+		if deleted_count:
+			self._list = self._list[:-deleted_count]
 
 	def remove_all(self, elems_to_delete):
 		"""Remove all elements from elems_to_delete, raises ValueErrors.
@@ -332,15 +362,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			ValueError: If the count of any element is greater in
 				elems_to_delete than self.
 		"""
-		removed = set()
-		for element in elems_to_delete:
-			if element not in self:
-				raise ValueError('Cannot remove element that is not present')
-			elif element in removed:
-				raise ValueError('Cannot remove more than one of element')
-			else:
-				removed.add(element)
-		self.discard_all(elems_to_delete)
+		self._delete_all(elems_to_delete, raise_errors=True)
 
 	def discard_all(self, elems_to_delete):
 		"""Discard all the elements from elems_to_delete.
@@ -351,23 +373,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		Args:
 			elems_to_delete (Iterable): Elements to discard.
 		"""
-		marked_to_delete = object()
-		for elem in elems_to_delete:
-			if elem in self:
-				elem_index = self._dict[elem]
-				self._list[elem_index] = marked_to_delete
-				del self._dict[elem]
-		deleted_count = 0
-		for i, elem in enumerate(self):
-			if elem is marked_to_delete:
-				deleted_count += 1
-			else:
-				new_index = i - deleted_count
-				self._list[new_index] = elem
-				self._dict[elem] = new_index
-		# Now remove deleted_count items from the end of the list
-		if deleted_count:
-			self._list = self._list[:-deleted_count]
+		self._delete_all(elems_to_delete, raise_errors=False)
 
 	# Implement MutableSet
 	def add(self, item):
