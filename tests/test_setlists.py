@@ -284,6 +284,12 @@ def test_update_with_duplicates():
 	assert sl == setlist(range(4))
 
 
+def test_update_raises_type_error():
+	sl = setlist()
+	with pytest.raises(TypeError):
+		sl.update([list()])
+
+
 def test_hash():
 	"""Test __hash__."""
 	assert hash(frozensetlist('abc')) == hash(frozensetlist('abc'))
