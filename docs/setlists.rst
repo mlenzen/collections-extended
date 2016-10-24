@@ -84,15 +84,15 @@ implementing do. All will raise ``TypeError`` if you use unhashable values.
 The bulk operations are atomic, if any single value is unhashable or a duplicate,
 no changes will be made to the ``setlist``.
 
-=====================  =======         =============
-Raises ``ValueError``  No              Yes
-=====================  =======         =============
-Interface:             ``Set``         ``Sequence``
-                       ``add``         ``append``
-                       ``update``      ``extend``
-                       ``discard``     ``remove``
-                       ``discard_all`` ``remove_all``
-=====================   ==============  =============
+======================  ===============  ==============
+Raises ``ValueError``   No               Yes
+Interface               ``Set``          ``Sequence``
+======================  ===============  ==============
+Add a single value      ``add``          ``append``
+Add multiple values     ``update``       ``extend``
+Remove a single value   ``discard``      ``remove``
+Remove multiple values  ``discard_all``  ``remove_all``
+======================  ===============  ==============
 
 The setlist constructor by defualt does not raise ``ValueError`` on duplicate values
 because we have to choose one or the other and this matches the behavior of Set.
