@@ -209,6 +209,24 @@ def test_delitem():
 	compare_del_slice_to_list(slice(0, 7, 2))
 
 
+def test_append_works():
+	sl = setlist(range(2))
+	sl.append(2)
+	assert sl == setlist(range(3))
+
+
+def test_append_unhashable_raises_type_error():
+	sl = setlist()
+	with pytest.raises(TypeError):
+		sl.append(list())
+
+
+def test_append_duplicate_raises_value_error():
+	sl = setlist('a')
+	with pytest.raises(ValueError):
+		sl.append('a')
+
+
 def test_extend_works():
 	"""Test simple extend works."""
 	sl = setlist(range(1))
