@@ -18,7 +18,8 @@ class _basesetlist(Sequence, Set):
 	"""
 
 	def __init__(self, iterable=None, raise_on_duplicate=False):
-		"""
+		"""Create a setlist.
+
 		Args:
 			iterable (Iterable): Values to initialize the setlist with.
 		"""
