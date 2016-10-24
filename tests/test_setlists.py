@@ -209,19 +209,47 @@ def test_delitem():
 	compare_del_slice_to_list(slice(0, 7, 2))
 
 
-def test_extend_update():
-	"""Test extend."""
-	sl = setlist(range(10))
-	sl.extend([10, 11])
-	assert sl == setlist(range(12))
+def test_extend_works():
+	"""Test simple extend works."""
+	sl = setlist(range(1))
+	sl.extend([1, 2])
+	assert sl == setlist(range(3))
+
+
+def test_extend_fails_with_existing_values():
+	"""Test extend with existing values fails."""
+	sl = setlist(range(3))
 	with pytest.raises(ValueError):
 		sl.extend([1, 2])
-	assert sl == setlist(range(12))
+	assert sl == setlist(range(3))
+
+
+def test_extend_fails_with_some_existing_values():
+	"""Test extend with some existing values fails and doesn't change the setlist."""
+	sl = setlist(range(3))
 	with pytest.raises(ValueError):
-		sl.extend([13, 2])
-	assert sl == setlist(range(12))
-	sl.update([11, 12])
-	assert sl == setlist(range(13))
+		sl.extend([4, 2])
+	assert sl == setlist(range(3))
+
+
+def test_extend_fails_with_duplicate_values():
+	"""Test extend with duplicate values fails and doesn't change the setlist."""
+	sl = setlist(range(3))
+	with pytest.raises(ValueError):
+		sl.extend([3, 3])
+	assert sl == setlist(range(3))
+
+
+def test_update():
+	sl = setlist(range(3))
+	sl.update([3])
+	assert sl == setlist(range(4))
+
+
+def test_update_with_duplicates():
+	sl = setlist(range(3))
+	sl.update([2, 3])
+	assert sl == setlist(range(4))
 
 
 def test_hash():
