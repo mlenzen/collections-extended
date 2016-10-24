@@ -137,12 +137,6 @@ def test_getitem():
 
 def test_setitem():
 	"""Test __setitem__."""
-	def compare_set_slice_to_list(slice_, replacement):
-		sl = setlist(range(10))
-		sl[slice_] = replacement
-		l = list(range(10))
-		l[slice_] = replacement
-		assert sl == setlist(l)
 	sl = setlist('abc')
 	sl[0] = 'd'
 	assert sl == setlist('dbc')
@@ -169,12 +163,6 @@ def test_setitem():
 	with pytest.raises(IndexError):
 		sl[10] = 'd'
 	assert sl == setlist(['a'] + list(range(1, 9)) + ['c'])
-	compare_set_slice_to_list(slice(0, 2), ['a', 'b'])
-	compare_set_slice_to_list(slice(2, 4), ['a', 'b'])
-	compare_set_slice_to_list(slice(7, 9), ['a', 'b'])
-	compare_set_slice_to_list(slice(2, -2), ['a', 'b'])
-	compare_set_slice_to_list(slice(2, 5, 2), ['a', 'b'])
-	compare_set_slice_to_list(slice(-1, None, -1), list(range(10)))
 	with pytest.raises(TypeError):
 		sl[0:2] = 1
 	sl = setlist(range(10))
@@ -182,6 +170,22 @@ def test_setitem():
 		sl[0:2] = [8, 9]
 	with pytest.raises(ValueError):
 		sl[-1:0:-2] = ['a', 'b']
+
+
+@pytest.mark.parametrize('slice_, replacement', [
+	(slice(0, 2), ['a', 'b']),
+	(slice(2, 4), ['a', 'b']),
+	(slice(7, 9), ['a', 'b']),
+	(slice(2, -2), ['a', 'b']),
+	(slice(2, 5, 2), ['a', 'b']),
+	(slice(-1, None, -1), list(range(10))),
+	])
+def test_compare_set_slice_to_list(slice_, replacement):
+	sl = setlist(range(10))
+	sl[slice_] = replacement
+	l = list(range(10))
+	l[slice_] = replacement
+	assert sl == setlist(l)
 
 
 def test_delitem():
@@ -196,17 +200,20 @@ def test_delitem():
 	with pytest.raises(IndexError):
 		del sl[10]
 
-	def compare_del_slice_to_list(slice_):
-		sl = setlist(range(10))
-		del sl[slice_]
-		l = list(range(10))
-		del l[slice_]
-		assert sl == setlist(l)
-	compare_del_slice_to_list(slice(0, 2))
-	compare_del_slice_to_list(slice(6, 9))
-	compare_del_slice_to_list(slice(3, 7))
-	compare_del_slice_to_list(slice(7, 3, -1))
-	compare_del_slice_to_list(slice(0, 7, 2))
+
+@pytest.mark.parametrize('slice_', [
+	slice(0, 2),
+	slice(6, 9),
+	slice(3, 7),
+	slice(7, 3, -1),
+	slice(0, 7, 2),
+	])
+def test_compare_del_slice_to_list(slice_):
+	sl = setlist(range(10))
+	del sl[slice_]
+	l = list(range(10))
+	del l[slice_]
+	assert sl == setlist(l)
 
 
 def test_append_works():
@@ -256,6 +263,13 @@ def test_extend_fails_with_duplicate_values():
 	with pytest.raises(ValueError):
 		sl.extend([3, 3])
 	assert sl == setlist(range(3))
+
+
+def test_extend_fails_with_unhashable_value():
+	sl = setlist()
+	with pytest.raises(TypeError):
+		sl.extend(['a', list()])
+	assert sl == setlist()
 
 
 def test_update():
