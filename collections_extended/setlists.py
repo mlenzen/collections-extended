@@ -49,7 +49,7 @@ class _basesetlist(Sequence, Set):
 		if index < 0:
 			index += len(self)
 		if index < 0:
-			raise IndexError
+			raise IndexError('index is out of range')
 		return index
 
 	def _fix_end_index(self, index):
@@ -226,12 +226,15 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 	def __delitem__(self, index):
 		if isinstance(index, slice):
-			values_to_remove = self._list[index]
-			self.remove_all(values_to_remove)
+			indices_to_delete = set(self.index(e) for e in self._list[index])
+			self._delete_values_by_index(indices_to_delete)
 		else:
 			index = self._fix_neg_index(index)
 			value = self._list[index]
-			self.remove(value)
+			del self._dict[value]
+			for elem in self._list[index + 1:]:
+				self._dict[elem] -= 1
+			del self._list[index]
 
 	def insert(self, index, value):
 		"""Insert value at index.
@@ -316,10 +319,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		except KeyError:
 			raise ValueError('Value "%s" is not present.')
 		else:
-			del self._dict[value]
-			for elem in self._list[index + 1:]:
-				self._dict[elem] -= 1
-			del self._list[index]
+			del self[index]
 
 	def _delete_all(self, elems_to_delete, raise_errors):
 		indices_to_delete = set()
@@ -361,6 +361,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		Raises:
 			ValueError: If the count of any element is greater in
 				elems_to_delete than self.
+			TypeError: If any of the values aren't hashable.
 		"""
 		self._delete_all(elems_to_delete, raise_errors=True)
 
@@ -372,6 +373,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 		Args:
 			elems_to_delete (Iterable): Elements to discard.
+		Raises:
+			TypeError: If any of the values aren't hashable.
 		"""
 		self._delete_all(elems_to_delete, raise_errors=False)
 
