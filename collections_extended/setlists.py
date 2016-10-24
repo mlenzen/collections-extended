@@ -1,4 +1,5 @@
 """Setlist class definitions."""
+import itertools
 import random as random_
 
 from collections import (
@@ -97,6 +98,9 @@ class _basesetlist(Sequence, Set):
 		return value in self._dict
 
 	# Iterable we get by inheriting from Sequence
+	def __add__(self, other):
+		if isinstance(other, _basesetlist):
+			return self._from_iterable(itertools.chain(self, other), raise_on_duplicate=True)
 
 	# Implement Sized
 	def __len__(self):

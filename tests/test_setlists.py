@@ -85,6 +85,13 @@ def test_setlist():
 	assert sl == setlist(('a', 'c', 'e', 'f', 'g', 'h'))
 
 
+def test_add():
+	assert frozensetlist(range(2)) + frozensetlist([2]) == frozensetlist(range(3))
+	assert setlist(range(2)) + frozensetlist([2]) == setlist(range(3))
+	assert frozensetlist(range(2)) + setlist([2]) == frozensetlist(range(3))
+	assert setlist(range(2)) + setlist([2]) == setlist(range(3))
+
+
 def test_remove_all_works():
 	sl = setlist('abcdefgh')
 	sl.remove_all('acdh')
