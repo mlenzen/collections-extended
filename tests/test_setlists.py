@@ -90,6 +90,10 @@ def test_add():
 	assert setlist(range(2)) + frozensetlist([2]) == setlist(range(3))
 	assert frozensetlist(range(2)) + setlist([2]) == frozensetlist(range(3))
 	assert setlist(range(2)) + setlist([2]) == setlist(range(3))
+	with pytest.raises(ValueError):
+		setlist() + set()
+	with pytest.raises(ValueError):
+		setlist() + list()
 
 
 def test_remove_all_works():

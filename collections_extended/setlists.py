@@ -90,8 +90,8 @@ class _basesetlist(Sequence, Set):
 			self._add(value)
 
 	@classmethod
-	def _from_iterable(cls, it):
-		return cls(it)
+	def _from_iterable(cls, it, **kwargs):
+		return cls(it, **kwargs)
 
 	# Implement Container
 	def __contains__(self, value):
@@ -155,11 +155,13 @@ class _basesetlist(Sequence, Set):
 
 	def _check_type(self, other, operand_name):
 		if not isinstance(other, _basesetlist):
-			message = "unsupported operand type(s) for {operand_name}: '{self_type}' and '{other_type}'".format(
-				operand_name=operand_name,
-				self_type=type(self),
-				other_type=type(other),
-				)
+			message = (
+				"unsupported operand type(s) for {operand_name}: "
+				"'{self_type}' and '{other_type}'").format(
+					operand_name=operand_name,
+					self_type=type(self),
+					other_type=type(other),
+					)
 			raise TypeError(message)
 
 	def __add__(self, other):
@@ -175,17 +177,44 @@ class _basesetlist(Sequence, Set):
 		return self._dict.keys().issuperset(other)
 
 	def union(self, other):
-		raise NotImplementedError
+		out = self.copy()
+		out.update(other)
+		return other
 
 	def intersection(self, other):
-		raise NotImplementedError
+		other = set(other)
+		out = self._from_iterable()
+		for item in self:
+			if item in other:
+				out.add(item)
+		return out
 
 	def difference(self, other):
-		raise NotImplementedError
+		other = set(other)
+		out = self._from_iterable()
+		for item in self:
+			if item not in other:
+				out.add(item)
+		return out
 
 	def symmetric_difference(self, other):
-		raise NotImplementedError
+		return self.union(other) - self.intersection(other)
 
+	def __sub__(self, other):
+		self._check_type(other, '-')
+		return self.difference(other)
+
+	def __and__(self, other):
+		self._check_type(other, '&')
+		return self.intersection(other)
+
+	def __or__(self, other):
+		self._check_type(other, '|')
+		return self.union(other)
+
+	def __xor__(self, other):
+		self._check_type(other, '^')
+		return self.symmetric_difference(other)
 
 	# Comparison
 
@@ -451,13 +480,49 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			pass
 
 	def difference_update(self, other):
-		raise NotImplementedError
+		other = set()
+		indices_to_delete = set()
+		for i, elem in enumerate(self):
+			if elem in other:
+				indices_to_delete.add(i)
+		if indices_to_delete:
+			self._delete_values_by_index(indices_to_delete)
 
 	def intersection_update(self, other):
-		raise NotImplementedError
+		other = set(other)
+		indices_to_delete = set()
+		for i, elem in enumerate(self):
+			if elem not in other:
+				indices_to_delete.add(i)
+		if indices_to_delete:
+			self._delete_values_by_index(indices_to_delete)
 
 	def symmetric_difference_update(self, other):
-		raise NotImplementedError
+		other = setlist(other)
+		indices_to_delete = set()
+		for i, item in enumerate(self):
+			if item not in other:
+				indices_to_delete.add(i)
+		self._delete_values_by_index(indices_to_delete)
+		for item in other:
+			if item not in self:
+				self.add(item)
+
+	def __isub__(self, other):
+		self._check_type(other, '-=')
+		self.difference_update(other)
+
+	def __iand__(self, other):
+		self._check_type(other, '+=')
+		self.intersection_update(other)
+
+	def __ior__(self, other):
+		self._check_type(other, '|=')
+		self.update(other)
+
+	def __ixor__(self, other):
+		self._check_type(other, '^=')
+		self.symmetric_difference_update(other)
 
 	# New methods
 	def shuffle(self, random=None):
