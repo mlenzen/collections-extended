@@ -10,6 +10,8 @@ from collections import (
 	Hashable,
 	)
 
+from . import _util
+
 
 class _basesetlist(Sequence, Set):
 	"""A setlist is an ordered Collection of unique elements.
@@ -536,4 +538,4 @@ class frozensetlist(_basesetlist, Hashable):
 	"""An immutable (hashable) setlist."""
 
 	def __hash__(self):
-		return Set._hash(self)
+		return _util.hash_iterable(self)
