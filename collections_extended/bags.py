@@ -506,4 +506,6 @@ class frozenbag(_basebag, Hashable):
 		is identical to _abcoll.Set._hash
 		We can't call it directly because Python2 raises a TypeError.
 		"""
-		return self._hash()
+		if not hasattr(self, '_hash_value'):
+			self._hash_value = self._hash()
+		return self._hash_value

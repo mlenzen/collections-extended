@@ -538,4 +538,6 @@ class frozensetlist(_basesetlist, Hashable):
 	"""An immutable (hashable) setlist."""
 
 	def __hash__(self):
-		return _util.hash_iterable(self)
+		if not hasattr(self, '_hash_value'):
+			self._hash_value = _util.hash_iterable(self)
+		return self._hash_value
