@@ -366,6 +366,10 @@ def test_hash():
 	assert hash(frozensetlist()) == hash(frozensetlist())
 
 
+def test_hash_differs_with_order():
+	assert hash(frozensetlist('abc')) != hash(frozensetlist('cab'))
+
+
 def test_clear():
 	"""Test clear."""
 	sl = setlist(range(10))
