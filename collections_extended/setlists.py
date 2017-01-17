@@ -155,13 +155,14 @@ class _basesetlist(Sequence, Set):
 			else:
 				raise ValueError
 
-	def _check_type(self, other, operand_name):
+	@classmethod
+	def _check_type(cls, other, operand_name):
 		if not isinstance(other, _basesetlist):
 			message = (
 				"unsupported operand type(s) for {operand_name}: "
 				"'{self_type}' and '{other_type}'").format(
 					operand_name=operand_name,
-					self_type=type(self),
+					self_type=cls,
 					other_type=type(other),
 					)
 			raise TypeError(message)
@@ -173,31 +174,23 @@ class _basesetlist(Sequence, Set):
 	# Implement Set
 
 	def issubset(self, other):
-		return self._dict.keys().issubset(other)
+		return self <= other
 
 	def issuperset(self, other):
-		return self._dict.keys().issuperset(other)
+		return self >= other
 
 	def union(self, other):
 		out = self.copy()
 		out.update(other)
-		return other
+		return out
 
 	def intersection(self, other):
 		other = set(other)
-		out = self._from_iterable()
-		for item in self:
-			if item in other:
-				out.add(item)
-		return out
+		return self._from_iterable(item for item in self if item in other)
 
 	def difference(self, other):
 		other = set(other)
-		out = self._from_iterable()
-		for item in self:
-			if item not in other:
-				out.add(item)
-		return out
+		return self._from_iterable(item for item in self if item not in other)
 
 	def symmetric_difference(self, other):
 		return self.union(other) - self.intersection(other)

@@ -433,3 +433,53 @@ def test_copy():
 	assert sl == copy
 	assert sl is not copy
 	assert sl[1] is copy[1]
+
+
+def test__add__():
+	assert setlist('abc') + setlist('def') == setlist('abcdef')
+	with pytest.raises(TypeError):
+		assert setlist('abc') + 'def' == setlist('abcdef')
+
+
+def test_is_subset():
+	assert setlist('ab').issubset(setlist('abc'))
+	assert setlist('abc').issubset(setlist('abc'))
+	assert not setlist('abc').issubset(setlist('ab'))
+
+
+def test_is_superset():
+	assert not setlist('ab').issuperset(setlist('abc'))
+	assert setlist('abc').issuperset(setlist('abc'))
+	assert setlist('abc').issuperset(setlist('ab'))
+
+
+def test_union():
+	assert setlist('ab').union(setlist('bc')) == setlist('abc')
+	assert setlist('ab').union('bc') == setlist('abc')
+	assert setlist('ab') | setlist('bc') == setlist('abc')
+	with pytest.raises(TypeError):
+		assert setlist('ab') | 'bc' == setlist('abc')
+
+
+def test_intersection():
+	assert setlist('abd').intersection(setlist('bcd')) == setlist('bd')
+	assert setlist('abd').intersection('bcd') == setlist('bd')
+	assert setlist('abd') & setlist('bcd') == setlist('bd')
+	with pytest.raises(TypeError):
+		assert setlist('abd') & 'bcd' == setlist('bd')
+
+
+def test_difference():
+	assert setlist('abd').difference(setlist('bcd')) == setlist('a')
+	assert setlist('abd').difference('bcd') == setlist('a')
+	assert setlist('abd') - setlist('bcd') == setlist('a')
+	with pytest.raises(TypeError):
+		assert setlist('abd') - 'bcd' == setlist('a')
+
+
+def test_symmetric_difference():
+	assert setlist('abd').symmetric_difference(setlist('bcd')) == setlist('ac')
+	assert setlist('abd').symmetric_difference('bcd') == setlist('ac')
+	assert setlist('abd') ^ setlist('bcd') == setlist('ac')
+	with pytest.raises(TypeError):
+		assert setlist('abd') ^ 'bcd' == setlist('ac')
