@@ -81,8 +81,6 @@ def test_setlist():
 		sl.insert(1, 'e')
 	sl.append('f')
 	assert sl == setlist(('a', 'c', 'e', 'f'))
-	sl += ('g', 'h')
-	assert sl == setlist(('a', 'c', 'e', 'f', 'g', 'h'))
 
 
 def test_add_operator():
@@ -483,3 +481,54 @@ def test_symmetric_difference():
 	assert setlist('abd') ^ setlist('bcd') == setlist('ac')
 	with pytest.raises(TypeError):
 		assert setlist('abd') ^ 'bcd' == setlist('ac')
+
+
+def test_intersection_update():
+	sl = setlist('abd')
+	sl.intersection_update(setlist('bcd'))
+	assert sl == setlist('bd')
+	sl = setlist('abd')
+	sl.intersection_update('bcd')
+	assert sl == setlist('bd')
+	sl = setlist('abd')
+	sl &= setlist('bcd')
+	assert sl == setlist('bd')
+	sl = setlist('abd')
+	with pytest.raises(TypeError):
+		sl &= 'bcd'
+
+
+def test_difference_update():
+	sl = setlist('abd')
+	sl.difference_update(setlist('bcd'))
+	assert sl == setlist('a')
+	sl = setlist('abd')
+	sl.difference_update('bcd')
+	assert sl == setlist('a')
+	sl = setlist('abd')
+	sl -= setlist('bcd')
+	assert sl == setlist('a')
+	sl = setlist('abd')
+	with pytest.raises(TypeError):
+		sl -= 'bcd'
+
+
+def test_symmetric_difference_update():
+	sl = setlist('abd')
+	sl.symmetric_difference_update(setlist('bcd'))
+	assert sl == setlist('ac')
+	sl = setlist('abd')
+	sl.symmetric_difference_update('bcd')
+	assert sl == setlist('ac')
+	sl = setlist('abd')
+	sl ^= setlist('bcd')
+	assert sl == setlist('ac')
+	sl = setlist('abd')
+	with pytest.raises(TypeError):
+		sl ^= 'bcd'
+
+
+def test_union_update():
+	sl = setlist('abd')
+	sl |= setlist('bcd')
+	assert sl == setlist('abdc')

@@ -169,7 +169,8 @@ class _basesetlist(Sequence, Set):
 
 	def __add__(self, other):
 		self._check_type(other, '+')
-		return self._from_iterable(itertools.chain(self, other), raise_on_duplicate=True)
+		values = itertools.chain(self, other)
+		return self._from_iterable(values, raise_on_duplicate=True)
 
 	# Implement Set
 
@@ -387,6 +388,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		Raises:
 			ValueError: If any values are already present
 		"""
+		self._check_type(values)
 		self.extend(values)
 		return self
 
@@ -475,7 +477,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			pass
 
 	def difference_update(self, other):
-		other = set()
+		other = set(other)
 		indices_to_delete = set()
 		for i, elem in enumerate(self):
 			if elem in other:
@@ -496,28 +498,31 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		other = setlist(other)
 		indices_to_delete = set()
 		for i, item in enumerate(self):
-			if item not in other:
+			if item in other:
 				indices_to_delete.add(i)
-		self._delete_values_by_index(indices_to_delete)
 		for item in other:
-			if item not in self:
-				self.add(item)
+			self.add(item)
+		self._delete_values_by_index(indices_to_delete)
 
 	def __isub__(self, other):
 		self._check_type(other, '-=')
 		self.difference_update(other)
+		return self
 
 	def __iand__(self, other):
-		self._check_type(other, '+=')
+		self._check_type(other, '&=')
 		self.intersection_update(other)
+		return self
 
 	def __ior__(self, other):
 		self._check_type(other, '|=')
 		self.update(other)
+		return self
 
 	def __ixor__(self, other):
 		self._check_type(other, '^=')
 		self.symmetric_difference_update(other)
+		return self
 
 	# New methods
 	def shuffle(self, random=None):
