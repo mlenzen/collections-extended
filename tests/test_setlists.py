@@ -85,14 +85,14 @@ def test_setlist():
 	assert sl == setlist(('a', 'c', 'e', 'f', 'g', 'h'))
 
 
-def test_add():
+def test_add_operator():
 	assert frozensetlist(range(2)) + frozensetlist([2]) == frozensetlist(range(3))
 	assert setlist(range(2)) + frozensetlist([2]) == setlist(range(3))
 	assert frozensetlist(range(2)) + setlist([2]) == frozensetlist(range(3))
 	assert setlist(range(2)) + setlist([2]) == setlist(range(3))
-	with pytest.raises(ValueError):
+	with pytest.raises(TypeError):
 		setlist() + set()
-	with pytest.raises(ValueError):
+	with pytest.raises(TypeError):
 		setlist() + list()
 
 
