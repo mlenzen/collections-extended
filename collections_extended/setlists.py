@@ -388,7 +388,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		Raises:
 			ValueError: If any values are already present
 		"""
-		self._check_type(values)
+		self._check_type(values, '+=')
 		self.extend(values)
 		return self
 

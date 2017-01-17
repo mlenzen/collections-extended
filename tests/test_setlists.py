@@ -532,3 +532,15 @@ def test_union_update():
 	sl = setlist('abd')
 	sl |= setlist('bcd')
 	assert sl == setlist('abdc')
+
+
+def test_extend_update():
+	sl = setlist('abd')
+	sl += setlist('e')
+	assert sl == setlist('abde')
+	with pytest.raises(TypeError):
+		sl += 'f'
+	assert sl == setlist('abde')
+	with pytest.raises(ValueError):
+		sl += setlist('fe')
+	assert sl == setlist('abde')
