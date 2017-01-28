@@ -34,9 +34,6 @@ class _basesetlist(Sequence, Set):
 			else:
 				self._update(iterable)
 
-	def __str__(self):
-		return self._list.__repr__()
-
 	def __repr__(self):
 		if len(self) == 0:
 			return '{0}()'.format(self.__class__.__name__)
@@ -258,6 +255,9 @@ class _basesetlist(Sequence, Set):
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
 	"""A mutable (unhashable) setlist."""
+
+	def __str__(self):
+		return '{[%s}]' % ', '.join(repr(v) for v in self)
 
 	# Helper methods
 	def _delete_all(self, elems_to_delete, raise_errors):

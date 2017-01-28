@@ -410,14 +410,18 @@ def test_eq():
 
 def test_str():
 	"""Test __str__."""
-	assert str(setlist()) == str(list())
-	assert str(setlist('abc')) == str(list('abc'))
+	assert str(setlist()) == '{[}]'
+	assert str(setlist('abc')) == "{['a', 'b', 'c'}]"
+	assert str(frozensetlist()) == 'frozensetlist()'
+	assert str(frozensetlist('abc')) == "frozensetlist(('a', 'b', 'c'))"
 
 
 def test_repr():
 	"""Test __repr."""
 	assert repr(setlist()) == 'setlist()'
 	assert repr(setlist(range(4))) == 'setlist((0, 1, 2, 3))'
+	assert repr(frozensetlist()) == 'frozensetlist()'
+	assert repr(frozensetlist('abc')) == "frozensetlist(('a', 'b', 'c'))"
 
 
 def test_copy():
