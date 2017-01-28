@@ -30,3 +30,4 @@ required, add version number to:
 #. .travis.yml
 #. setup.py classifiers
 #. README.rst description
+#. docs/index.rst list of versions
