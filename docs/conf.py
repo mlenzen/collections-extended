@@ -64,7 +64,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'collections_extended'
-copyright = u'2016, Michael Lenzen'
+copyright = u'2017, Michael Lenzen'
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
