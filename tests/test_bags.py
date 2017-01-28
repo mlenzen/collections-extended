@@ -22,13 +22,16 @@ def test_repr():
 	assert ms == eval(ms.__repr__())
 	ms = _basebag('abracadabra')
 	assert ms == eval(ms.__repr__())
+	assert repr(bag('a')) == "bag(('a',))"
 
 
 def test_str():
 	"""Test __str__."""
 	def compare_bag_string(b):
 		s = str(b)
-		return set(s.lstrip('{').rstrip('}').split(', '))
+		assert s.startswith('{')
+		assert s.endswith('}')
+		return set(s[1:-1].split(', '))
 	assert str(_basebag()) == '_basebag()'
 	assert "'a'^5" in str(_basebag('abracadabra'))
 	assert "'b'^2" in str(_basebag('abracadabra'))
