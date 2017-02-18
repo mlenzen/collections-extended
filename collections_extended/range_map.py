@@ -1,7 +1,6 @@
 """RangeMap class definition."""
 from bisect import bisect_left, bisect_right
-from collections import namedtuple
-from collections.abc import Mapping, MappingView, Set
+from collections import namedtuple, Mapping, MappingView, Set
 
 
 # Used to mark unmapped ranges
