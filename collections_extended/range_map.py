@@ -1,12 +1,61 @@
 """RangeMap class definition."""
 from bisect import bisect_left, bisect_right
-from collections import namedtuple, Container, Mapping
+from collections import namedtuple
+from collections.abc import Mapping, MappingView, Set
 
 
 # Used to mark unmapped ranges
 _empty = object()
 
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
+
+
+class KeysView(MappingView, Set):
+
+	__slots__ = ()
+
+	@classmethod
+	def _from_iterable(self, it):
+		return set(it)
+
+	def __contains__(self, key):
+		loc = self._mapping._bisect_left(key)
+		return self._mapping._keys[loc] == key and self._mapping._values[loc] is not _empty
+
+	def __iter__(self):
+		for item in self._mapping.ranges():
+			yield item.start
+
+
+class ItemsView(MappingView, Set):
+
+	__slots__ = ()
+
+	@classmethod
+	def _from_iterable(self, it):
+		return set(it)
+
+	def __contains__(self, item):
+		key, value = item
+		loc = self._mapping._bisect_left(key)
+		return self._mapping._keys[loc] == key and self._mapping._values[loc] == value
+
+	def __iter__(self):
+		for mapped_range in self._mapping.ranges():
+			yield (mapped_range.start, mapped_range.value)
+
+
+class ValuesView(MappingView):
+
+	__slots__ = ()
+
+	def __contains__(self, value):
+		return value in self._mapping._values
+
+	def __iter__(self):
+		for value in self._mapping._values:
+			if value is not _empty:
+				yield value
 
 
 def _check_start_stop(start, stop):
@@ -27,7 +76,7 @@ def _check_key_slice(key):
 		raise ValueError('Cannot set or delete slices with steps')
 
 
-class RangeMap(Container):
+class RangeMap(Mapping):
 	"""Map ranges of orderable elements to values."""
 
 	def __init__(self, iterable=None, **kwargs):
@@ -138,6 +187,11 @@ class RangeMap(Container):
 			return False
 		else:
 			return True
+
+	def __iter__(self):
+		for key, value in zip(self._keys, self._values):
+			if value is not _empty:
+				yield key
 
 	def __bool__(self):
 		if len(self._keys) > 1:
@@ -254,6 +308,22 @@ class RangeMap(Container):
 	def __delitem__(self, key):
 		_check_key_slice(key)
 		self.delete(key.start, key.stop)
+
+	def __len__(self):
+		count = 0
+		for v in self._values:
+			if v is not _empty:
+				count += 1
+		return count
+
+	def keys(self):
+		return KeysView(self)
+
+	def values(self):
+		return ValuesView(self)
+
+	def items(self):
+		return ItemsView(self)
 
 	# Python2 - override slice methods
 	def __setslice__(self, i, j, value):

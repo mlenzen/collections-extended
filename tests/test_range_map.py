@@ -388,3 +388,82 @@ def test_init():
 	assert RangeMap.from_mapping({1: 'a', 2: 'b'}) == rm
 	with pytest.raises(TypeError):
 		RangeMap(foo='bar')
+
+
+def test_len():
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
+	assert len(rm) == 3
+	assert len(RangeMap(default_value='a')) == 1
+	assert len(RangeMap()) == 0
+	assert len(RangeMap(default_value=None)) == 1
+
+
+def test_keys():
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
+	assert rm.keys() == set((1, 4, 5))
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		))
+	assert rm.keys() == set((1, 4))
+	assert RangeMap().keys() == set()
+	assert RangeMap(default_value='a').keys() == set((None,))
+	assert RangeMap(default_value=None).keys() == set((None, ))
+
+
+def test_values():
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
+	assert list(rm.values()) == ['a', 'd', 'e']
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		))
+	assert list(rm.values()) == ['a', 'd']
+	assert list(RangeMap().values()) == []
+	assert list(RangeMap(default_value='a').values()) == ['a']
+	assert list(RangeMap(default_value=None).values()) == [None]
+
+
+def test_items():
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
+	assert rm.items() == set(((1, 'a'), (4, 'd'), (5, 'e')))
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		))
+	assert rm.items() == set(((1, 'a'), (4, 'd')))
+	assert RangeMap().items() == set()
+	assert RangeMap(default_value='a').items() == set(((None, 'a'),))
+	assert RangeMap(default_value=None).items() == set(((None, None), ))
+
+
+def test_iter():
+	assert list(RangeMap()) == []
+	assert list(RangeMap(default_value='a')) == [None]
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
+	assert list(rm) == [1, 4, 5]
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		))
+	assert list(rm) == [1, 4]
