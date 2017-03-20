@@ -63,28 +63,24 @@ class ProperInterval(Interval, metaclass=ABCMeta):
 		raise NotImplementedError
 
 	@classmethod
-	@abstractmethod
-	def is_start_of_a(cls, dt: datetime):
-		"""Does dt start a ProperInterval of this type."""
-		raise NotImplementedError
-
-	@classmethod
 	def beginning(cls, d: datetime):
 		"""Return the instance of this class beginning at datetime d."""
-		if cls.is_start_of_a(d):
-			cls.containing(d)
-		else:
-			raise NotImplementedError
+		interval = cls.containing(d)
+		if interval.beg != d:
+			raise ValueError('d is not the beggining of a {cls}'.format(cls=cls))
+		return interval
 
 	@classmethod
 	def ending(cls, d: datetime):
 		"""Return the instance of this class ending at datetime d."""
+		# TODO infinite recursion with prev
 		return cls.beginning(d).prev()
 
 	def next(self):
 		return self.beginning(self.end)
 
 	def prev(self):
+		# TODO infinite recursion with ending
 		return self.ending(self.beg)
 
 
@@ -112,14 +108,6 @@ class Year(ProperInterval):
 	def containing(cls, d: date):
 		return cls(d.year)
 
-	@classmethod
-	def is_start_of_a(cls, d: date):
-		if (d.month, d.day) != (1, 1):
-			return False
-		if isinstance(d, datetime) and d.time != time(0, 0):
-			return False
-		return True
-
 
 class Quarter(ProperInterval):
 
@@ -135,6 +123,10 @@ class Quarter(ProperInterval):
 	@property
 	def year(self):
 		return self._year
+
+	@property
+	def quarter(self):
+		return self._quarter
 
 	@property
 	def beg(self):
@@ -155,16 +147,6 @@ class Quarter(ProperInterval):
 	def containing(cls, d: date):
 		quarter = d.month // 3 + 1
 		return cls(d.year, quarter)
-
-	@classmethod
-	def is_start_of_a(cls, d: date):
-		if d.month not in (1, 4, 7, 10):
-			return False
-		if d.day != 1:
-			return False
-		if isinstance(d, datetime) and d.time != time(0, 0):
-			return False
-		return True
 
 
 class Month(ProperInterval):
@@ -208,14 +190,6 @@ class Month(ProperInterval):
 	def containing(cls, d: date):
 		return cls(d.year, d.month)
 
-	@classmethod
-	def is_start_of_a(cls, d: date):
-		if d.day != 1:
-			return False
-		if isinstance(d, datetime) and d.time != time(0, 0):
-			return False
-		return True
-
 
 class _FixedMeta(ABCMeta):
 
@@ -241,21 +215,14 @@ class Week(FixedInterval, ProperInterval):
 	delta = timedelta(days=7)
 
 	@classmethod
-	def containing(cls, d: date):
-		starts_on = calendar.firstweekday()
+	def containing(cls, d: date, starts_on=None):
+		if not starts_on:
+			starts_on = calendar.firstweekday()
 		if isinstance(d, datetime):
 			d = d.date()
 		days = (d.weekday() + 7 - starts_on) % 7
 		d -= timedelta(days=days)
 		return cls(d)
-
-	@classmethod
-	def is_start_of_a(cls, d: date):
-		if d.day != calendar.firstweekday():
-			return False
-		if isinstance(d, datetime) and d.time != time(0, 0):
-			return False
-		return True
 
 
 class Day(FixedInterval, ProperInterval):
@@ -267,12 +234,6 @@ class Day(FixedInterval, ProperInterval):
 		d = datetime(d.year, d.month, d.day)
 		return cls(d)
 
-	@classmethod
-	def is_start_of_a(cls, d: date):
-		if isinstance(d, datetime) and d.time != time(0, 0):
-			return False
-		return True
-
 
 class Hour(FixedInterval, ProperInterval):
 
@@ -280,12 +241,8 @@ class Hour(FixedInterval, ProperInterval):
 
 	@classmethod
 	def containing(cls, d: datetime):
-		d = datetime(d.year, d.month, d.day, d.hour)
+		d = d.replace(minute=0, second=0, microsecond=0)
 		return cls(d)
-
-	@classmethod
-	def is_start_of_a(cls, dt: datetime):
-		return (dt.minute, dt.second, dt.microsecond) == (0, 0, 0)
 
 
 class Minute(FixedInterval, ProperInterval):
@@ -294,12 +251,8 @@ class Minute(FixedInterval, ProperInterval):
 
 	@classmethod
 	def containing(cls, d: datetime):
-		d = datetime(d.year, d.month, d.day, d.hour, d.minute)
+		d = d.replace(second=0, microsecond=0)
 		return cls(d)
-
-	@classmethod
-	def is_start_of_a(cls, dt: datetime):
-		return (dt.second, dt.microsecond) == (0, 0)
 
 
 class Second(FixedInterval, ProperInterval):
@@ -308,12 +261,8 @@ class Second(FixedInterval, ProperInterval):
 
 	@classmethod
 	def containing(cls, d: datetime):
-		d = datetime(d.year, d.month, d.day, d.hour, d.minute, d.second)
+		d = d.replace(microsecond=0)
 		return cls(d)
-
-	@classmethod
-	def is_start_of_a(cls, dt: datetime):
-		return dt.microsecond == 0
 
 
 class MilliSecond(FixedInterval, ProperInterval):
@@ -323,12 +272,8 @@ class MilliSecond(FixedInterval, ProperInterval):
 	@classmethod
 	def containing(cls, d: datetime):
 		microsecond = round(d.microsecond, -3)
-		d = datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, microsecond)
+		d = d.replace(microsecond=microsecond)
 		return cls(d)
-
-	@classmethod
-	def is_start_of_a(cls, dt: datetime):
-		return dt.microsecond == round(dt.microsecond, -3)
 
 
 class MicroSecond(FixedInterval, ProperInterval):
@@ -338,7 +283,3 @@ class MicroSecond(FixedInterval, ProperInterval):
 	@classmethod
 	def containing(cls, d: datetime):
 		return cls(d)
-
-	@classmethod
-	def is_start_of_a(cls, dt: datetime):
-		return True
