@@ -114,20 +114,13 @@ class ProperInterval(Interval, meta=ABCMeta):
 
 # Specifics
 
-
-class Day(ProperInterval, FixedInterval):
-
-	@property
-	def delta
-
-
 Century = ProperInterval()
 Decade = ProperInterval()
 Year = ProperInterval()
 Quarter = ProperInterval()
 # Month = ProperInterval()
-Week = ProperInterval()
-Day = ProperInterval()
+# Week = ProperInterval()
+# Day = ProperInterval()
 Hour = ProperInterval()
 Minute = ProperInterval()
 Second = ProperInterval()
