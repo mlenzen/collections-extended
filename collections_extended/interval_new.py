@@ -3,19 +3,42 @@ import calendar
 from datetime import datetime, date, timedelta, tzinfo
 
 # TODO handle tzinfo on Year, Quarter & Month
+# TODO multiply a FixedIntervalType to get a new one
 
 
 class Interval():
 	"""An Interval is a specific timespan, with fixed beginning and end datetimes.
 
+	At least 2 of beg, end and delta must be passed to determine the interval.
+	If all 3 are passed, then `end - beg == delta`.
+
 	Args:
 		beg: The start of the interval, inclusive.
 		end: The end of the interval, exclusive.
+		delta: The length of the interval.
 	"""
 
-	def __init__(self, beg: datetime, end: datetime):
-		self._beg = beg
-		self._delta = end - beg
+	def __init__(
+			self,
+			beg: datetime = None,
+			end: datetime = None,
+			delta: timedelta = None,
+			):
+		if beg:
+			self._beg = beg
+			if delta:
+				self._delta = delta
+				if end and self.end != end:
+					raise ValueError('delta != end - beg')
+			else:
+				if not end:
+					raise ValueError('Must pass at least 2 of beg, end & delta')
+				self._delta = end - beg
+		else:
+			if not end and delta:
+				raise ValueError('Must pass at least 2 of beg, end & delta')
+			self._beg = end - delta
+			self._delta = delta
 
 	@property
 	def beg(self) -> datetime:
@@ -23,7 +46,7 @@ class Interval():
 
 	@property
 	def end(self) -> datetime:
-		return self._beg + self._delta
+		return self.beg + self.delta
 
 	@property
 	def delta(self) -> timedelta:
@@ -35,6 +58,11 @@ class Interval():
 
 	def __contains__(self, d: datetime):
 		return self.beg <= d < self.end
+
+	def __eq__(self, other):
+		if not isinstance(other, Interval):
+			return False
+		return (self.beg, self.end) == (other.beg, other.end)
 
 	def pace(self, dt=None) -> float:
 		"""Return how far through this interval dt is.
@@ -49,6 +77,20 @@ class Interval():
 			return 1.0
 		else:
 			return (dt - self.start) / self.delta
+
+	def divide(self, interval_type, extras_action='raise'):
+		"""
+
+		extras_action can be 'raise', 'ignore', or 'partial'
+		'raise' - raise an Exception if the passed IntervalType does not evenly
+			divide this Interval.
+		'ignore' - ignore parts of this Interval to divide self into subintervals
+			of interval_type
+		'partial' - return partial intervals not matching interval_type where
+			necessary
+		"""
+		# TODO
+		raise NotImplementedError
 
 
 class ProperInterval(Interval, metaclass=ABCMeta):
@@ -78,12 +120,27 @@ class ProperInterval(Interval, metaclass=ABCMeta):
 		# TODO infinite recursion with prev
 		return cls.beginning(d).prev()
 
+	def __lt__(self, other):
+		if not isinstance(other, type(self)):
+			return NotImplemented
+		return self.beg < other.beg
+
 	def next(self):
 		return self.beginning(self.end)
 
 	def prev(self):
 		# TODO infinite recursion with ending
 		return self.ending(self.beg)
+
+	@classmethod
+	def first_after(cls, dt: datetime):
+		"""Return the first ProperInterval following datetime."""
+		return cls.containing(dt).next()
+
+	@classmethod
+	def last_before(cls, dt: datetime):
+		"""Return last ProperInterval before datetime."""
+		return cls.containing(dt).prev()
 
 
 class Year(ProperInterval):
@@ -110,6 +167,10 @@ class Year(ProperInterval):
 	@property
 	def end(self) -> datetime:
 		return datetime(self.year + 1, 1, 1, tzinfo=self.tzinfo)
+
+	@property
+	def delta(self) -> timedelta:
+		return self.end - self.beg
 
 	@classmethod
 	def containing(cls, d: date):
@@ -170,6 +231,10 @@ class Quarter(ProperInterval):
 			month = self.quarter * 3 + 1
 		return datetime(year, month, tzinfo=self.tzinfo)
 
+	@property
+	def delta(self) -> timedelta:
+		return self.end - self.beg
+
 	@classmethod
 	def containing(cls, d: date):
 		if isinstance(d, datetime):
@@ -187,7 +252,7 @@ class Month(ProperInterval):
 			raise ValueError
 		self._year = year
 		self._month = month
-		self.tzinfo = tzinfo
+		self._tzinfo = tzinfo
 
 	@property
 	def year(self) -> int:
@@ -207,6 +272,7 @@ class Month(ProperInterval):
 
 	@property
 	def end(self) -> datetime:
+		# return self.beg + self.delta
 		if self.month == 12:
 			year = self.year + 1
 			month = 1
@@ -215,12 +281,12 @@ class Month(ProperInterval):
 			month = self.month + 1
 		return datetime(year, month, tzinfo=self.tzinfo)
 
-	# @property
-	# def delta(self):
-	# 	return timedelta(days=self.num_days())
-	#
-	# def num_days(self):
-	# 	return calendar.monthrange(self.year, self.month)[1]
+	@property
+	def delta(self):
+		return timedelta(days=self.num_days())
+
+	def num_days(self):
+		return calendar.monthrange(self.year, self.month)[1]
 
 	@classmethod
 	def containing(cls, d: date):
@@ -239,7 +305,7 @@ class Month(ProperInterval):
 		raise NotImplementedError
 
 
-class _FixedMeta(ABCMeta):
+class FixedIntervalType(ABCMeta):
 
 	@property
 	@abstractmethod
@@ -247,7 +313,7 @@ class _FixedMeta(ABCMeta):
 		raise NotImplementedError()
 
 
-class FixedInterval(Interval, metaclass=_FixedMeta):
+class FixedInterval(Interval, metaclass=FixedIntervalType):
 	"""A Interval of a fixed length."""
 
 	def __init__(self, beg: datetime):
@@ -257,8 +323,29 @@ class FixedInterval(Interval, metaclass=_FixedMeta):
 	def end(self) -> datetime:
 		return self.beg + self.delta
 
+	def next(self):
+		return self.beginning(self.end)
 
-class Week(FixedInterval, ProperInterval):
+	def prev(self):
+		return self.ending(self.beg)
+
+	@classmethod
+	def beginning(cls, d: datetime):
+		"""Return the instance of this class beginning at datetime d."""
+		return cls(d)
+
+	@classmethod
+	def ending(cls, d: datetime):
+		"""Return the instance of this class ending at datetime d."""
+		return cls(d - cls.delta)
+
+	@classmethod
+	def create(cls, td: timedelta):
+		print('hello')
+		return type('CustomInterval', (cls, ), {'delta': td})
+
+
+class Week(ProperInterval, FixedInterval):
 
 	delta = timedelta(days=7)
 
@@ -273,7 +360,7 @@ class Week(FixedInterval, ProperInterval):
 		return cls(d)
 
 
-class Day(FixedInterval, ProperInterval):
+class Day(ProperInterval, FixedInterval):
 
 	delta = timedelta(days=1)
 
@@ -291,7 +378,7 @@ class Day(FixedInterval, ProperInterval):
 		raise NotImplementedError
 
 
-class Hour(FixedInterval, ProperInterval):
+class Hour(ProperInterval, FixedInterval):
 
 	delta = timedelta(hours=1)
 
@@ -301,7 +388,7 @@ class Hour(FixedInterval, ProperInterval):
 		return cls(dt)
 
 
-class Minute(FixedInterval, ProperInterval):
+class Minute(ProperInterval, FixedInterval):
 
 	delta = timedelta(minutes=1)
 
@@ -311,7 +398,7 @@ class Minute(FixedInterval, ProperInterval):
 		return cls(dt)
 
 
-class Second(FixedInterval, ProperInterval):
+class Second(ProperInterval, FixedInterval):
 
 	delta = timedelta(seconds=1)
 
@@ -321,7 +408,7 @@ class Second(FixedInterval, ProperInterval):
 		return cls(dt)
 
 
-class MilliSecond(FixedInterval, ProperInterval):
+class MilliSecond(ProperInterval, FixedInterval):
 
 	delta = timedelta(microseconds=1000)
 
@@ -332,7 +419,7 @@ class MilliSecond(FixedInterval, ProperInterval):
 		return cls(dt)
 
 
-class MicroSecond(FixedInterval, ProperInterval):
+class MicroSecond(ProperInterval, FixedInterval):
 
 	delta = timedelta(microseconds=1)
 
