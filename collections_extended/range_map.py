@@ -10,6 +10,11 @@ MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
 
 class KeysView(MappingView, Set):
+	"""A view of the keys that mark the starts of subranges.
+
+	Since iterating over all the keys is impossible, the KeysView only
+	contains the keys that start each subrange.
+	"""
 
 	__slots__ = ()
 
@@ -27,6 +32,11 @@ class KeysView(MappingView, Set):
 
 
 class ItemsView(MappingView, Set):
+	"""A view of the items that mark the starts of subranges.
+
+	Since iterating over all the keys is impossible, the ItemsView only
+	contains the items that start each subrange.
+	"""
 
 	__slots__ = ()
 

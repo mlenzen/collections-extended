@@ -241,7 +241,7 @@ def test_delete():
 	assert rm == RangeMap.from_iterable(((1, 2, 'a'), (4, 5, 'd')))
 
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
-	rm.delete(2, 3)
+	del rm[2:3]
 	assert rm == RangeMap([(1, 2, 'a'), (3, None, 'c')])
 	print(repr(rm))
 	with pytest.raises(KeyError):
@@ -467,3 +467,55 @@ def test_iter():
 		(4, 5, 'd'),
 		))
 	assert list(rm) == [1, 4]
+
+
+def test_key_view_contains():
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
+	assert 1 in rm.keys()
+	assert 2 not in rm.keys()
+	assert 1.5 not in rm.keys()
+
+
+def test_items_view_contains():
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
+	assert (1, 'a') in rm.items()
+	assert (2, 'a') not in rm.items()
+
+
+def test_values_view_contains():
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
+	assert 'a' in rm.values()
+	assert 'b' not in rm.values()
+
+
+def test_get():
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
+	assert rm.get(1) == 'a'
+	assert rm.get(1.5) == 'a'
+	assert rm.get(2) is None
+
+
+def test_clear():
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'd'),
+		(5, None, 'e'),
+		))
+	rm.clear()
+	assert rm == RangeMap()
