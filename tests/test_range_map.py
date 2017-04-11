@@ -206,6 +206,8 @@ def test_version_differences():
 	else:
 		rm[3:] = 'a'
 		assert rm == RangeMap({1: 'a', 2: 'b', 3: 'a'})
+		del rm[1:2]
+		assert rm == RangeMap({2: 'b', 3: 'a'})
 
 
 def test_slice_errors():
@@ -241,7 +243,7 @@ def test_delete():
 	assert rm == RangeMap.from_iterable(((1, 2, 'a'), (4, 5, 'd')))
 
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c'})
-	del rm[2:3]
+	rm.delete(2, 3)
 	assert rm == RangeMap([(1, 2, 'a'), (3, None, 'c')])
 	print(repr(rm))
 	with pytest.raises(KeyError):
