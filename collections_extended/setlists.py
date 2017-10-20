@@ -531,6 +531,11 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		for i, elem in enumerate(self._list):
 			self._dict[elem] = i
 
+	def sort(self, *args, **kwargs):
+		self._list.sort(*args, **kwargs)
+		for index, value in enumerate(self._list):
+			self._dict[value] = index
+
 
 class frozensetlist(_basesetlist, Hashable):
 	"""An immutable (hashable) setlist."""

@@ -548,3 +548,15 @@ def test_extend_update():
 	with pytest.raises(ValueError):
 		sl += setlist('fe')
 	assert sl == setlist('abde')
+
+
+def test_sort():
+	sl = setlist([4, 7, 1, 0])
+	sl.sort()
+	assert sl == setlist([0, 1, 4, 7])
+	sl = setlist([])
+	sl.sort()
+	assert sl == setlist()
+	sl = setlist(['a9', 'b7', 'c5'])
+	sl.sort(key=lambda i: i[1])
+	assert sl == setlist(['c5', 'b7', 'a9'])
