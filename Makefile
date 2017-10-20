@@ -33,7 +33,9 @@ coverage:
 	coverage report -m
 	coverage html
 
-publish: testall lint coverage
+publish: testall lint coverage publish-force
+
+publish-force:
 	python setup.py sdist upload
 	python setup.py bdist_wheel upload
 	git push
