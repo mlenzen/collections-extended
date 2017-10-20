@@ -50,6 +50,9 @@ docs/_build
 MANIFEST
 
 env
+venv
+.env
+.venv
 dev-env
 
 .cache
