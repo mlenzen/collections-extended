@@ -24,7 +24,8 @@ class KeysView(MappingView, Set):
 
 	def __contains__(self, key):
 		loc = self._mapping._bisect_left(key)
-		return self._mapping._keys[loc] == key and self._mapping._values[loc] is not _empty
+		return self._mapping._keys[loc] == key and \
+			self._mapping._values[loc] is not _empty
 
 	def __iter__(self):
 		for item in self._mapping.ranges():
@@ -47,7 +48,8 @@ class ItemsView(MappingView, Set):
 	def __contains__(self, item):
 		key, value = item
 		loc = self._mapping._bisect_left(key)
-		return self._mapping._keys[loc] == key and self._mapping._values[loc] == value
+		return self._mapping._keys[loc] == key and \
+			self._mapping._values[loc] == value
 
 	def __iter__(self):
 		for mapped_range in self._mapping.ranges():
