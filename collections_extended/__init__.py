@@ -1,4 +1,5 @@
 """collections_extended contains a few extra basic data structures."""
+from ._compat import Collection
 from .bags import bag, frozenbag
 from .setlists import setlist, frozensetlist
 from .bijection import bijection
@@ -15,6 +16,7 @@ __all__ = (
 	'bijection',
 	'RangeMap',
 	'MappedRange',
+	'Collection',
 	)
 
 
