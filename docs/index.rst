@@ -19,6 +19,7 @@ Contents:
 	setlists
 	bags
 	range_map
+	bijection
 	api
 	contributing
 
