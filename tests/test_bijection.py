@@ -28,3 +28,7 @@ def test_bijection():
 	assert 'b' in b
 	assert b['b'] == 1
 	assert 'a' not in b
+
+
+def test_init_from_pairs():
+	assert bijection({'a': 1, 'b': 2}) == bijection((('a', 1), ('b', 2)))
