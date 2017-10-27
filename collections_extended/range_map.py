@@ -57,6 +57,7 @@ class ItemsView(MappingView, Set):
 
 
 class ValuesView(MappingView):
+	"""A view on the values of a Mapping."""
 
 	__slots__ = ()
 
@@ -328,12 +329,15 @@ class RangeMap(Mapping):
 		return count
 
 	def keys(self):
+		"""Return a view of the keys."""
 		return KeysView(self)
 
 	def values(self):
+		"""Return a view of the values."""
 		return ValuesView(self)
 
 	def items(self):
+		"""Return a view of the item pairs."""
 		return ItemsView(self)
 
 	# Python2 - override slice methods

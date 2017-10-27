@@ -5,6 +5,7 @@ from collections_extended.setlists import setlist, frozensetlist
 
 
 def test_init():
+	"""Test __init__."""
 	with pytest.raises(ValueError):
 		setlist('aa', raise_on_duplicate=True)
 	with pytest.raises(ValueError):

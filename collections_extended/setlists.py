@@ -292,6 +292,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 	# Set/Sequence agnostic
 	def pop(self, index=-1):
+		"""Remove and return the item at index."""
 		value = self._list.pop(index)
 		del self._dict[value]
 		return value
@@ -477,6 +478,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			pass
 
 	def difference_update(self, other):
+		"""Update self to include only the differene with other."""
 		other = set(other)
 		indices_to_delete = set()
 		for i, elem in enumerate(self):
@@ -486,6 +488,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			self._delete_values_by_index(indices_to_delete)
 
 	def intersection_update(self, other):
+		"""Update self to include only the intersection with other."""
 		other = set(other)
 		indices_to_delete = set()
 		for i, elem in enumerate(self):
@@ -495,6 +498,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			self._delete_values_by_index(indices_to_delete)
 
 	def symmetric_difference_update(self, other):
+		"""Update self to include only the symmetric difference with other."""
 		other = setlist(other)
 		indices_to_delete = set()
 		for i, item in enumerate(self):
@@ -532,6 +536,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			self._dict[elem] = i
 
 	def sort(self, *args, **kwargs):
+		"""Sort this setlist in place."""
 		self._list.sort(*args, **kwargs)
 		for index, value in enumerate(self._list):
 			self._dict[value] = index

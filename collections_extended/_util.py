@@ -1,3 +1,4 @@
+"""util functions for collections_extended."""
 
 
 def hash_iterable(it):

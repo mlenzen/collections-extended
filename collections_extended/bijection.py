@@ -27,7 +27,7 @@ class bijection(MutableMapping):
 
 	@property
 	def inverse(self):
-		"""The inverse of this bijection."""
+		"""Return the inverse of this bijection."""
 		return self.__inverse
 
 	# Required for MutableMapping

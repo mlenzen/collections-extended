@@ -21,6 +21,7 @@ class PyTest(TestCommand):
 		errcode = pytest.main(self.test_args)
 		sys.exit(errcode)
 
+
 setup(
 	name='collections-extended',
 	packages=['collections_extended'],
