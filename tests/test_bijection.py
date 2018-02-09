@@ -32,3 +32,11 @@ def test_bijection():
 
 def test_init_from_pairs():
 	assert bijection({'a': 1, 'b': 2}) == bijection((('a', 1), ('b', 2)))
+
+def test_repr():
+	"""Test __repr__."""
+	b = bijection()
+	assert b == eval(b.__repr__())
+	b = bijection({'a': 1, 'b': 2, 'c': 3})
+	assert b == eval(b.__repr__())
+	assert repr(bijection({'a': 1})) == "bijection({'a': 1})"
