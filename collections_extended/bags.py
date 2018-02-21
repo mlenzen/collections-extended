@@ -148,7 +148,7 @@ class _basebag(Set):
 
 		This runs in O(1)
 		"""
-		return self.count(value)
+		return self._dict.get(value, 0)
 
 	# implementing Iterable methods
 
@@ -171,11 +171,11 @@ class _basebag(Set):
 		"""
 		if isinstance(other, _basebag):
 			for elem, count in self._dict.items():
-				if not count <= other.count(elem):
+				if not count <= other._dict.get(elem, 0):
 					return False
 		else:
 			for elem in self:
-				if self.count(elem) > 1 or elem not in other:
+				if self._dict.get(elem, 0) > 1 or elem not in other:
 					return False
 		return True
 
@@ -187,7 +187,7 @@ class _basebag(Set):
 		"""
 		if isinstance(other, _basebag):
 			for elem, count in other._dict.items():
-				if not self.count(elem) >= count:
+				if not self._dict.get(elem, 0) >= count:
 					return False
 		else:
 			for elem in other:
@@ -223,7 +223,7 @@ class _basebag(Set):
 		if not len(self) == len(other):
 			return False
 		for elem in other:
-			if self.count(elem) != 1:
+			if self._dict.get(elem, 0) != 1:
 				return False
 		return True
 
@@ -246,7 +246,7 @@ class _basebag(Set):
 			other = self._from_iterable(other)
 		values = dict()
 		for elem in self._dict:
-			values[elem] = min(other.count(elem), self.count(elem))
+			values[elem] = min(other._dict.get(elem, 0), self._dict.get(elem, 0))
 		return self.from_mapping(values)
 
 	def isdisjoint(self, other):
@@ -275,7 +275,7 @@ class _basebag(Set):
 			other = self._from_iterable(other)
 		values = dict()
 		for elem in self.unique_elements() | other.unique_elements():
-			values[elem] = max(self.count(elem), other.count(elem))
+			values[elem] = max(self._dict.get(elem, 0), other._dict.get(elem, 0))
 		return self.from_mapping(values)
 
 	def __add__(self, other):
@@ -309,7 +309,7 @@ class _basebag(Set):
 		"""
 		out = self.copy()
 		for value in other:
-			old_count = out.count(value)
+			old_count = out._dict.get(value, 0)
 			if old_count == 1:
 				del out._dict[value]
 				out._size -= 1
@@ -392,7 +392,7 @@ class bag(_basebag, MutableSet):
 		Raises:
 			ValueError: if the elem isn't present
 		"""
-		old_count = self.count(elem)
+		old_count = self._dict.get(elem, 0)
 		if old_count == 0:
 			raise ValueError
 		elif old_count == 1:
@@ -406,7 +406,7 @@ class bag(_basebag, MutableSet):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		for elem, other_count in other._dict.items():
-			old_count = self.count(elem)
+			old_count = self._dict.get(elem, 0)
 			new_count = old_count - other_count
 			if new_count >= 0:
 				if new_count == 0:
@@ -444,7 +444,7 @@ class bag(_basebag, MutableSet):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		for elem, other_count in other._dict.items():
-			old_count = self.count(elem)
+			old_count = self._dict.get(elem, 0)
 			new_count = max(other_count, old_count)
 			self._dict[elem] = new_count
 			self._size += new_count - old_count
@@ -461,7 +461,7 @@ class bag(_basebag, MutableSet):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		for elem, old_count in set(self._dict.items()):
-			other_count = other.count(elem)
+			other_count = other._dict.get(elem, 0)
 			new_count = min(other_count, old_count)
 			if new_count == 0:
 				del self._dict[elem]
@@ -507,7 +507,7 @@ class bag(_basebag, MutableSet):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		for elem, other_count in other._dict.items():
-			self._dict[elem] = self.count(elem) + other_count
+			self._dict[elem] = self._dict.get(elem, 0) + other_count
 			self._size += other_count
 		return self
 
