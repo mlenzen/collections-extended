@@ -29,10 +29,10 @@ class _basebag(Set):
 		if iterable:
 			if isinstance(iterable, _basebag):
 				for elem, count in iterable._dict.items():
-					self._inc(elem, count)
+					self._set(elem, self.count(elem) + count)
 			else:
 				for value in iterable:
-					self._inc(value)
+					self._set(value, self.count(value) + 1)
 
 	def __repr__(self):
 		if self._size == 0:
@@ -74,13 +74,6 @@ class _basebag(Set):
 		else:
 			self._dict[elem] = value
 		self._size += value - old_count
-
-	def _inc(self, elem, count=1):
-		"""Increment the multiplicity of value by count.
-
-		If count <0 then decrement.
-		"""
-		self._set(elem, self.count(elem) + count)
 
 	# New public methods (not overriding/implementing anything)
 
@@ -142,7 +135,7 @@ class _basebag(Set):
 		"""
 		out = cls()
 		for elem, count in mapping.items():
-			out._inc(elem, count)
+			out._set(elem, out.count(elem) + count)
 		return out
 
 	def copy(self):
@@ -311,7 +304,7 @@ class _basebag(Set):
 		"""
 		out = self.copy()
 		for value in other:
-			out._inc(value)
+			out._set(value, out.count(value) + 1)
 		return out
 
 	def __sub__(self, other):
@@ -329,7 +322,7 @@ class _basebag(Set):
 		out = self.copy()
 		for value in other:
 			try:
-				out._inc(value, -1)
+				out._set(value, out.count(value) - 1)
 			except ValueError:
 				pass
 		return out
@@ -390,7 +383,7 @@ class bag(_basebag, MutableSet):
 
 	def add(self, elem):
 		"""Add elem to self."""
-		self._inc(elem, 1)
+		self._set(elem, self.count(elem) + 1)
 
 	def discard(self, elem):
 		"""Remove elem from this bag, silent if it isn't present."""
@@ -407,7 +400,7 @@ class bag(_basebag, MutableSet):
 		Raises:
 			ValueError: if the elem isn't present
 		"""
-		self._inc(elem, -1)
+		self._set(elem, self.count(elem) - 1)
 
 	def clear(self):
 		"""Remove all elements from this bag."""
@@ -476,7 +469,7 @@ class bag(_basebag, MutableSet):
 			other = self._from_iterable(other)
 		for elem, count in other._dict.items():
 			try:
-				self._inc(elem, -count)
+				self._set(elem, self.count(elem) - count)
 			except ValueError:
 				pass
 		return self
@@ -492,7 +485,7 @@ class bag(_basebag, MutableSet):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		for elem, count in other._dict.items():
-			self._inc(elem, count)
+			self._set(elem, self.count(elem) + count)
 		return self
 
 
