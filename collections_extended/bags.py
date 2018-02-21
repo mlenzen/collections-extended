@@ -29,10 +29,12 @@ class _basebag(Set):
 		if iterable:
 			if isinstance(iterable, _basebag):
 				for elem, count in iterable._dict.items():
-					self._set(elem, self.count(elem) + count)
+					self._dict[elem] = count
+					self._size += count
 			else:
 				for value in iterable:
-					self._set(value, self.count(value) + 1)
+					self._dict[value] = self._dict.get(value, 0) + 1
+					self._size += 1
 
 	def __repr__(self):
 		if self._size == 0:
@@ -57,23 +59,6 @@ class _basebag(Set):
 				else:
 					strings.append(format_single.format(elem=elem))
 			return '{%s}' % ', '.join(strings)
-
-	# Internal methods
-
-	def _set(self, elem, value):
-		"""Set the multiplicity of elem to count.
-
-		This runs in O(1) time
-		"""
-		if value < 0:
-			raise ValueError
-		old_count = self.count(elem)
-		if value == 0:
-			if elem in self:
-				del self._dict[elem]
-		else:
-			self._dict[elem] = value
-		self._size += value - old_count
 
 	# New public methods (not overriding/implementing anything)
 
@@ -135,7 +120,9 @@ class _basebag(Set):
 		"""
 		out = cls()
 		for elem, count in mapping.items():
-			out._set(elem, out.count(elem) + count)
+			if count > 0:
+				out._dict[elem] = count
+				out._size += count
 		return out
 
 	def copy(self):
@@ -176,7 +163,7 @@ class _basebag(Set):
 
 	# Comparison methods
 
-	def _check_elems_le(self, other):
+	def _is_subset(self, other):
 		"""Check that every element in self has a count <= in other.
 
 		Args:
@@ -192,7 +179,7 @@ class _basebag(Set):
 					return False
 		return True
 
-	def _check_elems_ge(self, other):
+	def _is_superset(self, other):
 		"""Check that every element in self has a count >= in other.
 
 		Args:
@@ -211,22 +198,22 @@ class _basebag(Set):
 	def __le__(self, other):
 		if not isinstance(other, Set):
 			return _compat.handle_rich_comp_not_implemented()
-		return len(self) <= len(other) and self._check_elems_le(other)
+		return len(self) <= len(other) and self._is_subset(other)
 
 	def __lt__(self, other):
 		if not isinstance(other, Set):
 			return _compat.handle_rich_comp_not_implemented()
-		return len(self) < len(other) and self._check_elems_le(other)
+		return len(self) < len(other) and self._is_subset(other)
 
 	def __gt__(self, other):
 		if not isinstance(other, Set):
 			return _compat.handle_rich_comp_not_implemented()
-		return len(self) > len(other) and self._check_elems_ge(other)
+		return len(self) > len(other) and self._is_superset(other)
 
 	def __ge__(self, other):
 		if not isinstance(other, Set):
 			return _compat.handle_rich_comp_not_implemented()
-		return len(self) >= len(other) and self._check_elems_ge(other)
+		return len(self) >= len(other) and self._is_superset(other)
 
 	def __eq__(self, other):
 		if not isinstance(other, Set):
@@ -304,13 +291,14 @@ class _basebag(Set):
 		"""
 		out = self.copy()
 		for value in other:
-			out._set(value, out.count(value) + 1)
+			out._dict[value] = out._dict.get(value, 0) + 1
+			out._size += 1
 		return out
 
 	def __sub__(self, other):
 		"""Difference between the sets.
 
-		For normal sets this is all s.t. x in self and x not in other.
+		For normal sets this is all x s.t. x in self and x not in other.
 		For bags this is count(x) = max(0, self.count(x)-other.count(x))
 
 		This runs in O(m + n) where:
@@ -321,10 +309,13 @@ class _basebag(Set):
 		"""
 		out = self.copy()
 		for value in other:
-			try:
-				out._set(value, out.count(value) - 1)
-			except ValueError:
-				pass
+			old_count = out.count(value)
+			if old_count == 1:
+				del out._dict[value]
+				out._size -= 1
+			elif old_count > 1:
+				out._dict[value] = old_count - 1
+				out._size -= 1
 		return out
 
 	def __mul__(self, other):
@@ -383,7 +374,8 @@ class bag(_basebag, MutableSet):
 
 	def add(self, elem):
 		"""Add elem to self."""
-		self._set(elem, self.count(elem) + 1)
+		self._dict[elem] = self._dict.get(elem, 0) + 1
+		self._size += 1
 
 	def discard(self, elem):
 		"""Remove elem from this bag, silent if it isn't present."""
@@ -400,7 +392,39 @@ class bag(_basebag, MutableSet):
 		Raises:
 			ValueError: if the elem isn't present
 		"""
-		self._set(elem, self.count(elem) - 1)
+		old_count = self.count(elem)
+		if old_count == 0:
+			raise ValueError
+		elif old_count == 1:
+			del self._dict[elem]
+		else:
+			self._dict[elem] -= 1
+		self._size -= 1
+
+	def discard_all(self, other):
+		"""Discard all of the elems from other."""
+		if not isinstance(other, _basebag):
+			other = self._from_iterable(other)
+		for elem, other_count in other._dict.items():
+			old_count = self.count(elem)
+			new_count = old_count - other_count
+			if new_count >= 0:
+				if new_count == 0:
+					if elem in self:
+						del self._dict[elem]
+				else:
+					self._dict[elem] = new_count
+				self._size += new_count - old_count
+
+	def remove_all(self, other):
+		"""Remove all of the elems from other.
+
+		Raises a ValueError if the multiplicity of any elem in other is greater
+		than in self.
+		"""
+		if not self._is_superset(other):
+			raise ValueError
+		self.discard_all(other)
 
 	def clear(self):
 		"""Remove all elements from this bag."""
@@ -420,12 +444,14 @@ class bag(_basebag, MutableSet):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		for elem, other_count in other._dict.items():
-			self_count = self.count(elem)
-			self._set(elem, max(other_count, self_count))
+			old_count = self.count(elem)
+			new_count = max(other_count, old_count)
+			self._dict[elem] = new_count
+			self._size += new_count - old_count
 		return self
 
 	def __iand__(self, other):
-		"""Add all of the elements of other to self.
+		"""Set multiplicity of each element to the minimum of the two collections.
 
 		if isinstance(other, _basebag):
 			This runs in O(other.num_unique_elements())
@@ -434,9 +460,14 @@ class bag(_basebag, MutableSet):
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
-		for elem, self_count in set(self._dict.items()):
+		for elem, old_count in set(self._dict.items()):
 			other_count = other.count(elem)
-			self._set(elem, min(other_count, self_count))
+			new_count = min(other_count, old_count)
+			if new_count == 0:
+				del self._dict[elem]
+			else:
+				self._dict[elem] = new_count
+			self._size += new_count - old_count
 		return self
 
 	def __ixor__(self, other):
@@ -455,23 +486,14 @@ class bag(_basebag, MutableSet):
 		return self
 
 	def __isub__(self, other):
-		"""Remove the elements of other from self.
-
-		Raises:
-			ValueError: if an element of other isn't present in self
+		"""Discard the elements of other from self.
 
 		if isinstance(it, _basebag):
 			This runs in O(it.num_unique_elements())
 		else:
 			This runs in O(len(it))
 		"""
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
-		for elem, count in other._dict.items():
-			try:
-				self._set(elem, self.count(elem) - count)
-			except ValueError:
-				pass
+		self.discard_all(other)
 		return self
 
 	def __iadd__(self, other):
@@ -484,8 +506,9 @@ class bag(_basebag, MutableSet):
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
-		for elem, count in other._dict.items():
-			self._set(elem, self.count(elem) + count)
+		for elem, other_count in other._dict.items():
+			self._dict[elem] = self.count(elem) + other_count
+			self._size += other_count
 		return self
 
 
