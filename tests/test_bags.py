@@ -89,15 +89,28 @@ def test_contains():
 	assert 'a' not in _basebag('missing letter')
 
 
-def test_compare_sets():
-	"""Test comparisons to Sets."""
-	assert _basebag() == set()
-	assert _basebag('a') == set('a')
-	assert not _basebag('ab') == set('a')
-	assert not _basebag('a') == set('ab')
-	assert not _basebag('aa') == set('a')
-	assert not _basebag('aa') == set('ab')
-	assert not _basebag('ac') == set('ab')
+@pytest.mark.parametrize("bag_data, set_data", [
+	('', ''),
+	('a', 'a'),
+	('ab', 'ab'),
+	])
+def test_compare_eq_set(bag_data, set_data):
+	"""Test comparisons to Sets that should be equal."""
+	assert _basebag(bag_data) == set(set_data)
+
+
+@pytest.mark.parametrize("bag_data, set_data", [
+	('ab', 'a'),
+	('a', 'ab'),
+	('aa', 'a'),
+	('aa', 'ab'),
+	('ac', 'ab'),
+	])
+def test_compare_ne_set(bag_data, set_data):
+	assert not _basebag(bag_data) == set(set_data)
+
+
+def test_compare_unorderable():
 	assert not _basebag('ac') <= set('ab')
 	assert not _basebag('ac') >= set('ab')
 
