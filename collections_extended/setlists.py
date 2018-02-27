@@ -85,7 +85,9 @@ class _basesetlist(Sequence, Set):
 
 	def _update(self, values):
 		for value in values:
-			self._add(value)
+			if value not in self:
+				self._dict[value] = len(self)
+				self._list.append(value)
 
 	@classmethod
 	def _from_iterable(cls, it, **kwargs):
@@ -273,7 +275,6 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 					if raise_errors:
 						raise ValueError('Passed vales contain duplicates')
 				indices_to_delete.add(elem_index)
-		print(indices_to_delete)
 		self._delete_values_by_index(indices_to_delete)
 
 	def _delete_values_by_index(self, indices_to_delete):

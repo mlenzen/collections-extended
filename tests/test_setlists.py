@@ -33,6 +33,8 @@ def test_index():
 		sl.index('f', end=5)
 	with pytest.raises(ValueError):
 		sl.index('f', end=-1)
+	with pytest.raises(IndexError):
+		sl.index('a', end=-10)
 
 
 def test_sub_index():
