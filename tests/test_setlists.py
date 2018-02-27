@@ -84,7 +84,16 @@ def test_setlist():
 	assert sl == setlist(('a', 'c', 'e', 'f'))
 
 
-def test_add_operator():
+def test_operator_iadd():
+	sl = setlist('abc')
+	sl += setlist('de')
+	assert sl == setlist('abcde')
+
+
+def test_operator_add():
+	assert setlist('abc') + setlist('def') == setlist('abcdef')
+	with pytest.raises(TypeError):
+		assert setlist('abc') + 'def' == setlist('abcdef')
 	assert frozensetlist(range(2)) + frozensetlist([2]) == frozensetlist(range(3))
 	assert setlist(range(2)) + frozensetlist([2]) == setlist(range(3))
 	assert frozensetlist(range(2)) + setlist([2]) == frozensetlist(range(3))
@@ -439,12 +448,6 @@ def test_copy():
 	assert sl == copy
 	assert sl is not copy
 	assert sl[1] is copy[1]
-
-
-def test__add__():
-	assert setlist('abc') + setlist('def') == setlist('abcdef')
-	with pytest.raises(TypeError):
-		assert setlist('abc') + 'def' == setlist('abcdef')
 
 
 def test_is_subset():

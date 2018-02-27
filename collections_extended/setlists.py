@@ -1,5 +1,4 @@
 """Setlist class definitions."""
-import itertools
 import random as random_
 
 from collections import (
@@ -67,22 +66,22 @@ class _basesetlist(Sequence, Set):
 			self._list.append(value)
 
 	def _extend(self, values):
-		new_setlist = setlist()
+		new_values = set()
 		for value in values:
-			try:
-				new_setlist._append(value)
-			except ValueError:
+			if value in new_values:
 				raise ValueError('New values contain duplicates')
-		if not self.isdisjoint(new_setlist):
-			raise ValueError('New values contain elemnents already present')
-		self._list.extend(new_setlist._list)
-		self._dict.update(new_setlist._dict)
+			elif value in self:
+				raise ValueError('New values contain elements already present in self')
+			else:
+				new_values.add(value)
+		for value in values:
+			self._dict[value] = len(self)
+			self._list.append(value)
 
 	def _add(self, item):
-		try:
-			self._append(item)
-		except ValueError:
-			pass
+		if item not in self:
+			self._dict[item] = len(self)
+			self._list.append(item)
 
 	def _update(self, values):
 		for value in values:
@@ -166,8 +165,9 @@ class _basesetlist(Sequence, Set):
 
 	def __add__(self, other):
 		self._check_type(other, '+')
-		values = itertools.chain(self, other)
-		return self._from_iterable(values, raise_on_duplicate=True)
+		out = self.copy()
+		out._extend(other)
+		return out
 
 	# Implement Set
 
