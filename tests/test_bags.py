@@ -199,6 +199,10 @@ def test_rich_comp_type_mismatch():
 	assert not 'abc' == bag('abc')
 
 
+def test_comparison_chaining():
+	assert bag('a') < bag('aa') <= bag('aa')
+
+
 def test_and():
 	"""Test __and__."""
 	assert bag('aabc') & bag('aacd') == bag('aac')

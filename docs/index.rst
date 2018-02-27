@@ -8,6 +8,8 @@ collections_extended's documentation
  - a ``RangeMap`` which is a mapping from ranges to values.
 There are also frozen (hashable) varieties of bags and setlists.
 
+The ABC :class:`collections.abc.Collection` is backported to Python versions < 3.6
+
 It is `tested against`_ Python 2.6, 2.7, 3.3, 3.4, 3.5, 3.6, PyPy & PyPy3.
 
 Contents:

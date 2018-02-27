@@ -7,17 +7,20 @@ elements. See http://en.wikipedia.org/wiki/Multiset
 There are two classes provided:
 
 :class:`collections_extended.bag`
-  This is a mutable bag
+  A mutable (unhashable) bag.
 :class:`collections_extended.frozenbag`
-  This is a frozen (implements :class:`collections.abc.Hashable`) version of a bag.
+  An immutable (implements :class:`collections.abc.Hashable`) version of a bag.
 
-Both classes implement :class:`collections.abc.Sized`, :class:`collections.abc.Iterable` and :class:`collections.abc.Container`.
+Both classes implement :class:`collections.abc.Sized`,
+:class:`collections.abc.Iterable` and :class:`collections.abc.Container`.
+Both classes implement :class:`collections.abc.Collection` starting in Python
+3.6.
 
-Rich Comparison Methods
------------------------
-Bags comparison methods are implemented when other is a Set. If other isn't
-a bag, then it's assumed that it is a set that contains at most one of each
-element.
+Comparison Methods
+------------------
+Bags are comparable to Sets (including other bags). When comparing a bag to a
+Set, the Set is treated as a bag with all multiplicies equal to 1.
+The ordering comparison operators are implemented using multiset comparison.
 
 .. testsetup::
 
@@ -43,6 +46,10 @@ element.
   False
   >>> bag('ac') >= set('ab')
   False
+	>>> bag('a') <= bag('a') < bag('aa')
+	True
+	>>> bag('aa') <= bag('a')
+	False
 
 Compared to existing similar implementations
 --------------------------------------------

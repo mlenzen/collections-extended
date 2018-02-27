@@ -38,7 +38,7 @@ if sys.version_info < (3, 6):
 			return NotImplemented
 
 else:
-	from collections import Collection
+	from collections.abc import Collection
 
 
 def handle_rich_comp_not_implemented():
