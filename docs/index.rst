@@ -33,7 +33,7 @@ Other Packages of Interest
 - https://bidict.readthedocs.org/en/master/ - bijections
 
 :Author: Michael Lenzen
-:Copyright: 2017 Michael Lenzen
+:Copyright: 2018 Michael Lenzen
 :License: Apache License, Version 2.0
 
 .. _`tested against`: https://travis-ci.org/mlenzen/collections-extended
