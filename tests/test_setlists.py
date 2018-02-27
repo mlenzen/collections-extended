@@ -308,6 +308,9 @@ def test_extend_works():
 	sl = setlist(range(1))
 	sl.extend([1, 2])
 	assert sl == setlist(range(3))
+	assert sl.index(0) == 0
+	assert sl.index(1) == 1
+	assert sl.index(2) == 2
 
 
 def test_extend_fails_with_existing_values():
