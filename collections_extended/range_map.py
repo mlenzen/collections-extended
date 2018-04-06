@@ -70,6 +70,26 @@ class ValuesView(MappingView):
 				yield value
 
 
+class ValueTuple(tuple):
+	"""A tuple of values, used in RangeMap product."""
+
+	def __new__(cls, values):
+		return super(ValueTuple, cls).__new__(cls, tuple(cls.flatten(values)))
+
+	@classmethod
+	def flatten(cls, values):
+		for value in values:
+			if type(value) is ValueTuple:
+				for v in value:
+					yield v
+			else:
+				yield value
+
+	@property
+	def all_none(self):
+		return all(v is None for v in self)
+
+
 def _check_start_stop(start, stop):
 	"""Check that start and stop are valid - orderable and in the right order.
 
@@ -327,6 +347,27 @@ class RangeMap(Mapping):
 			if v is not _empty:
 				count += 1
 		return count
+
+	def __mul__(self, other):
+		"""Take the product of two RangeMaps, merging their keys and creating tuples as values."""
+		if isinstance(other, RangeMap):
+			keys = [None] + sorted((set(self._keys) | set(other._keys)) - set([None])) + [None]
+			rm = RangeMap()
+			for start, stop in zip(keys[:-1], keys[1:]):
+				values = ValueTuple((self.get(start, self._rest), other.get(start, other._rest)))
+				if not values.all_none:
+					rm.set(values, start=start, stop=stop)
+			return rm
+		else:
+			return NotImplemented
+
+	@property
+	def _rest(self):
+		"""Get an appropriate 'restval' for RangeMap.get. Used in RangeMap.__mul__."""
+		if len(self._values) > 2 and type(self._values[1]) is ValueTuple:
+			return ValueTuple((None,) * len(self._values[1]))
+		else:
+			return None
 
 	def keys(self):
 		"""Return a view of the keys."""
