@@ -296,6 +296,19 @@ class RangeMap(Mapping):
 		self._keys = [None]
 		self._values = [_empty]
 
+	@property
+	def start(self):
+		"""Get the start key of the first range. None if RangeMap is empty or unbounded to the left."""
+		try:
+			return self._keys[1]
+		except:
+			return None
+
+	@property
+	def end(self):
+		"""Get the stop key of the last range. None if RangeMap is empty or unbounded to the right."""
+		return self._keys[-1]
+
 	def __eq__(self, other):
 		if isinstance(other, RangeMap):
 			return (

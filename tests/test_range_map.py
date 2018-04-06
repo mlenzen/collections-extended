@@ -521,3 +521,20 @@ def test_clear():
 		))
 	rm.clear()
 	assert rm == RangeMap()
+
+
+def test_start():
+	assert RangeMap().start is None
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'b'),
+		))
+	assert rm.start == 1
+
+
+def test_end():
+	rm = RangeMap.from_iterable((
+		(1, 2, 'a'),
+		(4, 5, 'b'),
+		))
+	assert rm.end == 5
