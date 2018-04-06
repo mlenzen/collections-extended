@@ -521,3 +521,40 @@ def test_clear():
 		))
 	rm.clear()
 	assert rm == RangeMap()
+
+
+def test_product():
+	rm1 = RangeMap.from_iterable((
+		(None, 10, 'a'),
+		(10, 25, 'b'),
+		))
+	rm2 = RangeMap.from_iterable((
+		(5, 15, 'c'),
+		(15, 25, 'd'),
+		(30, None, 'e'),
+		))
+	assert rm1 * rm2 == RangeMap.from_iterable((
+		(None, 5, ('a', None)),
+		(5, 10, ('a', 'c')),
+		(10, 15, ('b', 'c')),
+		(15, 25, ('b', 'd')),
+		(30, None, (None, 'e')),
+		))
+	rm3 = RangeMap.from_iterable((
+		(None, 0, 'f'),
+		(0, 20, 'g'),
+		(35, 40, 'h'),
+		))
+	assert rm1 * rm2 * rm3 == RangeMap.from_iterable((
+		(None, 0, ('a', None, 'f')),
+		(0, 5, ('a', None, 'g')),
+		(5, 10, ('a', 'c', 'g')),
+		(10, 15, ('b', 'c', 'g')),
+		(15, 20, ('b', 'd', 'g')),
+		(20, 25, ('b', 'd', None)),
+		(30, 35, (None, 'e', None)),
+		(35, 40, (None, 'e', 'h')),
+		(40, None, (None, 'e', None)),
+		))
+	with pytest.raises(TypeError):
+		RangeMap() * 1
