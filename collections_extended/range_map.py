@@ -302,10 +302,15 @@ class RangeMap(Mapping):
 
 		None if RangeMap is empty or unbounded to the left.
 		"""
-		try:
-			return self._keys[1]
-		except IndexError:
-			return None
+		if self._values[0] is _empty:
+			try:
+				return self._keys[1]
+			except IndexError:
+				# This is empty or everything is mapped to a single value
+				return None
+		else:
+			# This is unbounded to the left
+			return self._keys[0]
 
 	@property
 	def end(self):
@@ -313,7 +318,11 @@ class RangeMap(Mapping):
 
 		None if RangeMap is empty or unbounded to the right.
 		"""
-		return self._keys[-1]
+		if self._values[-1] is _empty:
+			return self._keys[-1]
+		else:
+			# This is unbounded to the right
+			return None
 
 	def __eq__(self, other):
 		if isinstance(other, RangeMap):
