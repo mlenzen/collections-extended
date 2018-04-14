@@ -569,3 +569,12 @@ def test_sort():
 	sl = setlist(['a9', 'b7', 'c5'])
 	sl.sort(key=lambda i: i[1])
 	assert sl == setlist(['c5', 'b7', 'a9'])
+
+
+def test_tuple_keys():
+	# https://github.com/mlenzen/collections-extended/issues/83
+	sl = setlist()
+	sl.add((1, 2, 3))
+	with pytest.raises(ValueError):
+		sl.append((1, 2, 3))
+	assert sl == setlist([(1, 2, 3)])

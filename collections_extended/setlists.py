@@ -60,7 +60,7 @@ class _basesetlist(Sequence, Set):
 	def _append(self, value):
 		# Checking value in self will check that value is Hashable
 		if value in self:
-			raise ValueError('Value "%s" already present' % value)
+			raise ValueError('Value "%s" already present' % str(value))
 		else:
 			self._dict[value] = len(self)
 			self._list.append(value)
