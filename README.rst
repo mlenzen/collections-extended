@@ -123,9 +123,9 @@ frozensetlist
 Mappings
 --------
 bijection
-  A one-to-one mapping.
+	A one-to-one mapping.
 RangeMap
-  A mapping from ranges (of numbers/dates/etc)
+	A mapping from ranges (of numbers/dates/etc)
 
 :Author: Michael Lenzen
 :Copyright: 2018 Michael Lenzen

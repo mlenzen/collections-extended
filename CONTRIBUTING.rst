@@ -59,33 +59,33 @@ Ready to contribute? Here's how to set up `collections-extended` for local devel
 #. Fork the `collections-extended` repo on GitHub.
 #. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/collections-extended.git
+	$ git clone git@github.com:your_name_here/collections-extended.git
 
 #. Install your local copy into a virtualenv::
 
-    $ cd collections-extended
-    $ pyvenv env
-    $ . env/bin/activate
-    $ pip install -r requirements-dev.txt
-    $ python setup.py develop
+	$ cd collections-extended
+	$ pyvenv env
+	$ . env/bin/activate
+	$ pip install -r requirements-dev.txt
+	$ python setup.py develop
 
 #. Create a branch for local development::
 
-    $ git checkout -b name-of-your-bugfix-or-feature
+	$ git checkout -b name-of-your-bugfix-or-feature
 
 #. Make your changes locally.
 
 #. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
 
-    $ flake8
-    $ py.test
-    $ tox
+	$ flake8
+	$ py.test
+	$ tox
 
 #. Commit your changes and push your branch to GitHub::
 
-    $ git add .
-    $ git commit -m "Your detailed description of your changes."
-    $ git push origin name-of-your-bugfix-or-feature
+	$ git add .
+	$ git commit -m "Your detailed description of your changes."
+	$ git push origin name-of-your-bugfix-or-feature
 
 #. Submit a pull request through the GitHub website.
 
@@ -96,15 +96,16 @@ Before you submit a pull request, check that it meets these guidelines:
 
 1. The pull request should include tests.
 2. If the pull request adds functionality, the docs should be updated. Put
-   your new functionality into a function with a docstring, and add the
-   feature to the list in README.rst.
+	your new functionality into a function with a docstring, and add the
+	feature to the list in README.rst.
 3. The pull request should work for all supported versions. Check
-   https://travis-ci.org/mlenzen/collections-extended/pull_requests
-   and make sure that the tests pass for all supported Python versions.
+	https://travis-ci.org/mlenzen/collections-extended/pull_requests
+	and make sure that the tests pass for all supported Python versions.
 
 Tips
 ----
 
 To run a subset of tests::
 
-    $ py.test tests/test_example.py
+	$ py.test tests/test_example.py
+	$ py.test tests/test_example.py::test_func

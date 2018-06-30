@@ -5,7 +5,7 @@ Module contents
 ---------------
 
 .. automodule:: collections_extended
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :inherited-members:
+	:members:
+	:undoc-members:
+	:show-inheritance:
+	:inherited-members:

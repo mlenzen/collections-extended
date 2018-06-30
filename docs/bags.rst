@@ -24,28 +24,28 @@ The ordering comparison operators are implemented using multiset comparison.
 
 .. testsetup::
 
-  >>> from collections_extended import bag
+	>>> from collections_extended import bag
 
 .. code-block:: python
 
-  >>> bag() == set()
-  True
-  >>> bag('a') == set('a')
-  True
-  >>> bag('ab') == set('a')
-  False
-  >>> bag('a') == set('ab')
-  False
-  >>> bag('aa') == set('a')
-  False
-  >>> bag('aa') == set('ab')
-  False
-  >>> bag('ac') == set('ab')
-  False
-  >>> bag('ac') <= set('ab')
-  False
-  >>> bag('ac') >= set('ab')
-  False
+	>>> bag() == set()
+	True
+	>>> bag('a') == set('a')
+	True
+	>>> bag('ab') == set('a')
+	False
+	>>> bag('a') == set('ab')
+	False
+	>>> bag('aa') == set('a')
+	False
+	>>> bag('aa') == set('ab')
+	False
+	>>> bag('ac') == set('ab')
+	False
+	>>> bag('ac') <= set('ab')
+	False
+	>>> bag('ac') >= set('ab')
+	False
 	>>> bag('a') <= bag('a') < bag('aa')
 	True
 	>>> bag('aa') <= bag('a')
@@ -152,7 +152,7 @@ New Methods
 ``isdisjoint(other: Iterable)``
 	Tests if self is disjoint with any other Iterable.  O(len(other))
 ``from_mapping(map: Mapping)``
-  Classmethod to create a bag from a Mapping that maps elements to counts.
+	Classmethod to create a bag from a Mapping that maps elements to counts.
 
 The following are only for mutable bags (not frozenbags).
 
