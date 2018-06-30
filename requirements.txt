@@ -1,1 +1,13 @@
 -e .
+sphinxcontrib-napoleon
+git+https://github.com/mlenzen/alabaster.git
+bumpversion
+pytest
+sphinx
+wheel
+ipython
+flake8
+tox
+coverage
+codecov
+flake8-docstrings
