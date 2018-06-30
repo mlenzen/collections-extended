@@ -29,7 +29,7 @@ lint:
 	flake8 --statistics --count
 
 coverage:
-	coverage run --source collections_extended setup.py test
+	coverage run --source collections_extended setup.py pytest
 	coverage report -m
 	coverage html
 
