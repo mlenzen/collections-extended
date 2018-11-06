@@ -347,6 +347,12 @@ def test_contains():
 	assert 1 in RangeMap({1: 'a'})
 	assert 2 in RangeMap({1: 'a'})
 	assert 0 not in RangeMap({1: 'a'})
+	rm = RangeMap([(1, 2, 'a'), (3, 4, 'b')])
+	assert 0 not in rm
+	assert 1 in rm
+	assert 2 not in rm
+	assert 3 in rm
+	assert 4 not in rm
 
 
 def test_get_range():

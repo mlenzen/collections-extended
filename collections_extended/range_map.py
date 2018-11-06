@@ -194,7 +194,7 @@ class RangeMap(Mapping):
 
 	def __contains__(self, value):
 		try:
-			self.__getitem(value) is not _empty
+			self.__getitem(value)
 		except KeyError:
 			return False
 		else:
