@@ -88,7 +88,167 @@ def _check_key_slice(key):
 		raise ValueError('Cannot set or delete slices with steps')
 
 
-class RangeMap(Mapping):
+class _BaseRangeMap(Mapping):
+	"""Base class for shared functionality between RangeMap and RangeMapView."""
+
+	def __str__(self):
+		range_format = '({range.start}, {range.stop}): {range.value}'
+		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
+		return '%s(%s)' % (self.__class__.__name__, values)
+
+	def __repr__(self):
+		range_format = '({range.start!r}, {range.stop!r}, {range.value!r})'
+		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
+		return '%s([%s])' % (self.__class__.__name__, values)
+
+	def _bisect_left(self, key):
+		"""Return the index of the key or the last key < key."""
+		if key is None:
+			return 0
+		else:
+			return bisect_left(self._keys, key, lo=1)
+
+	def _bisect_right(self, key):
+		"""Return the index of the first key > key."""
+		if key is None:
+			return 1
+		else:
+			return bisect_right(self._keys, key, lo=1)
+
+	def __contains__(self, value):
+		try:
+			self._getitem(value)
+		except KeyError:
+			return False
+		else:
+			return True
+
+	def __iter__(self):
+		for key, value in zip(self._keys, self._values):
+			if value is not _empty:
+				yield key
+
+	def __bool__(self):
+		if len(self._keys) > 1:
+			return True
+		else:
+			return self._values[0] != _empty
+
+	__nonzero__ = __bool__
+
+	def _getitem(self, key):
+		"""Get the value for a key (not a slice)."""
+		loc = self._bisect_right(key) - 1
+		value = self._values[loc]
+		if value is _empty:
+			raise KeyError(key)
+		else:
+			return value
+
+	def get(self, key, restval=None):
+		"""Get the value of the range containing key, otherwise return restval."""
+		try:
+			return self._getitem(key)
+		except KeyError:
+			return restval
+
+	def get_range(self, start=None, stop=None):
+		"""Return a RangeMap for the range start to stop.
+
+		Returns:
+			A RangeMap
+		"""
+		return self.from_iterable(self.ranges(start, stop))
+
+	@property
+	def start(self):
+		"""Get the start key of the first range.
+
+		None if RangeMap is empty or unbounded to the left.
+		"""
+		if self._values[0] is _empty:
+			try:
+				return self._keys[1]
+			except IndexError:
+				# This is empty or everything is mapped to a single value
+				return None
+		else:
+			# This is unbounded to the left
+			return self._keys[0]
+
+	@property
+	def end(self):
+		"""Get the stop key of the last range.
+
+		None if RangeMap is empty or unbounded to the right.
+		"""
+		if self._values[-1] is _empty:
+			return self._keys[-1]
+		else:
+			# This is unbounded to the right
+			return None
+
+	def __eq__(self, other):
+		if isinstance(other, _BaseRangeMap):
+			return (
+				self._keys == other._keys and
+				self._values == other._values
+				)
+		else:
+			return False
+
+	def __getitem__(self, key):
+		try:
+			_check_key_slice(key)
+		except TypeError:
+			return self._getitem(key)
+		else:
+			return self.get_range(key.start, key.stop)
+
+	def __setitem__(self, key, value):
+		_check_key_slice(key)
+		self.set(value, key.start, key.stop)
+
+	def __delitem__(self, key):
+		_check_key_slice(key)
+		self.delete(key.start, key.stop)
+
+	def __len__(self):
+		count = 0
+		for v in self._values:
+			if v is not _empty:
+				count += 1
+		return count
+
+	def keys(self):
+		"""Return a view of the keys."""
+		return KeysView(self)
+
+	def values(self):
+		"""Return a view of the values."""
+		return ValuesView(self)
+
+	def items(self):
+		"""Return a view of the item pairs."""
+		return ItemsView(self)
+
+	# Python2 - override slice methods
+	def __setslice__(self, i, j, value):
+		"""Implement __setslice__ to override behavior in Python 2.
+
+		This is required because empty slices pass integers in python2 as opposed
+		to None in python 3.
+		"""
+		raise SyntaxError('Assigning slices doesn\t work in Python 2, use set')
+
+	def __delslice__(self, i, j):
+		raise SyntaxError('Deleting slices doesn\t work in Python 2, use delete')
+
+	def __getslice__(self, i, j):
+		raise SyntaxError('Getting slices doesn\t work in Python 2, use get_range.')
+
+
+class RangeMap(_BaseRangeMap):
 	"""Map ranges of orderable elements to values."""
 
 	def __init__(self, iterable=None, **kwargs):
@@ -147,95 +307,10 @@ class RangeMap(Mapping):
 		for start, stop, value in iterable:
 			self.set(value, start=start, stop=stop)
 
-	def __str__(self):
-		range_format = '({range.start}, {range.stop}): {range.value}'
-		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
-		return 'RangeMap(%s)' % values
-
-	def __repr__(self):
-		range_format = '({range.start!r}, {range.stop!r}, {range.value!r})'
-		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
-		return 'RangeMap([%s])' % values
-
-	def _bisect_left(self, key):
-		"""Return the index of the key or the last key < key."""
-		if key is None:
-			return 0
-		else:
-			return bisect_left(self._keys, key, lo=1)
-
-	def _bisect_right(self, key):
-		"""Return the index of the first key > key."""
-		if key is None:
-			return 1
-		else:
-			return bisect_right(self._keys, key, lo=1)
-
 	def ranges(self, start=None, stop=None):
-		"""Generate MappedRanges for all mapped ranges.
-
-		Yields:
-			MappedRange
+		"""Return a view of ranges between start and stop.
 		"""
-		_check_start_stop(start, stop)
-		start_loc = self._bisect_right(start)
-		if stop is None:
-			stop_loc = len(self._keys)
-		else:
-			stop_loc = self._bisect_left(stop)
-		start_val = self._values[start_loc - 1]
-		candidate_keys = [start] + self._keys[start_loc:stop_loc] + [stop]
-		candidate_values = [start_val] + self._values[start_loc:stop_loc]
-		for i, value in enumerate(candidate_values):
-			if value is not _empty:
-				start_key = candidate_keys[i]
-				stop_key = candidate_keys[i + 1]
-				yield MappedRange(start_key, stop_key, value)
-
-	def __contains__(self, value):
-		try:
-			self.__getitem(value)
-		except KeyError:
-			return False
-		else:
-			return True
-
-	def __iter__(self):
-		for key, value in zip(self._keys, self._values):
-			if value is not _empty:
-				yield key
-
-	def __bool__(self):
-		if len(self._keys) > 1:
-			return True
-		else:
-			return self._values[0] != _empty
-
-	__nonzero__ = __bool__
-
-	def __getitem(self, key):
-		"""Get the value for a key (not a slice)."""
-		loc = self._bisect_right(key) - 1
-		value = self._values[loc]
-		if value is _empty:
-			raise KeyError(key)
-		else:
-			return value
-
-	def get(self, key, restval=None):
-		"""Get the value of the range containing key, otherwise return restval."""
-		try:
-			return self.__getitem(key)
-		except KeyError:
-			return restval
-
-	def get_range(self, start=None, stop=None):
-		"""Return a RangeMap for the range start to stop.
-
-		Returns:
-			A RangeMap
-		"""
-		return self.from_iterable(self.ranges(start, stop))
+		return RangeMapView(self, start, stop)
 
 	def set(self, value, start=None, stop=None):
 		"""Set the range from start to stop to value."""
@@ -296,89 +371,69 @@ class RangeMap(Mapping):
 		self._keys = [None]
 		self._values = [_empty]
 
-	@property
-	def start(self):
-		"""Get the start key of the first range.
 
-		None if RangeMap is empty or unbounded to the left.
-		"""
-		if self._values[0] is _empty:
-			try:
-				return self._keys[1]
-			except IndexError:
-				# This is empty or everything is mapped to a single value
-				return None
-		else:
-			# This is unbounded to the left
-			return self._keys[0]
+class RangeMapView(_BaseRangeMap):
+
+	__slots__ = ('_mapping', '_start', '_stop')
+
+	def __init__(self, mapping, start, stop):
+		self._mapping = mapping
+		self._start = start
+		self._stop = stop
 
 	@property
-	def end(self):
-		"""Get the stop key of the last range.
+	def _keys(self):
+		raise NotImplementedError
 
-		None if RangeMap is empty or unbounded to the right.
+	@property
+	def _values(self):
+		raise NotImplementedError
+
+	def __iter__(self):
+		raise NotImplementedError
+		_check_start_stop(self._start, self._stop)
+		start_loc = self._mapping._bisect_right(self._start)
+		if self._stop is None:
+			stop_loc = len(self._mapping._keys)
+		else:
+			stop_loc = self._mapping._bisect_left(self._stop)
+		start_val = self._mapping._values[start_loc - 1]
+		candidate_keys = [self._start] + self._mapping._keys[start_loc:stop_loc] + [self._stop]
+		candidate_values = [start_val] + self._mapping._values[start_loc:stop_loc]
+		for i, value in enumerate(candidate_values):
+			if value is not _empty:
+				start_key = candidate_keys[i]
+				stop_key = candidate_keys[i + 1]
+				yield MappedRange(start_key, stop_key, value)
+
+	def ranges(self, start=None, stop=None):
+		"""Return a view of ranges between start and stop.
 		"""
-		if self._values[-1] is _empty:
-			return self._keys[-1]
-		else:
-			# This is unbounded to the right
-			return None
+		raise NotImplementedError
+		# TODO check start, stop against self._start, self._stop
+		# start must be >= self._start, stop <= self._stop
+		return RangeMapView(self._mapping, start, stop)
 
-	def __eq__(self, other):
-		if isinstance(other, RangeMap):
-			return (
-				self._keys == other._keys and
-				self._values == other._values
-				)
-		else:
-			return False
+	def set(self, value, start=None, stop=None):
+		"""Set the range from start to stop to value."""
+		raise NotImplementedError
 
-	def __getitem__(self, key):
-		try:
-			_check_key_slice(key)
-		except TypeError:
-			return self.__getitem(key)
-		else:
-			return self.get_range(key.start, key.stop)
+	def delete(self, start=None, stop=None):
+		"""Delete the range from start to stop from self.
 
-	def __setitem__(self, key, value):
-		_check_key_slice(key)
-		self.set(value, key.start, key.stop)
-
-	def __delitem__(self, key):
-		_check_key_slice(key)
-		self.delete(key.start, key.stop)
-
-	def __len__(self):
-		count = 0
-		for v in self._values:
-			if v is not _empty:
-				count += 1
-		return count
-
-	def keys(self):
-		"""Return a view of the keys."""
-		return KeysView(self)
-
-	def values(self):
-		"""Return a view of the values."""
-		return ValuesView(self)
-
-	def items(self):
-		"""Return a view of the item pairs."""
-		return ItemsView(self)
-
-	# Python2 - override slice methods
-	def __setslice__(self, i, j, value):
-		"""Implement __setslice__ to override behavior in Python 2.
-
-		This is required because empty slices pass integers in python2 as opposed
-		to None in python 3.
+		Raises:
+			KeyError: If part of the passed range isn't mapped.
 		"""
-		raise SyntaxError('Assigning slices doesn\t work in Python 2, use set')
+		raise NotImplementedError
 
-	def __delslice__(self, i, j):
-		raise SyntaxError('Deleting slices doesn\t work in Python 2, use delete')
+	def empty(self, start=None, stop=None):
+		"""Empty the range from start to stop.
 
-	def __getslice__(self, i, j):
-		raise SyntaxError('Getting slices doesn\t work in Python 2, use get_range.')
+		Like delete, but no Error is raised if the entire range isn't mapped.
+		"""
+		raise NotImplementedError
+
+	def clear(self):
+		"""Remove all elements."""
+		raise NotImplementedError
+
