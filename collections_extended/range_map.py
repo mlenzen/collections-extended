@@ -9,6 +9,22 @@ _empty = object()
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
 
+# From collections.abc
+#
+# class MappingView(Sized):
+# 
+# 	__slots__ = '_mapping',
+# 
+# 	def __init__(self, mapping):
+# 		self._mapping = mapping
+# 
+# 	def __len__(self):
+# 		return len(self._mapping)
+# 
+# 	def __repr__(self):
+# 		return '{0.__class__.__name__}({0._mapping!r})'.format(self)
+
+
 class KeysView(MappingView, Set):
 	"""A view of the keys that mark the starts of subranges.
 
@@ -68,17 +84,6 @@ class ValuesView(MappingView):
 		for value in self._mapping._values:
 			if value is not _empty:
 				yield value
-
-
-def _check_start_stop(start, stop):
-	"""Check that start and stop are valid - orderable and in the right order.
-
-	Raises:
-		ValueError: if stop <= start
-		TypeError: if unorderable
-	"""
-	if start is not None and stop is not None and stop <= start:
-		raise ValueError('stop must be > start')
 
 
 def _check_key_slice(key):
@@ -232,6 +237,16 @@ class _BaseRangeMap(Mapping):
 		"""Return a view of the item pairs."""
 		return ItemsView(self)
 
+	def _check_start_stop(self, start, stop):
+		"""Check that start and stop are valid - orderable and in the right order.
+
+		Raises:
+			ValueError: if stop <= start
+			TypeError: if unorderable
+		"""
+		if start is not None and stop is not None and stop <= start:
+			raise ValueError('stop must be > start')
+
 	# Python2 - override slice methods
 	def __setslice__(self, i, j, value):
 		"""Implement __setslice__ to override behavior in Python 2.
@@ -310,11 +325,12 @@ class RangeMap(_BaseRangeMap):
 	def ranges(self, start=None, stop=None):
 		"""Return a view of ranges between start and stop.
 		"""
+		self._check_start_stop(start, stop)
 		return RangeMapView(self, start, stop)
 
 	def set(self, value, start=None, stop=None):
 		"""Set the range from start to stop to value."""
-		_check_start_stop(start, stop)
+		self._check_start_stop(start, stop)
 		# start_index, stop_index will denote the sections we are replacing
 		start_index = self._bisect_left(start)
 		if start is not None:  # start_index == 0
@@ -347,7 +363,7 @@ class RangeMap(_BaseRangeMap):
 		Raises:
 			KeyError: If part of the passed range isn't mapped.
 		"""
-		_check_start_stop(start, stop)
+		self._check_start_stop(start, stop)
 		start_loc = self._bisect_right(start) - 1
 		if stop is None:
 			stop_loc = len(self._keys)
@@ -389,9 +405,12 @@ class RangeMapView(_BaseRangeMap):
 	def _values(self):
 		raise NotImplementedError
 
+	def _check_start_stop(self, start, stop):
+		raise NotImplementedError
+
 	def __iter__(self):
 		raise NotImplementedError
-		_check_start_stop(self._start, self._stop)
+		self._check_start_stop(self._start, self._stop)
 		start_loc = self._mapping._bisect_right(self._start)
 		if self._stop is None:
 			stop_loc = len(self._mapping._keys)
@@ -409,9 +428,6 @@ class RangeMapView(_BaseRangeMap):
 	def ranges(self, start=None, stop=None):
 		"""Return a view of ranges between start and stop.
 		"""
-		raise NotImplementedError
-		# TODO check start, stop against self._start, self._stop
-		# start must be >= self._start, stop <= self._stop
 		return RangeMapView(self._mapping, start, stop)
 
 	def set(self, value, start=None, stop=None):

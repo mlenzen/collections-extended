@@ -6,7 +6,7 @@ import datetime
 import pytest
 
 from collections_extended._compat import is_py2
-from collections_extended.range_map import RangeMap
+from collections_extended.range_map import RangeMap, RangeMapView
 
 
 def print_underlying(rm):
@@ -555,3 +555,9 @@ def test_end():
 		(4, None, 'b'),
 		))
 	assert rm.end is None
+
+
+def test_ranges_view():
+	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'b'})
+	sub = rm.ranges(2, 3)
+	assert isinstance(sub, RangeMapView)
