@@ -555,3 +555,28 @@ def test_end():
 		(4, None, 'b'),
 		))
 	assert rm.end is None
+
+
+class TestRangeMapView:
+
+	def test_contains(self):
+		# TODO check outside start, stop to make sure __getitem uses
+		# subclasses _keys
+		pass
+
+	def test_iter(self):
+		# TODO check combinations of start, stop with Non
+		pass
+
+	def test_bool(self):
+		# TODO check view's start, stop params cut off view and return False
+		pass
+
+	def test_start(self):
+		# TODO check that this plays well with accessing overwritten _keys
+		pass
+
+	def test_end(self):
+		# TODO
+		pass
+

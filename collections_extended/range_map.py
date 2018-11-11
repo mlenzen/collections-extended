@@ -117,31 +117,33 @@ class RangeMap(Mapping):
 		self._keys = [None]
 		self._values = [default_value]
 		if iterable:
+			if isinstance(iterable, RangeMap):
+				self._init_from_iterable(iterable.ranges())
 			if isinstance(iterable, Mapping):
 				self._init_from_mapping(iterable)
 			else:
 				self._init_from_iterable(iterable)
 
-	@classmethod
-	def from_mapping(cls, mapping):
-		"""Create a RangeMap from a mapping of interval starts to values."""
-		obj = cls()
-		obj._init_from_mapping(mapping)
-		return obj
+	# @classmethod
+	# def from_mapping(cls, mapping):
+	# 	"""Create a RangeMap from a mapping of interval starts to values."""
+	# 	obj = cls()
+	# 	obj._init_from_mapping(mapping)
+	# 	return obj
 
 	def _init_from_mapping(self, mapping):
 		for key, value in sorted(mapping.items()):
 			self.set(value, key)
 
-	@classmethod
-	def from_iterable(cls, iterable):
-		"""Create a RangeMap from an iterable of tuples defining each range.
-
-		Each element of the iterable is a tuple (start, stop, value).
-		"""
-		obj = cls()
-		obj._init_from_iterable(iterable)
-		return obj
+	# @classmethod
+	# def from_iterable(cls, iterable):
+	# 	"""Create a RangeMap from an iterable of tuples defining each range.
+	#
+	# 	Each element of the iterable is a tuple (start, stop, value).
+	# 	"""
+	# 	obj = cls()
+	# 	obj._init_from_iterable(iterable)
+	# 	return obj
 
 	def _init_from_iterable(self, iterable):
 		for start, stop, value in iterable:
@@ -150,12 +152,12 @@ class RangeMap(Mapping):
 	def __str__(self):
 		range_format = '({range.start}, {range.stop}): {range.value}'
 		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
-		return 'RangeMap(%s)' % values
+		return '%s(%s)' % (self.__class__.__name__, values)
 
 	def __repr__(self):
 		range_format = '({range.start!r}, {range.stop!r}, {range.value!r})'
 		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
-		return 'RangeMap([%s])' % values
+		return '%s([%s])' % (self.__class__.__name__, values)
 
 	def _bisect_left(self, key):
 		"""Return the index of the key or the last key < key."""
@@ -225,7 +227,7 @@ class RangeMap(Mapping):
 	def get(self, key, restval=None):
 		"""Get the value of the range containing key, otherwise return restval."""
 		try:
-			return self.__getitem(key)
+			return self[key]
 		except KeyError:
 			return restval
 
@@ -233,9 +235,10 @@ class RangeMap(Mapping):
 		"""Return a RangeMap for the range start to stop.
 
 		Returns:
-			A RangeMap
+			A RangeMapView
 		"""
-		return self.from_iterable(self.ranges(start, stop))
+		# TODO Rename this and deprecate this method?
+		return RangeMapView(self, start=start, stop=stop)
 
 	def set(self, value, start=None, stop=None):
 		"""Set the range from start to stop to value."""
@@ -382,3 +385,72 @@ class RangeMap(Mapping):
 
 	def __getslice__(self, i, j):
 		raise SyntaxError('Getting slices doesn\t work in Python 2, use get_range.')
+
+
+class RangeMapView(RangeMap, MappingView):
+
+	__slots__ = ('_mapping', '_start', '_stop')
+
+	def __init__(self, mapping, start=None, stop=None):
+		"""Create a RangeMapView from a RangeMap and start, stop keys."""
+		self._mapping = mapping
+		self._start = start
+		self._stop = stop
+
+	# TODO check that RangeMap methods properly access _keys & _values
+	@property
+	def _keys(self):
+		raise NotImplementedError
+
+	@property
+	def _values(self):
+		raise NotImplementedError
+
+	def _fix_start_stop(self, start, stop):
+		if start is None:
+			start = self._start
+		elif self._start is not None:
+			start = max(start, self._start)
+		if stop is None:
+			stop = self._stop
+		elif self._stop is not None:
+			stop = min(stop, self._stop)
+		return start, stop
+
+	def ranges(self, start=None, stop=None):
+		start, stop = self._fix_start_stop(start, stop)
+		yield from self._mapping.ranges(start, stop)
+
+	def set(self, value, start=None, stop=None):
+		start, stop = self._fix_start_stop(start, stop)
+		self._mapping.set(value, start=start, stop=stop)
+
+	def delete(self, start=None, stop=None):
+		start, stop = self._fix_start_stop(start, stop)
+		self._mapping.delete(start=start, stop=stop)
+
+	def empty(self, start=None, stop=None):
+		start, stop = self._fix_start_stop(start=start, stop=stop)
+		self._mapping.empty(start=start, stop=stop)
+
+	def clear(self):
+		self._mapping.empty(start=self._start, stop=self._stop)
+
+	def __getitem__(self, key):
+		raise NotImplementedError
+		# TODO validate key
+		# if the key is a value, check it against self._start and self._stop
+		# if the key is a slice, fix it
+		value = super().__getitem__(key)
+
+	def __setitem__(self, key, value):
+		_check_key_slice(key)
+		start, stop = self._fix_start_stop(key.start, key.stop)
+		self.set(value, start, stop)
+
+	def __delitem__(self, key):
+		_check_key_slice(key)
+		start, stop = self._fix_start_stop(key.start, key.stop)
+		self.delete(start, stop)
+
+	# TODO continue with __len__
