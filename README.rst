@@ -22,7 +22,9 @@ Overview
 ``collections_extended`` is a Python module providing
 a ``bag`` class, AKA **multiset**,
 a ``setlist`` class, which is a **unique list** or **ordered set**,
-a ``bijection`` class and ``RangeMap`` which is a mapping from ranges to values.
+a ``bijection`` class, ``RangeMap`` which is a mapping from ranges to values and
+a ``IndexedDict`` class, which is an ordered mapping whose elements can be accessed using index,
+in addition to key.
 There are also frozen (hashable) varieties of bags and setlists.
 
 Tested against Python 2.7, 3.3, 3.4, 3.5, 3.6, 3.7, PyPy & PyPy3.
@@ -32,7 +34,7 @@ Getting Started
 
 .. code-block:: python
 
-	>>> from collections_extended import bag, setlist, bijection, RangeMap
+	>>> from collections_extended import bag, setlist, bijection, RangeMap, IndexedDict
 	>>> from datetime import date
 	>>> b = bag('abracadabra')
 	>>> b.count('a')
@@ -93,6 +95,17 @@ Getting Started
 	>>> us_presidents[date(2021, 3, 1)]
 	'Someone New'
 
+	>>> idict = IndexedDict()
+	>>> idict['a'] = "A"
+	>>> idict['b'] = "B"
+	>>> idict['c'] = "C"
+	>>> idict.get(key='a')
+	'A'
+	>>> idict.get(index=2)
+	'C'
+	>>> idict.index('b')
+	1
+
 Installation
 ============
 
@@ -126,6 +139,8 @@ bijection
 	A one-to-one mapping.
 RangeMap
 	A mapping from ranges (of numbers/dates/etc)
+IndexedDict
+	A mapping that keeps insertion order and allows acces by index.
 
 :Author: Michael Lenzen
 :Copyright: 2018 Michael Lenzen

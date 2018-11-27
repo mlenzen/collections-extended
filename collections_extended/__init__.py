@@ -4,6 +4,7 @@ from .bags import bag, frozenbag
 from .setlists import setlist, frozensetlist
 from .bijection import bijection
 from .range_map import RangeMap, MappedRange
+from .indexed_dict import IndexedDict
 
 __version__ = '1.0.2'
 
@@ -17,6 +18,7 @@ __all__ = (
 	'RangeMap',
 	'MappedRange',
 	'Collection',
+	'IndexedDict',
 	)
 
 
