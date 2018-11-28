@@ -33,6 +33,7 @@ def test_bijection():
 def test_init_from_pairs():
 	assert bijection({'a': 1, 'b': 2}) == bijection((('a', 1), ('b', 2)))
 
+
 def test_repr():
 	"""Test __repr__."""
 	b = bijection()
@@ -40,3 +41,29 @@ def test_repr():
 	b = bijection({'a': 1, 'b': 2, 'c': 3})
 	assert b == eval(b.__repr__())
 	assert repr(bijection({'a': 1})) == "bijection({'a': 1})"
+
+
+def test_setting_value():
+	"""Test that setting an existing value removes that key."""
+	b = bijection()
+	b['a'] = 1
+	b['b'] = 1
+	assert 'a' not in b
+	assert 'b' in b
+	assert 1 in b.values()
+
+
+def test_iter():
+	b = bijection({'a': 1, 'b': 2, 'c': 3})
+	assert list(b) == ['a', 'b', 'c']
+
+
+def test_clear():
+	b = bijection({'a': 1, 'b': 2, 'c': 3})
+	assert b.keys()
+	assert b.values()
+	assert b
+	b.clear()
+	assert not b
+	assert not b.keys()
+	assert not b.values()

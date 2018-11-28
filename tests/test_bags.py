@@ -252,7 +252,9 @@ def test_clear():
 
 def test_discard():
 	"""Test discard."""
-	b = bag('abc')
+	b = bag('aabc')
+	b.discard('a')
+	assert b == bag('abc')
 	b.discard('a')
 	assert b == bag('bc')
 	b.discard('a')
@@ -322,13 +324,22 @@ def test_ixor():
 
 
 def test_isub():
-	"""Test __isub__."""
+	"""Test __isub__ and discard_all."""
 	b = bag('aabbc')
 	b -= bag('bd')
 	assert b == bag('aabc')
-	b = bag('aabbc')
+	b = bag('aabc')
 	b -= set('bd')
-	assert b == bag('aabc')
+	assert b == bag('aac')
+
+
+def test_remove_all():
+	b = bag('abc')
+	with pytest.raises(ValueError):
+		b.remove_all('cd')
+	assert b == bag('abc')
+	b.remove_all('bc')
+	assert b == bag('a')
 
 
 def test_iadd():

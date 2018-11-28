@@ -1,6 +1,6 @@
 """RangeMap class definition."""
 from bisect import bisect_left, bisect_right
-from collections import namedtuple, Mapping, MappingView, Set
+from collections import namedtuple, Mapping, Set
 
 
 # Used to mark unmapped ranges
@@ -9,7 +9,26 @@ _empty = object()
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
 
-class KeysView(MappingView, Set):
+class RangeMapView:
+	"""Base class for views of RangeMaps."""
+
+	__slots__ = '_mapping',
+
+	def __init__(self, mapping):
+		self._mapping = mapping
+
+	def __len__(self):
+		return len(self._mapping)
+
+	def __repr__(self):
+		return '{0.__class__.__name__}({0._mapping!r})'.format(self)
+
+	@property
+	def mapping(self):
+		return self._mapping
+
+
+class KeysView(RangeMapView, Set):
 	"""A view of the keys that mark the starts of subranges.
 
 	Since iterating over all the keys is impossible, the KeysView only
@@ -18,21 +37,17 @@ class KeysView(MappingView, Set):
 
 	__slots__ = ()
 
-	@classmethod
-	def _from_iterable(self, it):
-		return set(it)
-
 	def __contains__(self, key):
-		loc = self._mapping._bisect_left(key)
-		return self._mapping._keys[loc] == key and \
-			self._mapping._values[loc] is not _empty
+		loc = self.mapping._bisect_left(key)
+		return self.mapping._keys[loc] == key and \
+			self.mapping._values[loc] is not _empty
 
 	def __iter__(self):
-		for item in self._mapping.ranges():
+		for item in self.mapping.ranges():
 			yield item.start
 
 
-class ItemsView(MappingView, Set):
+class ItemsView(RangeMapView, Set):
 	"""A view of the items that mark the starts of subranges.
 
 	Since iterating over all the keys is impossible, the ItemsView only
@@ -41,10 +56,6 @@ class ItemsView(MappingView, Set):
 
 	__slots__ = ()
 
-	@classmethod
-	def _from_iterable(self, it):
-		return set(it)
-
 	def __contains__(self, item):
 		key, value = item
 		loc = self._mapping._bisect_left(key)
@@ -52,20 +63,20 @@ class ItemsView(MappingView, Set):
 			self._mapping._values[loc] == value
 
 	def __iter__(self):
-		for mapped_range in self._mapping.ranges():
+		for mapped_range in self.mapping.ranges():
 			yield (mapped_range.start, mapped_range.value)
 
 
-class ValuesView(MappingView):
+class ValuesView(RangeMapView):
 	"""A view on the values of a Mapping."""
 
 	__slots__ = ()
 
 	def __contains__(self, value):
-		return value in self._mapping._values
+		return value in self.mapping._values
 
 	def __iter__(self):
-		for value in self._mapping._values:
+		for value in self.mapping._values:
 			if value is not _empty:
 				yield value
 

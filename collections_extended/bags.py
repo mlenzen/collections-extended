@@ -423,7 +423,7 @@ class bag(_basebag, MutableSet):
 		than in self.
 		"""
 		if not self._is_superset(other):
-			raise ValueError
+			raise ValueError('Passed collection is not a subset of this bag')
 		self.discard_all(other)
 
 	def clear(self):
@@ -481,7 +481,7 @@ class bag(_basebag, MutableSet):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		other_minus_self = other - self
-		self -= other
+		self.discard_all(other)
 		self |= other_minus_self
 		return self
 
