@@ -28,57 +28,65 @@ class RangeMapView:
 		return self._mapping
 
 
-class KeysView(RangeMapView, Set):
-	"""A view of the keys that mark the starts of subranges.
+class RangeMapKeysView(RangeMapView, Set):
+	"""A view of the keys that mark the starts of subranges of a RangeMap.
 
-	Since iterating over all the keys is impossible, the KeysView only
-	contains the keys that start each subrange.
+	Since iterating over all the keys is impossible, the view only
+	iterates over the keys that start each subrange.
 	"""
 
 	__slots__ = ()
 
 	def __contains__(self, key):
-		loc = self.mapping._bisect_left(key)
-		return self.mapping._keys[loc] == key and \
-			self.mapping._values[loc] is not _empty
+		return key in self.mapping
 
 	def __iter__(self):
-		for item in self.mapping.ranges():
-			yield item.start
+		for mapped_range in self.mapping.ranges():
+			yield mapped_range.start
 
 
-class ItemsView(RangeMapView, Set):
-	"""A view of the items that mark the starts of subranges.
+class RangeMapItemsView(RangeMapView, Set):
+	"""A view of the items that mark the starts of subranges of a RangeMap.
 
-	Since iterating over all the keys is impossible, the ItemsView only
-	contains the items that start each subrange.
+	Since iterating over all the items is impossible, the view only
+	iterates over the items that start each subrange.
 	"""
 
 	__slots__ = ()
 
 	def __contains__(self, item):
+		# TODO should item be a MappedRange instead of a 2-tuple
 		key, value = item
-		loc = self._mapping._bisect_left(key)
-		return self._mapping._keys[loc] == key and \
-			self._mapping._values[loc] == value
+		try:
+			mapped_value = self.mapping[key]
+		except KeyError:
+			return False
+		else:
+			return mapped_value == value
 
 	def __iter__(self):
 		for mapped_range in self.mapping.ranges():
 			yield (mapped_range.start, mapped_range.value)
 
 
-class ValuesView(RangeMapView):
-	"""A view on the values of a Mapping."""
+class RangeMapValuesView(RangeMapView):
+	"""A view on the values that mark the start of subranges of a RangeMap.
+
+	Since iterating over all the values is impossible, the view only
+	oterates over the values that start each subrange.
+	"""
 
 	__slots__ = ()
 
 	def __contains__(self, value):
-		return value in self.mapping._values
+		for mapped_range in self.mapping.ranges():
+			if mapped_range.value == value:
+				return True
+		return False
 
 	def __iter__(self):
-		for value in self.mapping._values:
-			if value is not _empty:
-				yield value
+		for mapped_range in self.mapping.ranges():
+			yield mapped_range.value
 
 
 def _check_start_stop(start, stop):
@@ -203,9 +211,9 @@ class RangeMap(Mapping):
 				stop_key = candidate_keys[i + 1]
 				yield MappedRange(start_key, stop_key, value)
 
-	def __contains__(self, value):
+	def __contains__(self, key):
 		try:
-			self.__getitem(value)
+			self._getitem(key)
 		except KeyError:
 			return False
 		else:
@@ -224,7 +232,7 @@ class RangeMap(Mapping):
 
 	__nonzero__ = __bool__
 
-	def __getitem(self, key):
+	def _getitem(self, key):
 		"""Get the value for a key (not a slice)."""
 		loc = self._bisect_right(key) - 1
 		value = self._values[loc]
@@ -236,7 +244,7 @@ class RangeMap(Mapping):
 	def get(self, key, restval=None):
 		"""Get the value of the range containing key, otherwise return restval."""
 		try:
-			return self.__getitem(key)
+			return self._getitem(key)
 		except KeyError:
 			return restval
 
@@ -348,7 +356,7 @@ class RangeMap(Mapping):
 		try:
 			_check_key_slice(key)
 		except TypeError:
-			return self.__getitem(key)
+			return self._getitem(key)
 		else:
 			return self.get_range(key.start, key.stop)
 
@@ -369,15 +377,15 @@ class RangeMap(Mapping):
 
 	def keys(self):
 		"""Return a view of the keys."""
-		return KeysView(self)
+		return RangeMapKeysView(self)
 
 	def values(self):
 		"""Return a view of the values."""
-		return ValuesView(self)
+		return RangeMapValuesView(self)
 
 	def items(self):
 		"""Return a view of the item pairs."""
-		return ItemsView(self)
+		return RangeMapItemsView(self)
 
 	# Python2 - override slice methods
 	def __setslice__(self, i, j, value):
@@ -386,10 +394,10 @@ class RangeMap(Mapping):
 		This is required because empty slices pass integers in python2 as opposed
 		to None in python 3.
 		"""
-		raise SyntaxError('Assigning slices doesn\t work in Python 2, use set')
+		raise SyntaxError("Assigning slices doesn't work in Python 2, use set.")
 
 	def __delslice__(self, i, j):
-		raise SyntaxError('Deleting slices doesn\t work in Python 2, use delete')
+		raise SyntaxError("Deleting slices doesn't work in Python 2, use delete.")
 
 	def __getslice__(self, i, j):
-		raise SyntaxError('Getting slices doesn\t work in Python 2, use get_range.')
+		raise SyntaxError("Getting slices doesn't work in Python 2, use get_range.")

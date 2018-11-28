@@ -485,7 +485,7 @@ def test_key_view_contains():
 		))
 	assert 1 in rm.keys()
 	assert 2 not in rm.keys()
-	assert 1.5 not in rm.keys()
+	assert 1.5 in rm.keys()
 
 
 def test_items_view_contains():
