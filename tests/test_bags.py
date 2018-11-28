@@ -315,9 +315,12 @@ def test_iand():
 
 def test_ixor():
 	"""Test __ixor__."""
-	b = bag('abbc')
-	b ^= bag('bg')
+	b = bag('abbbccd')
+	b ^= bag('bbcdg')
 	assert b == bag('abcg')
+	b = bag('bbcdg')
+	b ^= bag('abbbccd')
+	assert b == bag('acbg')
 	b = bag('abbc')
 	b ^= set('bg')
 	assert b == bag('abcg')
