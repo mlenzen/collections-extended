@@ -1,6 +1,8 @@
 """RangeMap class definition."""
 import collections
 
+from ._util import NOT_SET
+
 KEY_AND_INDEX_ERROR = TypeError(
 	"Specifying both `key` and `index` is not allowed")
 KEY_EQ_INDEX_ERROR = TypeError(
@@ -15,31 +17,30 @@ class IndexedDict(collections.MutableMapping):
 	.. automethod:: __init__
 	"""
 
-	_marker = object()  # Used to distinguish unset arguments
-
-	def __init__(self, *args, **kwargs):
-		"""Create empty IndexedDict and call self.update(*args, **kwargs)."""
-		self.clear()
-		self.update(*args, **kwargs)
+	def __init__(self, iterable=None, **kwargs):
+		"""Create an IndexedDict and initialize it like a dict."""
+		self._dict = {}  # key -> (index, value)
+		self._list = []  # index -> (key, value)
+		self.update(iterable or [], **kwargs)
 
 	def clear(self):
 		"""Remove all items."""
-		self._dict = {}  # key -> (index, value)
-		self._list = []  # index -> (key, value)
+		self._dict = {}
+		self._list = []
 
-	def get(self, key=_marker, index=_marker, d=None):
+	def get(self, key=NOT_SET, index=NOT_SET, d=None):
 		"""Return value with given key or index.
 
 		If no value is found, return d (None by default).
 		"""
-		if index is self._marker and key is not self._marker:
+		if index is NOT_SET and key is not NOT_SET:
 			try:
 				index, value = self._dict[key]
 			except KeyError:
 				return d
 			else:
 				return value
-		elif index is not self._marker and key is self._marker:
+		elif index is not NOT_SET and key is NOT_SET:
 			try:
 				key, value = self._list[index]
 			except IndexError:
@@ -49,7 +50,7 @@ class IndexedDict(collections.MutableMapping):
 		else:
 			raise KEY_EQ_INDEX_ERROR
 
-	def pop(self, key=_marker, index=_marker, d=_marker):
+	def pop(self, key=NOT_SET, index=NOT_SET, d=NOT_SET):
 		"""Remove and return value with given key or index (last item by default).
 
 		If key is not found, returns d if given,
@@ -57,11 +58,11 @@ class IndexedDict(collections.MutableMapping):
 
 		This is generally O(N) unless removing last item, then O(1).
 		"""
-		has_default = d is not self._marker
+		has_default = d is not NOT_SET
 
-		if index is self._marker and key is not self._marker:
+		if index is NOT_SET and key is not NOT_SET:
 			index, value = self._pop_key(key, has_default)
-		elif key is self._marker:
+		elif key is NOT_SET:
 			key, index, value = self._pop_index(index, has_default)
 		else:
 			raise KEY_AND_INDEX_ERROR
@@ -90,7 +91,7 @@ class IndexedDict(collections.MutableMapping):
 	def _pop_index(self, index, has_default):
 		"""Remove an element by index, or last element."""
 		try:
-			if index is self._marker:
+			if index is NOT_SET:
 				index = len(self._list) - 1
 				key, value = self._list.pop()
 			else:
@@ -108,7 +109,7 @@ class IndexedDict(collections.MutableMapping):
 
 		return key, index, value
 
-	def fast_pop(self, key=_marker, index=_marker):
+	def fast_pop(self, key=NOT_SET, index=NOT_SET):
 		"""Pop a specific item quickly by swapping it to the end.
 
 		Remove value with given key or index (last item by default) fast
@@ -121,10 +122,10 @@ class IndexedDict(collections.MutableMapping):
 
 		Runs in O(1).
 		"""
-		if index is self._marker and key is not self._marker:
+		if index is NOT_SET and key is not NOT_SET:
 			index, popped_value = self._dict.pop(key)
-		elif key is self._marker:
-			if index is self._marker:
+		elif key is NOT_SET:
+			if index is NOT_SET:
 				index = len(self._list) - 1
 				key, popped_value2 = self._list[-1]
 			else:
@@ -176,14 +177,14 @@ class IndexedDict(collections.MutableMapping):
 
 		return key, value
 
-	def move_to_end(self, key=_marker, index=_marker, last=True):
+	def move_to_end(self, key=NOT_SET, index=NOT_SET, last=True):
 		"""Move an existing element to the end (or beginning if last==False).
 
 		Runs in O(N).
 		"""
-		if index is self._marker and key is not self._marker:
+		if index is NOT_SET and key is not NOT_SET:
 			index, value = self._dict[key]
-		elif index is not self._marker and key is self._marker:
+		elif index is not NOT_SET and key is NOT_SET:
 			key, value = self._list[index]
 
 			# Normalize index
@@ -230,7 +231,10 @@ class IndexedDict(collections.MutableMapping):
 		return len(self._list)
 
 	def __repr__(self):
-		return "IndexedDict({})".format(repr(self._list))
+		return "{class_name}({data})".format(
+			class_name=self.__class__.__name__,
+			data=repr(self._list),
+			)
 
 	def __getitem__(self, key):
 		"""Return value corresponding to given key.

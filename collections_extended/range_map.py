@@ -2,9 +2,8 @@
 from bisect import bisect_left, bisect_right
 from collections import namedtuple, Mapping, Set
 
+from ._util import NOT_SET
 
-# Used to mark unmapped ranges
-_empty = object()
 
 MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
 
@@ -115,7 +114,7 @@ class RangeMap(Mapping):
 	.. automethod:: __init__
 	"""
 
-	def __init__(self, iterable=None, **kwargs):
+	def __init__(self, iterable=None, default_value=NOT_SET):
 		"""Create a RangeMap.
 
 		A mapping or other iterable can be passed to initialize the RangeMap.
@@ -135,9 +134,6 @@ class RangeMap(Mapping):
 				least key in mapping or missing ranges in iterable. If no mapping
 				or iterable, the return value for all keys.
 		"""
-		default_value = kwargs.pop('default_value', _empty)
-		if kwargs:
-			raise TypeError('Unknown keyword arguments: %s' % ', '.join(kwargs.keys()))
 		self._keys = [None]
 		self._values = [default_value]
 		if iterable:
@@ -211,7 +207,7 @@ class RangeMap(Mapping):
 		candidate_keys = [start] + self._keys[start_loc:stop_loc] + [stop]
 		candidate_values = [start_val] + self._values[start_loc:stop_loc]
 		for i, value in enumerate(candidate_values):
-			if value is not _empty:
+			if value is not NOT_SET:
 				start_key = candidate_keys[i]
 				stop_key = candidate_keys[i + 1]
 				yield MappedRange(start_key, stop_key, value)
@@ -226,14 +222,14 @@ class RangeMap(Mapping):
 
 	def __iter__(self):
 		for key, value in zip(self._keys, self._values):
-			if value is not _empty:
+			if value is not NOT_SET:
 				yield key
 
 	def __bool__(self):
 		if len(self._keys) > 1:
 			return True
 		else:
-			return self._values[0] != _empty
+			return self._values[0] != NOT_SET
 
 	__nonzero__ = __bool__
 
@@ -241,7 +237,7 @@ class RangeMap(Mapping):
 		"""Get the value for a key (not a slice)."""
 		loc = self._bisect_right(key) - 1
 		value = self._values[loc]
-		if value is _empty:
+		if value is NOT_SET:
 			raise KeyError(key)
 		else:
 			return value
@@ -303,22 +299,22 @@ class RangeMap(Mapping):
 		else:
 			stop_loc = self._bisect_left(stop)
 		for value in self._values[start_loc:stop_loc]:
-			if value is _empty:
+			if value is NOT_SET:
 				raise KeyError((start, stop))
 		# this is inefficient, we've already found the sub ranges
-		self.set(_empty, start=start, stop=stop)
+		self.set(NOT_SET, start=start, stop=stop)
 
 	def empty(self, start=None, stop=None):
 		"""Empty the range from start to stop.
 
 		Like delete, but no Error is raised if the entire range isn't mapped.
 		"""
-		self.set(_empty, start=start, stop=stop)
+		self.set(NOT_SET, start=start, stop=stop)
 
 	def clear(self):
 		"""Remove all elements."""
 		self._keys = [None]
-		self._values = [_empty]
+		self._values = [NOT_SET]
 
 	@property
 	def start(self):
@@ -326,7 +322,7 @@ class RangeMap(Mapping):
 
 		None if RangeMap is empty or unbounded to the left.
 		"""
-		if self._values[0] is _empty:
+		if self._values[0] is NOT_SET:
 			try:
 				return self._keys[1]
 			except IndexError:
@@ -342,7 +338,7 @@ class RangeMap(Mapping):
 
 		None if RangeMap is empty or unbounded to the right.
 		"""
-		if self._values[-1] is _empty:
+		if self._values[-1] is NOT_SET:
 			return self._keys[-1]
 		else:
 			# This is unbounded to the right
@@ -376,7 +372,7 @@ class RangeMap(Mapping):
 	def __len__(self):
 		count = 0
 		for v in self._values:
-			if v is not _empty:
+			if v is not NOT_SET:
 				count += 1
 		return count
 
