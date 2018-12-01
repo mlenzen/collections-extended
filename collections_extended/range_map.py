@@ -110,7 +110,10 @@ def _check_key_slice(key):
 
 
 class RangeMap(Mapping):
-	"""Map ranges of orderable elements to values."""
+	"""Map ranges of orderable elements to values.
+
+	.. automethod:: __init__
+	"""
 
 	def __init__(self, iterable=None, **kwargs):
 		"""Create a RangeMap.

@@ -11,6 +11,8 @@ class IndexedDict(collections.MutableMapping):
 	"""A Mapping that preserves insertion order and allows access by item index.
 
 	The API is an extension of OrderedDict.
+
+	.. automethod:: __init__
 	"""
 
 	_marker = object()  # Used to distinguish unset arguments

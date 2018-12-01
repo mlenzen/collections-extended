@@ -9,14 +9,14 @@ from ._compat import handle_rich_comp_not_implemented, keys_set
 class _basebag(Set):
 	"""Base class for bag classes.
 
-	Base class for bag and frozenbag.	Is not mutable and not hashable, so there's
+	Base class for bag and frozenbag. Is not mutable and not hashable, so there's
 	no reason to use this instead of either bag or frozenbag.
 	"""
 
 	# Basic object methods
 
 	def __init__(self, iterable=None):
-		"""Create a new basebag.
+		"""Create a new bag.
 
 		If iterable isn't given, is None or is empty then the bag starts empty.
 		Otherwise each element from iterable will be added to the bag
@@ -444,7 +444,10 @@ class _basebag(Set):
 
 
 class bag(_basebag, MutableSet):
-	"""bag is a mutable unhashable bag."""
+	"""bag is a mutable unhashable bag.
+
+	.. automethod:: __init__
+	"""
 
 	def pop(self):
 		"""Remove and return an element of self."""
@@ -507,7 +510,10 @@ class bag(_basebag, MutableSet):
 
 
 class frozenbag(_basebag, Hashable):
-	"""frozenbag is an immutable, hashable bab."""
+	"""frozenbag is an immutable, hashable bag.
+
+	.. automethod:: __init__
+	"""
 
 	def __hash__(self):
 		"""Compute the hash value of a frozenbag.

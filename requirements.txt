@@ -3,7 +3,7 @@ sphinxcontrib-napoleon
 git+https://github.com/mlenzen/alabaster.git
 bumpversion
 pytest
-sphinx
+sphinx>=1.8
 wheel
 ipython
 flake8

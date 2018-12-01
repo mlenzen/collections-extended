@@ -55,3 +55,8 @@ Implementation
 --------------
 RangeMaps are backed by lists of the keys, so it's only fast to add/remove the
 greatest values in the range (the end of the list).
+
+API
+---
+
+.. autoclass:: collections_extended.RangeMap

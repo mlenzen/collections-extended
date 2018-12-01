@@ -23,7 +23,7 @@ __all__ = (
 
 
 def collection(iterable=None, mutable=True, ordered=False, unique=False):
-	"""Return a Collection with the specified properties.
+	"""Return a :class:`Collection` with the specified properties.
 
 	Args:
 		iterable (Iterable): collection to instantiate new collection from.

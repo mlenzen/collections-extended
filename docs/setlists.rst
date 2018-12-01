@@ -1,11 +1,13 @@
+.. currentmodule:: collections_extended
+
 setlists
 ========
 
-A ``setlist`` is an ordered, indexed
-collection with unique elements.	It it more than just an **ordered Set**
+A :class:`setlist` is an ordered, indexed collection with unique elements.
+It it more than just an **ordered Set**
 in that the elements are accessible by index (ie. not just a linked set).
 
-However, ``setlist``'s are not comparable like sets or lists. Equality
+However, :class:`setlist`'s are not comparable like sets or lists. Equality
 testing still works, but ``setlist(('a', 'c')) < setlist(('a', 'b'))`` does not
 because we'd have to choose to compare by order or by set comparison.
 
@@ -71,33 +73,34 @@ setlist vs. set
 
 New Methods
 -----------
-Aside from the methods expected from Sequence and Set, this provides:
-- ``setlist.shuffle(random=None)`` Because random.shuffle(setlist) doesn't work, this is provided to do the same.
+Aside from the methods expected from Sequence and Set, this provides
+:meth:`setlist.shuffle(random=None)` because
+:func:`random.shuffle(setlist)` doesn't work.
 
 Errors
 ------
-Some methods will raise a ``ValueError`` when trying to add or remove elements
+Some methods will raise a :exc:`ValueError` when trying to add or remove elements
 when they respectively already or do not currently exist in the setlist.
-Each method has an analagous version that does/doesn't raise a ValueError.
-Methods implementing the Set methods do not raise ``ValueError`` while the one's
+Each method has an analogous version that does/doesn't raise a ValueError.
+Methods implementing the Set methods do not raise :exc:`ValueError` while the one's
 implementing do. All will raise ``TypeError`` if you use unhashable values.
 The bulk operations are atomic, if any single value is unhashable or a duplicate,
-no changes will be made to the ``setlist``.
+no changes will be made to the :class:`setlist`.
 
-======================  ===============  ==============
-Raises ``ValueError``   No               Yes
-Interface               ``Set``          ``Sequence``
-======================  ===============  ==============
-Add a single value      ``add``          ``append``
-Add multiple values     ``update``       ``extend``
-Remove a single value   ``discard``      ``remove``
-Remove multiple values  ``discard_all``  ``remove_all``
-======================  ===============  ==============
+========================   ===============  =================
+Raises :exc:`ValueError`   No               Yes
+Interface                  :class:`Set`     :class:`Sequence`
+========================   ===============  =================
+Add a single value         ``add``          ``append``
+Add multiple values        ``update``       ``extend``
+Remove a single value      ``discard``      ``remove``
+Remove multiple values     ``discard_all``  ``remove_all``
+========================   ===============  =================
 
-The setlist constructor by defualt does not raise ``ValueError`` on duplicate values
+The setlist constructor by defualt does not raise :exc:`ValueError` on duplicate values
 because we have to choose one or the other and this matches the behavior of Set.
 There is a flag ``raise_on_duplicate`` that can be passed to ``__init__`` to
-raise a ValueError if duplicate values are aoassed.
+raise a :exc:`ValueError` if duplicate values are passed.
 
 Quirks
 ------
@@ -105,3 +108,20 @@ Quirks
 	it is implemented by first setting one element then the other. But since
 	the first element it tries to set is still in the setlist, nothing happens.
 	This causes random.shuffle not to work on a setlist.
+
+API
+---
+
+setlist
+^^^^^^^
+
+.. autoclass:: collections_extended.setlist
+
+	:show-inheritance:
+
+frozensetlist
+^^^^^^^^^^^^^
+
+.. autoclass:: collections_extended.frozensetlist
+
+	:show-inheritance:

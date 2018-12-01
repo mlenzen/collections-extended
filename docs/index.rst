@@ -25,7 +25,7 @@ Contents:
 	range_map
 	bijection
 	indexed_dict
-	api
+	factory
 	contributing
 	changelog
 

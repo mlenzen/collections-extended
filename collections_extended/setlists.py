@@ -20,10 +20,12 @@ class _basesetlist(Sequence, Set):
 	"""
 
 	def __init__(self, iterable=None, raise_on_duplicate=False):
-		"""Create a setlist.
+		"""Create a setlist, initializing from iterable if present.
 
 		Args:
 			iterable (Iterable): Values to initialize the setlist with.
+			raise_on_duplicate: Raise a ValueError if any duplicate values
+				are present.
 		"""
 		self._list = list()
 		self._dict = dict()
@@ -256,7 +258,10 @@ class _basesetlist(Sequence, Set):
 
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
-	"""A mutable (unhashable) setlist."""
+	"""A mutable (unhashable) setlist.
+
+	.. automethod:: __init__
+	"""
 
 	def __str__(self):
 		return '{[%s}]' % ', '.join(repr(v) for v in self)
@@ -544,7 +549,10 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 
 class frozensetlist(_basesetlist, Hashable):
-	"""An immutable (hashable) setlist."""
+	"""An immutable (hashable) setlist.
+
+	.. automethod:: __init__
+	"""
 
 	def __hash__(self):
 		if not hasattr(self, '_hash_value'):

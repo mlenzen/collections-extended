@@ -32,3 +32,8 @@ Indexed lookups cost list's O(1), keyed lookups cost average case O(1) and worst
 case O(n) of dict.
 Deleting an element has a time complexity of O(1) if it is the last added one,
 or O(n) in general, in addition to the lookup cost.
+
+API
+---
+
+.. autoclass:: collections_extended.IndexedDict

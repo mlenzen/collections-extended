@@ -1,9 +1,11 @@
 bags (Multisets)
 ================
 
+`bag` is a multiset_ implementation for Python.
+Currently, bags have constant time inclusion testing but can only contain
+hashable elements due to the implementation.
 
-Bags have constant time inclusion testing but can only contain hashable
-elements. See http://en.wikipedia.org/wiki/Multiset
+.. _multiset: http://en.wikipedia.org/wiki/Multiset
 
 There are two classes provided:
 
@@ -162,3 +164,17 @@ The following are only for mutable bags (not frozenbags).
 - ``discard(elem)``
 - ``remove(elem)``
 - ``clear()``
+
+API
+---
+
+bag
+^^^
+
+.. autoclass:: collections_extended.bag
+
+frozenbag
+^^^^^^^^^
+
+.. autoclass:: collections_extended.frozenbag
+
