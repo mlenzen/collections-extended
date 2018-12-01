@@ -21,10 +21,23 @@ Both classes implement :class:`collections.abc.Sized`,
 Both classes implement :class:`collections.abc.Collection` starting in Python
 3.6.
 
+Set Operations
+--------------
+:class:`bag` and :class:`frozenbag` use python operators for multiset
+operations:
+
+* `__add__` (`a + b`): The sum of two multisets
+* `__sub__` (`a - b`): The difference between a and b
+* `__and__` (`a & b`): The intersection of a and b
+* `__or__` (`a | b`): The union of a and b
+* `__xor__` (`a ^ b`): The symmetric difference between a and b
+
+:class:`bag` has the equivalent in-place operators defined.
+
 Comparison Methods
 ------------------
 Bags are comparable to Sets (including other bags). When comparing a bag to a
-Set, the Set is treated as a bag with all multiplicies equal to 1.
+Set, the Set is treated as a bag with all multiplicities equal to 1.
 The ordering comparison operators are implemented using multiset comparison.
 
 .. testsetup::
@@ -62,7 +75,7 @@ Compared to existing similar implementations
 collections.Counter
 ^^^^^^^^^^^^^^^^^^^
 
-Counters don't really behave like "collections" (Sized, Iterable, Container)
+Counters don't really behave like Collections - Sized, Iterable, Containers
 
 .. testsetup::
 
@@ -156,6 +169,10 @@ New Methods
 	Returns a shallow copy of self.  O(self.num_unique_elements())
 ``isdisjoint(other: Iterable)``
 	Tests if self is disjoint with any other Iterable.  O(len(other))
+``is_subset(other: Set)``
+	Tests if self is a subset of another Set.
+``is_superset(other: Set)``
+	Tests if self is a superset of another Set.
 ``from_mapping(map: Mapping)``
 	Classmethod to create a bag from a Mapping that maps elements to counts.
 
