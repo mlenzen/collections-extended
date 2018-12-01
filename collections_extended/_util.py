@@ -19,7 +19,8 @@ def hash_iterable(it):
 class Sentinel(object):
 	"""A class to create sentinel objects.
 
-	The benefits
+	The benefits vs. object() are a good repr it is picklable.
+
 	Inspired by https://pypi.org/project/sentinels/
 	"""
 

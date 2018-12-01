@@ -1,4 +1,4 @@
-"""RangeMap class definition."""
+"""IndexedDict class definition."""
 import collections
 
 from ._util import NOT_SET
