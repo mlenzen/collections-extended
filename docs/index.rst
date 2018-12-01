@@ -27,6 +27,7 @@ Contents:
 	indexed_dict
 	api
 	contributing
+	changelog
 
 Other Packages of Interest
 ==========================

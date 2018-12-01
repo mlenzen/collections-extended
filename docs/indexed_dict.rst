@@ -2,7 +2,8 @@ IndexedDicts
 ============
 
 IndexedDict is an ordered mapping whose elements can be accessed using index,
-in addition to key. The interface is mostly a generalization of :class:`collections.OrderedDict`.
+in addition to key. The interface is mostly a generalization of
+:class:`collections.OrderedDict`.
 
 Differences from OrderedDict
 ----------------------------

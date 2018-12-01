@@ -41,7 +41,7 @@ Quirks
 
 Python 2 vs 3
 ~~~~~~~~~~~~~
-Slice notation is not implented for get, set and delete in python 2 and raises
+Slice notation is not implemented for get, set and delete in python 2 and raises
 a SyntaxError when used. This is because Python 2 assumes slices are integers
 and replaces open slices with 0 and maxint. Instead use ``RangeMap.set``,
 ``RangeMap.delete`` and ``RangeMap.get_range``.

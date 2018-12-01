@@ -1,5 +1,6 @@
-bags
-====
+bags (Multisets)
+================
+
 
 Bags have constant time inclusion testing but can only contain hashable
 elements. See http://en.wikipedia.org/wiki/Multiset
