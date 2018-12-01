@@ -1,5 +1,5 @@
-
-===========
+IndexedDicts
+============
 
 IndexedDict is an ordered mapping whose elements can be accessed using index,
 in addition to key. The interface is mostly a generalization of :class:`collections.OrderedDict`.
@@ -15,9 +15,9 @@ New Methods
 ^^^^^^^^^^^
 
 ``fast_pop``
-	Remove a item with given key and value from the IndexedDict by first
-	the item to the last position and then removing it.
-	Returns tuple of ``(poped_value, new_moved_index, moved_key, moved_value)``.
+	Remove an item with given key and value from the IndexedDict by first
+	swapping the item to the last position and then removing it.
+	Returns tuple of ``(popped_value, new_moved_index, moved_key, moved_value)``.
 	Time complexity of this operation is O(1).
 ``index``
 	Return index of a record with given key.

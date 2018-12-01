@@ -117,7 +117,7 @@ Usage
 
 Classes
 =======
-There are six new classes provided:
+There are seven new classes provided:
 
 Bags
 ----
@@ -140,7 +140,7 @@ bijection
 RangeMap
 	A mapping from ranges (of numbers/dates/etc)
 IndexedDict
-	A mapping that keeps insertion order and allows acces by index.
+	A mapping that keeps insertion order and allows access by index.
 
 :Author: Michael Lenzen
 :Copyright: 2018 Michael Lenzen
