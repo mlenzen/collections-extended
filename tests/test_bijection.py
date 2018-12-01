@@ -55,7 +55,7 @@ def test_setting_value():
 
 def test_iter():
 	b = bijection({'a': 1, 'b': 2, 'c': 3})
-	assert list(b) == ['a', 'b', 'c']
+	assert set(b) == {'a', 'b', 'c'}
 
 
 def test_clear():
