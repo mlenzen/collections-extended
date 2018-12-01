@@ -1,5 +1,8 @@
 import collections
 
+KEY_AND_INDEX_ERROR = TypeError("Specifying both `key` and `index` is not allowed")
+KEY_EQ_INDEX_ERROR = TypeError("Exactly one of `key` and `index` must be specified")
+
 
 class IndexedDict(collections.MutableMapping):
 	"""Indexed dict is a Mapping that preserves insertion order and allows acces
@@ -36,7 +39,7 @@ class IndexedDict(collections.MutableMapping):
 			else:
 				return value
 		else:
-			raise self._key_eq_index_error()
+			raise KEY_EQ_INDEX_ERROR
 
 	def pop(self, key=_marker, index=_marker, d=_marker):
 		"""Remove and return value with given key or index (last item by default).
@@ -52,7 +55,7 @@ class IndexedDict(collections.MutableMapping):
 		elif key is self._marker:
 			key, index, value = self._pop_index(index, has_default)
 		else:
-			raise self._key_and_index_error()
+			raise KEY_AND_INDEX_ERROR
 
 		if index is None:
 			return d
@@ -119,7 +122,7 @@ class IndexedDict(collections.MutableMapping):
 			index2, popped_value = self._dict.pop(key)
 			assert index == index2
 		else:
-			raise self._key_and_index_error()
+			raise KEY_AND_INDEX_ERROR
 
 		if key == self._list[-1][0]:
 			# The item we're removing happens to be the last in the list,
@@ -173,7 +176,7 @@ class IndexedDict(collections.MutableMapping):
 			if index < 0:
 				index += len(self._list)
 		else:
-			raise self._key_eq_index_error()
+			raise KEY_EQ_INDEX_ERROR
 
 		if last:
 			index_range = range(len(self._list) - 1, index - 1, -1)
@@ -256,14 +259,6 @@ class IndexedDict(collections.MutableMapping):
 	def __iter__(self):
 		"""Return iterator over the keys of the mapping in order."""
 		return (item[0] for item in self._list)
-
-	@staticmethod
-	def _key_and_index_error():
-		return TypeError("Specifying both `key` and `index` is not allowed")
-
-	@staticmethod
-	def _key_eq_index_error():
-		raise TypeError("Exactly one of `key` and `index` must be specified")
 
 	def _fix_indices_after_delete(self, starting_index=0):
 		for i, (k, v) in enumerate(self._list[starting_index:], starting_index):
