@@ -167,7 +167,7 @@ class _basebag(Set):
 		"Use `heapq.nlargest(n, self.counts(), key=itemgetter(1))` instead or "
 		"`sorted(self.counts(), reverse=True, key=itemgetter(1))` for `n=None`",
 		'1.1',
-	)
+		)
 	def nlargest(self, n=None):
 		"""List the n most common elements and their counts.
 
@@ -328,7 +328,7 @@ class _basebag(Set):
 		else:
 			This runs in O(len(other))
 		"""
-		# TODO can this be optimized so we don't have to create a bag from the other first?
+		# TODO do we have to create a bag from the other first?
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		for elem, old_count in set(self._dict.items()):
@@ -345,7 +345,7 @@ class _basebag(Set):
 		else:
 			This runs in O(len(other))
 		"""
-		# TODO can this be optimized so we don't have to create a bag from the other first?
+		# TODO do we have to create a bag from the other first?
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		for elem, other_count in other._dict.items():

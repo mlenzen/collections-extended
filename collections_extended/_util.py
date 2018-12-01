@@ -33,6 +33,7 @@ class Sentinel(object):
 		return self._name,
 
 	def __new__(cls, _name):
+		"""Find the Sentinel object with name or create a new one."""
 		try:
 			return cls._registry[_name]
 		except KeyError:
@@ -60,11 +61,9 @@ NOT_SET = Sentinel('not_set')
 
 
 def deprecated(msg, dep_version):
-	"""Decorator to mark a function, method or class as deprecated.
+	"""Decorate a function, method or class to mark as deprecated.
 
 	Raise DeprecationWarning and add a deprecation notice to the docstring.
-
-	Inspired by: https://github.com/briancurtin/deprecation/blob/master/deprecation.py
 	"""
 	def wrapper(func):
 		docstring = func.__doc__ or ''
