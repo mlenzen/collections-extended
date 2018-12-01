@@ -1,7 +1,8 @@
 """Test for bag classes."""
 import pytest
 
-from collections_extended.bags import _basebag, bag, frozenbag, _compat
+from collections_extended.bags import _basebag, bag, frozenbag
+from collections_extended._compat import is_py2
 
 
 def test_init():
@@ -38,7 +39,7 @@ def test_str():
 	assert "'c'" in str(_basebag('abracadabra'))
 	abra_elems = set(("'a'^5", "'b'^2", "'r'^2", "'c'", "'d'"))
 	assert compare_bag_string(bag('abracadabra')) == abra_elems
-	if not _compat.is_py2:
+	if not is_py2:
 		assert compare_bag_string(bag('abc')) == compare_bag_string(set('abc'))
 
 
