@@ -129,7 +129,7 @@ class _basebag(Set):
 			format_single = '{elem!r}'
 			format_mult = '{elem!r}^{mult}'
 			strings = []
-			for elem, mult in self._dict.items():
+			for elem, mult in self.counts():
 				if mult > 1:
 					strings.append(format_mult.format(elem=elem, mult=mult))
 				else:
@@ -229,7 +229,7 @@ class _basebag(Set):
 
 		Multiple copies will be returned if they exist.
 		"""
-		for value, count in self._dict.items():
+		for value, count in self.counts():
 			for _ in range(count):
 				yield value
 
@@ -242,7 +242,7 @@ class _basebag(Set):
 			other (Set)
 		"""
 		if isinstance(other, _basebag):
-			for elem, count in self._dict.items():
+			for elem, count in self.counts():
 				if not count <= other.count(elem):
 					return False
 		else:
@@ -258,7 +258,7 @@ class _basebag(Set):
 			other (Set)
 		"""
 		if isinstance(other, _basebag):
-			for elem, count in other._dict.items():
+			for elem, count in other.counts():
 				if not self.count(elem) >= count:
 					return False
 		else:
@@ -313,7 +313,7 @@ class _basebag(Set):
 				This runs in O(len(it))
 		"""
 		if isinstance(other, _basebag):
-			for elem, count in other._dict.items():
+			for elem, count in other.counts():
 				self._increment_count(elem, count)
 		else:
 			for elem in other:
@@ -331,7 +331,7 @@ class _basebag(Set):
 		# TODO do we have to create a bag from the other first?
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
-		for elem, old_count in set(self._dict.items()):
+		for elem, old_count in set(self.counts()):
 			other_count = other.count(elem)
 			new_count = min(other_count, old_count)
 			self._set_count(elem, new_count)
@@ -348,7 +348,7 @@ class _basebag(Set):
 		# TODO do we have to create a bag from the other first?
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
-		for elem, other_count in other._dict.items():
+		for elem, other_count in other.counts():
 			old_count = self.count(elem)
 			new_count = max(other_count, old_count)
 			self._set_count(elem, new_count)
@@ -363,7 +363,7 @@ class _basebag(Set):
 			This runs in O(len(other))
 		"""
 		if isinstance(other, _basebag):
-			for elem, other_count in other._dict.items():
+			for elem, other_count in other.counts():
 				count = abs(self.count(elem) - other_count)
 				self._set_count(elem, count)
 		else:
@@ -387,7 +387,7 @@ class _basebag(Set):
 			This runs in O(len(it))
 		"""
 		if isinstance(other, _basebag):
-			for elem, other_count in other._dict.items():
+			for elem, other_count in other.counts():
 				try:
 					self._increment_count(elem, -other_count)
 				except ValueError:
@@ -482,8 +482,8 @@ class _basebag(Set):
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
 		values = dict()
-		for elem, count in self._dict.items():
-			for other_elem, other_count in other._dict.items():
+		for elem, count in self.counts():
+			for other_elem, other_count in other.counts():
 				new_elem = elem + other_elem
 				new_count = count * other_count
 				values[new_elem] = new_count
