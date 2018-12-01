@@ -547,6 +547,14 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		for index, value in enumerate(self._list):
 			self._dict[value] = index
 
+	def swap(self, i, j):
+		"""Swap the values at indices i & j."""
+		i = self._fix_neg_index(i)
+		j = self._fix_neg_index(j)
+		self._list[i], self._list[j] = self._list[j], self._list[i]
+		self._dict[self._list[i]] = i
+		self._dict[self._list[j]] = j
+
 
 class frozensetlist(_basesetlist, Hashable):
 	"""An immutable (hashable) setlist.

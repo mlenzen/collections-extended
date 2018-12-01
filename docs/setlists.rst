@@ -73,9 +73,11 @@ setlist vs. set
 
 New Methods
 -----------
-Aside from the methods expected from Sequence and Set, this provides
-:meth:`setlist.shuffle(random=None)` because
-:func:`random.shuffle(setlist)` doesn't work.
+Swapping values doesn't work (see `Quirks`_) so some things don't
+work. To work around that a couple of methods were added:
+
+* :meth:`setlist.swap(i, j)` to swap elements
+* :meth:`setlist.shuffle(random=None)` instead of `random.shuffle(setlist)`
 
 Errors
 ------

@@ -578,3 +578,21 @@ def test_tuple_keys():
 	with pytest.raises(ValueError):
 		sl.append((1, 2, 3))
 	assert sl == setlist([(1, 2, 3)])
+
+
+def assert_internal_structure(sl):
+	print(sl._list)
+	print(sl._dict)
+	for i, elem in enumerate(sl):
+		assert sl._dict[elem] == i
+	assert len(sl._dict) == len(sl._list)
+
+
+def test_swap():
+	sl = setlist('abcdef')
+	sl.swap(1, 2)
+	assert_internal_structure(sl)
+	assert sl == setlist('acbdef')
+	sl.swap(-1, 1)
+	assert_internal_structure(sl)
+	assert sl == setlist('afbdec')
