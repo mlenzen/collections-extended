@@ -32,8 +32,19 @@ class _basebag(Set):
 				self._size = iterable._size
 			else:
 				for value in iterable:
-					self._dict[value] = self._dict.get(value, 0) + 1
-					self._size += 1
+					self._increment_count(value)
+
+	def _set_count(self, elem, count):
+		if count < 0:
+			raise ValueError
+		self._size += count - self.count(elem)
+		if count == 0:
+			self._dict.pop(elem, None)
+		else:
+			self._dict[elem] = count
+
+	def _increment_count(self, elem, count=1):
+		self._set_count(elem, self.count(elem) + count)
 
 	@classmethod
 	def _from_iterable(cls, it):
@@ -126,12 +137,13 @@ class _basebag(Set):
 		"""Create a bag from a dict of elem->count.
 
 		Each key in the dict is added if the value is > 0.
+
+		Raises:
+			ValueError: If any count is < 0.
 		"""
 		out = cls()
 		for elem, count in mapping.items():
-			if count > 0:
-				out._dict[elem] = count
-				out._size += count
+			out._set_count(elem, count)
 		return out
 
 	# implementing Sized methods
@@ -150,7 +162,7 @@ class _basebag(Set):
 
 		This runs in O(1)
 		"""
-		return self._dict.get(value, 0)
+		return self.count(value)
 
 	# implementing Iterable methods
 
@@ -160,8 +172,8 @@ class _basebag(Set):
 		Multiple copies will be returned if they exist.
 		"""
 		for value, count in self._dict.items():
-			for i in range(count):
-				yield(value)
+			for _ in range(count):
+				yield value
 
 	# Comparison methods
 
@@ -173,11 +185,11 @@ class _basebag(Set):
 		"""
 		if isinstance(other, _basebag):
 			for elem, count in self._dict.items():
-				if not count <= other._dict.get(elem, 0):
+				if not count <= other.count(elem):
 					return False
 		else:
 			for elem in self:
-				if self._dict.get(elem, 0) > 1 or elem not in other:
+				if self.count(elem) > 1 or elem not in other:
 					return False
 		return True
 
@@ -189,7 +201,7 @@ class _basebag(Set):
 		"""
 		if isinstance(other, _basebag):
 			for elem, count in other._dict.items():
-				if not self._dict.get(elem, 0) >= count:
+				if not self.count(elem) >= count:
 					return False
 		else:
 			for elem in other:
@@ -225,7 +237,7 @@ class _basebag(Set):
 		if not len(self) == len(other):
 			return False
 		for elem in other:
-			if self._dict.get(elem, 0) != 1:
+			if self.count(elem) != 1:
 				return False
 		return True
 
@@ -233,6 +245,102 @@ class _basebag(Set):
 		return not (self == other)
 
 	# Operations - &, |, +, -, ^, * and isdisjoint
+
+	def _iadd(self, other):
+		"""Add all of the elements of other to self.
+
+		if isinstance(it, _basebag):
+				This runs in O(it.num_unique_elements())
+		else:
+				This runs in O(len(it))
+		"""
+		if isinstance(other, _basebag):
+			for elem, count in other._dict.items():
+				self._increment_count(elem, count)
+		else:
+			for elem in other:
+				self._increment_count(elem, 1)
+		return self
+
+	def _iand(self, other):
+		"""Set multiplicity of each element to the minimum of the two collections.
+
+		if isinstance(other, _basebag):
+			This runs in O(other.num_unique_elements())
+		else:
+			This runs in O(len(other))
+		"""
+		# TODO can this be optimized so we don't have to create a bag from the other first?
+		if not isinstance(other, _basebag):
+			other = self._from_iterable(other)
+		for elem, old_count in set(self._dict.items()):
+			other_count = other.count(elem)
+			new_count = min(other_count, old_count)
+			self._set_count(elem, new_count)
+		return self
+
+	def _ior(self, other):
+		"""Set multiplicity of each element to the maximum of the two collections.
+
+		if isinstance(other, _basebag):
+			This runs in O(other.num_unique_elements())
+		else:
+			This runs in O(len(other))
+		"""
+		# TODO can this be optimized so we don't have to create a bag from the other first?
+		if not isinstance(other, _basebag):
+			other = self._from_iterable(other)
+		for elem, other_count in other._dict.items():
+			old_count = self.count(elem)
+			new_count = max(other_count, old_count)
+			self._set_count(elem, new_count)
+		return self
+
+	def _ixor(self, other):
+		"""Set self to the symmetric difference between the sets.
+
+		if isinstance(other, _basebag):
+			This runs in O(other.num_unique_elements())
+		else:
+			This runs in O(len(other))
+		"""
+		if isinstance(other, _basebag):
+			for elem, other_count in other._dict.items():
+				count = abs(self.count(elem) - other_count)
+				self._set_count(elem, count)
+		else:
+			# Let a = self.count(elem) and b = other.count(elem)
+			# if a >= b then elem is removed from self b times leaving a - b
+			# if a < b then elem is removed from self a times then added (b - a)
+			# times leaving a - a + (b - a) = b - a
+			for elem in other:
+				try:
+					self._increment_count(elem, -1)
+				except ValueError:
+					self._increment_count(elem, 1)
+		return self
+
+	def _isub(self, other):
+		"""Discard the elements of other from self.
+
+		if isinstance(it, _basebag):
+			This runs in O(it.num_unique_elements())
+		else:
+			This runs in O(len(it))
+		"""
+		if isinstance(other, _basebag):
+			for elem, other_count in other._dict.items():
+				try:
+					self._increment_count(elem, -other_count)
+				except ValueError:
+					self._set_count(elem, 0)
+		else:
+			for elem in other:
+				try:
+					self._increment_count(elem, -1)
+				except ValueError:
+					pass
+		return self
 
 	def __and__(self, other):
 		"""Intersection is the minimum of corresponding counts.
@@ -244,12 +352,7 @@ class _basebag(Set):
 			else:
 				l = len(other)
 		"""
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
-		values = dict()
-		for elem in self._dict:
-			values[elem] = min(other._dict.get(elem, 0), self._dict.get(elem, 0))
-		return self.from_mapping(values)
+		return self.copy()._iand(other)
 
 	def isdisjoint(self, other):
 		"""Return if this bag is disjoint with the passed collection.
@@ -271,12 +374,7 @@ class _basebag(Set):
 			else:
 				m = len(other)
 		"""
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
-		values = dict()
-		for elem in self.unique_elements() | other.unique_elements():
-			values[elem] = max(self._dict.get(elem, 0), other._dict.get(elem, 0))
-		return self.from_mapping(values)
+		return self.copy()._ior(other)
 
 	def __add__(self, other):
 		"""Return a new bag also containing all the elements of other.
@@ -289,16 +387,7 @@ class _basebag(Set):
 		Args:
 			other (Iterable): elements to add to self
 		"""
-		out = self.copy()
-		if isinstance(other, _basebag):
-			for elem, count in other._dict.items():
-				out._dict[elem] = out._dict.get(elem, 0) + count
-				out._size += count
-		else:
-			for elem in other:
-				out._dict[elem] = out._dict.get(elem, 0) + 1
-				out._size += 1
-		return out
+		return self.copy()._iadd(other)
 
 	def __sub__(self, other):
 		"""Difference between the sets.
@@ -312,17 +401,7 @@ class _basebag(Set):
 		Args:
 			other (Iterable): elements to remove
 		"""
-		if isinstance(other, _basebag):
-			values = dict()
-			for elem, self_count in self._dict.items():
-				values[elem] = max(self_count - other.count(elem), 0)
-		else:
-			values = self._dict.copy()
-			for elem in other:
-				old_count = values.get(elem, 0)
-				if old_count:
-					values[elem] -= 1
-		return self.from_mapping(values)
+		return self.copy()._isub(other)
 
 	def __mul__(self, other):
 		"""Cartesian product of the two sets.
@@ -361,19 +440,7 @@ class _basebag(Set):
 			m = len(self)
 			n = len(other)
 		"""
-		if isinstance(other, _basebag):
-			values = dict()
-			for elem in keys_set(self._dict) | keys_set(other._dict):
-				values[elem] = abs(self.count(elem) - other.count(elem))
-		else:
-			values = self._dict.copy()
-			for elem in other:
-				old_count = values.get(elem, 0)
-				if old_count:
-					values[elem] -= 1
-				else:
-					values[elem] += 1
-		return self.from_mapping(values)
+		return self.copy()._ixor(other)
 
 
 class bag(_basebag, MutableSet):
@@ -386,14 +453,13 @@ class bag(_basebag, MutableSet):
 		try:
 			value = next(it)
 		except StopIteration:
-			raise KeyError
-		self.discard(value)
+			raise KeyError('pop from an empty bag')
+		self.remove(value)
 		return value
 
 	def add(self, elem):
 		"""Add elem to self."""
-		self._dict[elem] = self._dict.get(elem, 0) + 1
-		self._size += 1
+		self._increment_count(elem)
 
 	def discard(self, elem):
 		"""Remove elem from this bag, silent if it isn't present."""
@@ -410,29 +476,11 @@ class bag(_basebag, MutableSet):
 		Raises:
 			ValueError: if the elem isn't present
 		"""
-		old_count = self._dict.get(elem, 0)
-		if old_count == 0:
-			raise ValueError
-		elif old_count == 1:
-			del self._dict[elem]
-		else:
-			self._dict[elem] -= 1
-		self._size -= 1
+		self._increment_count(elem, -1)
 
 	def discard_all(self, other):
 		"""Discard all of the elems from other."""
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
-		for elem, other_count in other._dict.items():
-			old_count = self._dict.get(elem, 0)
-			new_count = old_count - other_count
-			if new_count >= 0:
-				if new_count == 0:
-					if elem in self:
-						del self._dict[elem]
-				else:
-					self._dict[elem] = new_count
-				self._size += new_count - old_count
+		self._isub(other)
 
 	def remove_all(self, other):
 		"""Remove all of the elems from other.
@@ -451,88 +499,11 @@ class bag(_basebag, MutableSet):
 
 	# In-place operations
 
-	def __ior__(self, other):
-		"""Set multiplicity of each element to the maximum of the two collections.
-
-		if isinstance(other, _basebag):
-			This runs in O(other.num_unique_elements())
-		else:
-			This runs in O(len(other))
-		"""
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
-		for elem, other_count in other._dict.items():
-			old_count = self._dict.get(elem, 0)
-			new_count = max(other_count, old_count)
-			self._dict[elem] = new_count
-			self._size += new_count - old_count
-		return self
-
-	def __iand__(self, other):
-		"""Set multiplicity of each element to the minimum of the two collections.
-
-		if isinstance(other, _basebag):
-			This runs in O(other.num_unique_elements())
-		else:
-			This runs in O(len(other))
-		"""
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
-		for elem, old_count in set(self._dict.items()):
-			other_count = other._dict.get(elem, 0)
-			new_count = min(other_count, old_count)
-			if new_count == 0:
-				del self._dict[elem]
-			else:
-				self._dict[elem] = new_count
-			self._size += new_count - old_count
-		return self
-
-	def __ixor__(self, other):
-		"""Set self to the symmetric difference between the sets.
-
-		if isinstance(other, _basebag):
-			This runs in O(other.num_unique_elements())
-		else:
-			This runs in O(len(other))
-		"""
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
-		for elem, other_count in other._dict.items():
-			self_count = self.count(elem)
-			new_count = abs(self_count - other_count)
-			if new_count:
-				self._dict[elem] = new_count
-			else:
-				del self._dict[elem]
-			self._size -= (self_count - new_count)
-		return self
-
-	def __isub__(self, other):
-		"""Discard the elements of other from self.
-
-		if isinstance(it, _basebag):
-			This runs in O(it.num_unique_elements())
-		else:
-			This runs in O(len(it))
-		"""
-		self.discard_all(other)
-		return self
-
-	def __iadd__(self, other):
-		"""Add all of the elements of other to self.
-
-		if isinstance(it, _basebag):
-			This runs in O(it.num_unique_elements())
-		else:
-			This runs in O(len(it))
-		"""
-		if not isinstance(other, _basebag):
-			other = self._from_iterable(other)
-		for elem, other_count in other._dict.items():
-			self._dict[elem] = self._dict.get(elem, 0) + other_count
-			self._size += other_count
-		return self
+	__ior__ = _basebag._ior
+	__iand__ = _basebag._iand
+	__ixor__ = _basebag._ixor
+	__isub__ = _basebag._isub
+	__iadd__ = _basebag._iadd
 
 
 class frozenbag(_basebag, Hashable):
