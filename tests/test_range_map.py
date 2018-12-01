@@ -6,7 +6,7 @@ import datetime
 import pytest
 
 from collections_extended._compat import is_py2
-from collections_extended.range_map import RangeMap
+from collections_extended.range_map import RangeMap, MappedRange
 
 
 def print_underlying(rm):
@@ -555,3 +555,21 @@ def test_end():
 		(4, None, 'b'),
 		))
 	assert rm.end is None
+
+
+class TestMappedRange:
+
+	def test_str(self):
+		mr = MappedRange(0, 1, 'a')
+		assert str(mr) == "[0, 1) -> 'a'"
+
+	def test_repr(self):
+		mr = MappedRange(0, 1, 'a')
+		assert repr(mr) == "MappedRange(0, 1, 'a')"
+
+	def test_unpack(self):
+		mr = MappedRange(0, 1, 'a')
+		v1, v2, v3 = mr
+		assert v1 == 0
+		assert v2 == 1
+		assert v3 == 'a'

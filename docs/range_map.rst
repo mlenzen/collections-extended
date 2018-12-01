@@ -60,3 +60,6 @@ API
 ---
 
 .. autoclass:: collections_extended.RangeMap
+
+.. autoclass:: collections_extended.MappedRange
+	:no-undoc-members:

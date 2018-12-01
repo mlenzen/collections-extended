@@ -1,11 +1,52 @@
 """RangeMap class definition."""
 from bisect import bisect_left, bisect_right
-from collections import namedtuple, Mapping, Set
+from collections import Mapping, Set
 
 from ._util import NOT_SET
 
 
-MappedRange = namedtuple('MappedRange', ('start', 'stop', 'value'))
+class MappedRange():
+	"""Represents a subrange of a RangeMap.
+
+	This is a glorified namedtuple.
+
+	.. automethod:: __init__
+	"""
+
+	__slots__ = ('start', 'stop', 'value')
+
+	def __init__(self, start, stop, value):
+		"""Create a mapped range.
+
+		Args:
+			start: The start of the range, inclusive.
+			stop: The end of the range, exclusive.
+			value: The mapped value.
+		"""
+		self.start = start
+		self.stop = stop
+		self.value = value
+
+	# Implement __iter__ so we can unpack this
+	def __iter__(self):
+		yield self.start
+		yield self.stop
+		yield self.value
+
+	def __str__(self):
+		return '[{start!r}, {stop!r}) -> {value!r}'.format(
+			start=self.start,
+			stop=self.stop,
+			value=self.value,
+			)
+
+	def __repr__(self):
+		return '{class_name}({start!r}, {stop!r}, {value!r})'.format(
+			class_name=self.__class__.__name__,
+			start=self.start,
+			stop=self.stop,
+			value=self.value,
+			)
 
 
 class RangeMapView:
