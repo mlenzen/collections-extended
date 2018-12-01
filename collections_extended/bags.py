@@ -35,6 +35,20 @@ class _basebag(Set):
 					self._dict[value] = self._dict.get(value, 0) + 1
 					self._size += 1
 
+	@classmethod
+	def _from_iterable(cls, it):
+		return cls(it)
+
+	def copy(self):
+		"""Create a shallow copy of self.
+
+		This runs in O(len(self.num_unique_elements()))
+		"""
+		out = self._from_iterable(None)
+		out._dict = self._dict.copy()
+		out._size = self._size
+		return out
+
 	def __repr__(self):
 		if self._size == 0:
 			return '{0}()'.format(self.__class__.__name__)
@@ -108,10 +122,6 @@ class _basebag(Set):
 			return heapq.nlargest(n, self._dict.items(), key=itemgetter(1))
 
 	@classmethod
-	def _from_iterable(cls, it):
-		return cls(it)
-
-	@classmethod
 	def from_mapping(cls, mapping):
 		"""Create a bag from a dict of elem->count.
 
@@ -123,13 +133,6 @@ class _basebag(Set):
 				out._dict[elem] = count
 				out._size += count
 		return out
-
-	def copy(self):
-		"""Create a shallow copy of self.
-
-		This runs in O(len(self.num_unique_elements()))
-		"""
-		return self.from_mapping(self._dict)
 
 	# implementing Sized methods
 
