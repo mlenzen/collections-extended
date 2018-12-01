@@ -2,9 +2,8 @@
 import heapq
 from operator import itemgetter
 from collections import Set, MutableSet, Hashable
-import warnings
 
-from ._compat import handle_rich_comp_not_implemented, keys_set
+from ._compat import handle_rich_comp_not_implemented
 from ._util import deprecated
 
 
@@ -26,8 +25,8 @@ class UniqueElementsView:
 		return self.bag.num_unique_elements()
 
 	def __iter__(self):
-		for elem in self.bag.unique_elements():
-			yield elem, self.bag.count(elem)
+		for elem in self.bag._dict:
+			yield elem
 
 	def __contains__(self, elem):
 		return elem in self.bag
@@ -57,7 +56,6 @@ class CountsView:
 	def __contains__(self, item):
 		elem, count = item
 		return self.bag.count(elem) == count
-
 
 
 class _basebag(Set):
@@ -149,7 +147,7 @@ class _basebag(Set):
 
 	def unique_elements(self):
 		"""Return a view of unique elements in this bag."""
-		return keys_set(self._dict)
+		return UniqueElementsView(self)
 
 	def count(self, value):
 		"""Return the number of value present in this bag.

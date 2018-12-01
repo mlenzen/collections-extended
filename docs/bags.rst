@@ -180,8 +180,11 @@ frozenbag
 
 .. autoclass:: frozenbag
 
-CountsView
-^^^^^^^^^^
+Views
+^^^^^
 
 .. autoclass:: CountsView
+	:no-undoc-members:
+
+.. autoclass:: UniqueElementsView
 	:no-undoc-members:
