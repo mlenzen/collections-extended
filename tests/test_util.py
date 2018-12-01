@@ -22,7 +22,7 @@ class TestSentinel:
 		assert str(Sentinel('abc')) == '<abc>'
 
 	def test_pickle(self):
-		pickled = pickle.dumps(NOT_SET)
+		pickled = pickle.dumps(NOT_SET, protocol=2)
 		unpickled = pickle.loads(pickled)
 		assert unpickled == NOT_SET
 		assert unpickled is NOT_SET
