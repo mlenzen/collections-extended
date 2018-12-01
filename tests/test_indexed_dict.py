@@ -6,28 +6,39 @@ import pytest
 from collections_extended.indexed_dict import IndexedDict
 
 
+def assert_internal_state(self):
+	"""Asserts that the inner state of the data structure is consistent.
+	Returns True, so it can be used in an assert expression itself."""
+
+	assert len(self._dict) == len(self._list)
+	for k, (i, v) in self._dict.items():
+		k2, v2 = self._list[i]
+		assert k2 == k
+		assert v2 is v
+
+
 def test_empty_construction():
 	d = IndexedDict()
 	assert list(d) == []
-	d._assert_internal_state()
+	assert_internal_state(d)
 
 
 def test_dict_construction():
 	d = IndexedDict({1: 2, 3: 4})
 	assert set(d) == {1, 3}  # Not necessarily ordered for python < 3.6
-	d._assert_internal_state()
+	assert_internal_state(d)
 
 
 def test_kwargs_construction():
 	d = IndexedDict(a=1, b=2, c=3)
 	assert set(d) == set("abc")  # Not necessarily ordered for python < 3.6
-	d._assert_internal_state()
+	assert_internal_state(d)
 
 
 def test_tuples_construction():
 	d = IndexedDict([(1, 2), (3, 4)])
 	assert list(d) == [1, 3]  # Must have correct order
-	d._assert_internal_state()
+	assert_internal_state(d)
 
 
 def test_clear():
@@ -35,13 +46,13 @@ def test_clear():
 	d.clear()
 	assert len(d) == 0
 	assert list(d) == []
-	d._assert_internal_state()
+	assert_internal_state(d)
 
 
 @pytest.fixture()
 def d(request):
 	ret = IndexedDict([(chr(ord("a") + i), 10 + i) for i in range(5)])
-	request.addfinalizer(ret._assert_internal_state)
+	request.addfinalizer(lambda: assert_internal_state(ret))
 	return ret
 
 
@@ -169,23 +180,24 @@ def test_popitem_empty():
 def test_copy(d):
 	l = list(d)
 	d2 = d.copy()
-	d2._assert_internal_state()
+	assert_internal_state(d2)
 
 	d.fast_pop("e")
-	d._assert_internal_state()
-	d2._assert_internal_state()
+	assert_internal_state(d)
+	assert_internal_state(d2)
 	assert list(d) != l
 	assert list(d2) == l
 
 	d["X"] = "y"
-	d._assert_internal_state()
-	d2._assert_internal_state()
+	assert_internal_state(d)
+	assert_internal_state(d2)
 	assert list(d) != l
 	assert list(d2) == l
 
 	d2["Z"] = "w"
-	d._assert_internal_state()
-	d2._assert_internal_state()
+	assert_internal_state(d)
+	assert_internal_state(d2)
+
 
 @pytest.mark.parametrize("indexing", [{"key": "b"}, {"index": 1}, {"index": -4}])
 def test_move_to_end_key_found(d, indexing):
@@ -307,6 +319,7 @@ def test_none_key(d):
 	d[None] = None
 	assert d[None] is None
 	assert list(d) == list("abcde") + [None]
+
 
 def test_repr():
 	d = IndexedDict()

@@ -268,15 +268,3 @@ class IndexedDict(collections.MutableMapping):
 	def _fix_indices_after_delete(self, starting_index=0):
 		for i, (k, v) in enumerate(self._list[starting_index:], starting_index):
 			self._dict[k] = (i, v)
-
-	def _assert_internal_state(self):
-		"""Asserts that the inner state of the data structure is consistent.
-		Returns True, so it can be used in an assert expression itself."""
-
-		assert len(self._dict) == len(self._list)
-		for k, (i, v) in self._dict.items():
-			k2, v2 = self._list[i]
-			assert k2 == k
-			assert v2 is v
-
-		return True
