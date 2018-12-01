@@ -3,7 +3,7 @@ import heapq
 from operator import itemgetter
 from collections import Set, MutableSet, Hashable
 
-from . import _compat
+from ._compat import handle_rich_comp_not_implemented, keys_set
 
 
 class _basebag(Set):
@@ -76,7 +76,7 @@ class _basebag(Set):
 		In Python 2:
 			This runs in O(n) and returns set of the current elements.
 		"""
-		return _compat.keys_set(self._dict)
+		return keys_set(self._dict)
 
 	def count(self, value):
 		"""Return the number of value present in this bag.
@@ -196,22 +196,22 @@ class _basebag(Set):
 
 	def __le__(self, other):
 		if not isinstance(other, Set):
-			return _compat.handle_rich_comp_not_implemented()
+			return handle_rich_comp_not_implemented()
 		return len(self) <= len(other) and self._is_subset(other)
 
 	def __lt__(self, other):
 		if not isinstance(other, Set):
-			return _compat.handle_rich_comp_not_implemented()
+			return handle_rich_comp_not_implemented()
 		return len(self) < len(other) and self._is_subset(other)
 
 	def __gt__(self, other):
 		if not isinstance(other, Set):
-			return _compat.handle_rich_comp_not_implemented()
+			return handle_rich_comp_not_implemented()
 		return len(self) > len(other) and self._is_superset(other)
 
 	def __ge__(self, other):
 		if not isinstance(other, Set):
-			return _compat.handle_rich_comp_not_implemented()
+			return handle_rich_comp_not_implemented()
 		return len(self) >= len(other) and self._is_superset(other)
 
 	def __eq__(self, other):
@@ -360,7 +360,7 @@ class _basebag(Set):
 		"""
 		if isinstance(other, _basebag):
 			values = dict()
-			for elem in self._dict.keys() | other._dict.keys():
+			for elem in keys_set(self._dict) | keys_set(other._dict):
 				values[elem] = abs(self.count(elem) - other.count(elem))
 		else:
 			values = self._dict.copy()
