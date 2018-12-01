@@ -15,6 +15,7 @@ class RangeMapView:
 	__slots__ = '_mapping',
 
 	def __init__(self, mapping):
+		"""Create a RangeMapView from a RangeMap."""
 		self._mapping = mapping
 
 	def __len__(self):
@@ -25,6 +26,7 @@ class RangeMapView:
 
 	@property
 	def mapping(self):
+		"""Return the underlying RangeMap."""
 		return self._mapping
 
 

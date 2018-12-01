@@ -1,13 +1,18 @@
+"""RangeMap class definition."""
 import collections
 
-KEY_AND_INDEX_ERROR = TypeError("Specifying both `key` and `index` is not allowed")
-KEY_EQ_INDEX_ERROR = TypeError("Exactly one of `key` and `index` must be specified")
+KEY_AND_INDEX_ERROR = TypeError(
+	"Specifying both `key` and `index` is not allowed")
+KEY_EQ_INDEX_ERROR = TypeError(
+	"Exactly one of `key` and `index` must be specified")
 
 
 class IndexedDict(collections.MutableMapping):
-	"""Indexed dict is a Mapping that preserves insertion order and allows acces
-	controlled by item index.
-	The API is an extension of OrderedDict. """
+	"""A Mapping that preserves insertion order and allows access by item index.
+
+	The API is an extension of OrderedDict.
+	"""
+
 	_marker = object()  # Used to distinguish unset arguments
 
 	def __init__(self, *args, **kwargs):
@@ -23,7 +28,8 @@ class IndexedDict(collections.MutableMapping):
 	def get(self, key=_marker, index=_marker, d=None):
 		"""Return value with given key or index.
 
-		If no value is found, return d (None by default)."""
+		If no value is found, return d (None by default).
+		"""
 		if index is self._marker and key is not self._marker:
 			try:
 				index, value = self._dict[key]
@@ -47,7 +53,8 @@ class IndexedDict(collections.MutableMapping):
 		If key is not found, returns d if given,
 		otherwise raises KeyError or IndexError.
 
-		This is generally O(N) unless removing last item, then O(1)."""
+		This is generally O(N) unless removing last item, then O(1).
+		"""
 		has_default = d is not self._marker
 
 		if index is self._marker and key is not self._marker:
@@ -64,7 +71,7 @@ class IndexedDict(collections.MutableMapping):
 			return value
 
 	def _pop_key(self, key, has_default):
-		"""Helper for removing element by key"""
+		"""Remove an element by key."""
 		try:
 			index, value = self._dict.pop(key)
 		except KeyError:
@@ -79,7 +86,7 @@ class IndexedDict(collections.MutableMapping):
 		return index, value
 
 	def _pop_index(self, index, has_default):
-		"""Helper for removing element by index, or last element."""
+		"""Remove an element by index, or last element."""
 		try:
 			if index is self._marker:
 				index = len(self._list) - 1
@@ -100,15 +107,18 @@ class IndexedDict(collections.MutableMapping):
 		return key, index, value
 
 	def fast_pop(self, key=_marker, index=_marker):
-		"""Remove value  with given key or index (last item by default) fast
+		"""Pop a specific item quickly by swapping it to the end.
+
+		Remove value with given key or index (last item by default) fast
 		by swapping it to the last place first.
 
-		Changes order of the remaining items (item that used to be last goes to the
-		popped location).
+		Changes order of the remaining items (item that used to be last goes to
+		the popped location).
 		Returns tuple of (poped_value, new_moved_index, moved_key, moved_value).
 		If key is not found raises KeyError or IndexError.
 
-		Runs in O(1)."""
+		Runs in O(1).
+		"""
 		if index is self._marker and key is not self._marker:
 			index, popped_value = self._dict.pop(key)
 		elif key is self._marker:
@@ -143,7 +153,8 @@ class IndexedDict(collections.MutableMapping):
 
 		Raises KeyError if the dictionary is empty.
 
-		Runs in O(1) for last item, O(N) for first one."""
+		Runs in O(1) for last item, O(N) for first one.
+		"""
 		try:
 			if last:
 				key, value = self._list.pop()
@@ -166,7 +177,8 @@ class IndexedDict(collections.MutableMapping):
 	def move_to_end(self, key=_marker, index=_marker, last=True):
 		"""Move an existing element to the end (or beginning if last==False).
 
-		Runs in O(N)."""
+		Runs in O(N).
+		"""
 		if index is self._marker and key is not self._marker:
 			index, value = self._dict[key]
 		elif index is not self._marker and key is self._marker:
@@ -191,7 +203,7 @@ class IndexedDict(collections.MutableMapping):
 			previous, self._list[i] = self._list[i], previous
 
 	def copy(self):
-		"""A shallow copy."""
+		"""Return a shallow copy."""
 		ret = IndexedDict()
 		ret._dict = self._dict.copy()
 		ret._list = list(self._list)
@@ -200,13 +212,15 @@ class IndexedDict(collections.MutableMapping):
 	def index(self, key):
 		"""Return index of a record with given key.
 
-		Runs in O(1)."""
+		Runs in O(1).
+		"""
 		return self._dict[key][0]
 
 	def key(self, index):
 		"""Return key of a record at given index.
 
-		Runs in O(1)."""
+		Runs in O(1).
+		"""
 		return self._list[index][0]
 
 	def __len__(self):
@@ -221,7 +235,8 @@ class IndexedDict(collections.MutableMapping):
 
 		Raises KeyError when the key is not present in the mapping.
 
-		Runs in O(1)."""
+		Runs in O(1).
+		"""
 		return self._dict[key][1]
 
 	def __setitem__(self, key, value):
@@ -230,7 +245,8 @@ class IndexedDict(collections.MutableMapping):
 		If the key is already present in the mapping its order is unchanged,
 		if it is not then it's added to the last place.
 
-		Runs in O(1)."""
+		Runs in O(1).
+		"""
 		if key in self._dict:
 			index, old_value1 = self._dict[key]
 			self._list[index] = key, value
@@ -242,7 +258,8 @@ class IndexedDict(collections.MutableMapping):
 	def __delitem__(self, key):
 		"""Remove item with given key from the mapping.
 
-		Runs in O(n), unless removing last item, then in O(1)."""
+		Runs in O(n), unless removing last item, then in O(1).
+		"""
 		index, value = self._dict.pop(key)
 		key2, value2 = self._list.pop(index)
 		assert key == key2
@@ -253,7 +270,8 @@ class IndexedDict(collections.MutableMapping):
 	def __contains__(self, key):
 		"""Check if a key is present in the mapping.
 
-		Runs in O(1)."""
+		Runs in O(1).
+		"""
 		return key in self._dict
 
 	def __iter__(self):
