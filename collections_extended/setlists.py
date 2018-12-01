@@ -484,7 +484,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			pass
 
 	def difference_update(self, other):
-		"""Update self to include only the differene with other."""
+		"""Update self to include only the difference with other."""
 		other = set(other)
 		indices_to_delete = set()
 		for i, elem in enumerate(self):
