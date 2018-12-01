@@ -235,7 +235,7 @@ class _basebag(Set):
 
 	# Comparison methods
 
-	def _is_subset(self, other):
+	def is_subset(self, other):
 		"""Check that every element in self has a count <= in other.
 
 		Args:
@@ -251,7 +251,7 @@ class _basebag(Set):
 					return False
 		return True
 
-	def _is_superset(self, other):
+	def is_superset(self, other):
 		"""Check that every element in self has a count >= in other.
 
 		Args:
@@ -270,22 +270,22 @@ class _basebag(Set):
 	def __le__(self, other):
 		if not isinstance(other, Set):
 			return handle_rich_comp_not_implemented()
-		return len(self) <= len(other) and self._is_subset(other)
+		return len(self) <= len(other) and self.is_subset(other)
 
 	def __lt__(self, other):
 		if not isinstance(other, Set):
 			return handle_rich_comp_not_implemented()
-		return len(self) < len(other) and self._is_subset(other)
+		return len(self) < len(other) and self.is_subset(other)
 
 	def __gt__(self, other):
 		if not isinstance(other, Set):
 			return handle_rich_comp_not_implemented()
-		return len(self) > len(other) and self._is_superset(other)
+		return len(self) > len(other) and self.is_superset(other)
 
 	def __ge__(self, other):
 		if not isinstance(other, Set):
 			return handle_rich_comp_not_implemented()
-		return len(self) >= len(other) and self._is_superset(other)
+		return len(self) >= len(other) and self.is_superset(other)
 
 	def __eq__(self, other):
 		if not isinstance(other, Set):
@@ -549,7 +549,7 @@ class bag(_basebag, MutableSet):
 		Raises a ValueError if the multiplicity of any elem in other is greater
 		than in self.
 		"""
-		if not self._is_superset(other):
+		if not self.is_superset(other):
 			raise ValueError('Passed collection is not a subset of this bag')
 		self.discard_all(other)
 
