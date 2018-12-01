@@ -1,4 +1,7 @@
 """util functions for collections_extended."""
+from functools import wraps
+import textwrap
+import warnings
 
 
 def hash_iterable(it):
@@ -54,3 +57,42 @@ class Sentinel(object):
 
 
 NOT_SET = Sentinel('not_set')
+
+
+def deprecated(msg, dep_version):
+	"""Decorator to mark a function, method or class as deprecated.
+
+	Raise DeprecationWarning and add a deprecation notice to the docstring.
+
+	Inspired by: https://github.com/briancurtin/deprecation/blob/master/deprecation.py
+	"""
+	def wrapper(func):
+		docstring = func.__doc__ or ''
+		docstring_msg = '.. deprecated:: {version} {msg}'.format(
+			version=dep_version,
+			msg=msg,
+			)
+		if docstring:
+			# We don't know how far to indent this message
+			# so instead we just dedent everything.
+			string_list = docstring.splitlines()
+			first_line = string_list[0]
+			remaining = textwrap.dedent(''.join(string_list[1:]))
+			docstring = '\n'.join([
+				first_line,
+				remaining,
+				'',
+				docstring_msg,
+				])
+		else:
+			docstring = docstring_msg
+		func.__doc__ = docstring
+
+		@wraps(func)
+		def inner(*args, **kwargs):
+			warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+			return func(*args, **kwargs)
+
+		return inner
+
+	return wrapper

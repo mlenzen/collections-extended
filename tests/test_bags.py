@@ -1,4 +1,6 @@
 """Test for bag classes."""
+import warnings
+
 import pytest
 
 from collections_extended.bags import _basebag, bag, frozenbag
@@ -55,9 +57,18 @@ def test_nlargest():
 	abra = _basebag('abracadabra')
 	sort_key = lambda e: (-e[1], e[0])
 	abra_counts = [('a', 5), ('b', 2), ('r', 2), ('c', 1), ('d', 1)]
-	assert (sorted(abra.nlargest(), key=sort_key) == abra_counts)
+	assert sorted(abra.nlargest(), key=sort_key) == abra_counts
 	assert sorted(abra.nlargest(3), key=sort_key) == abra_counts[:3]
 	assert _basebag('abcaba').nlargest(3) == [('a', 3), ('b', 2), ('c', 1)]
+
+
+def test_nlargest_deprecated():
+	"""Test that nlargest raises a DeprecationWarning."""
+	b = bag()
+	with warnings.catch_warnings():
+		warnings.simplefilter('error')
+		with pytest.raises(DeprecationWarning):
+			b.nlargest()
 
 
 def test_from_map():

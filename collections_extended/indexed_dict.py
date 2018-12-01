@@ -1,4 +1,7 @@
-"""IndexedDict class definition."""
+"""IndexedDict class definition.
+
+.. versionadded:: 1.1
+"""
 import collections
 
 from ._util import NOT_SET

@@ -548,7 +548,10 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			self._dict[value] = index
 
 	def swap(self, i, j):
-		"""Swap the values at indices i & j."""
+		"""Swap the values at indices i & j.
+
+		.. versionadded:: 1.1
+		"""
 		i = self._fix_neg_index(i)
 		j = self._fix_neg_index(j)
 		self._list[i], self._list[j] = self._list[j], self._list[i]

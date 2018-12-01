@@ -2,8 +2,62 @@
 import heapq
 from operator import itemgetter
 from collections import Set, MutableSet, Hashable
+import warnings
 
 from ._compat import handle_rich_comp_not_implemented, keys_set
+from ._util import deprecated
+
+
+class UniqueElementsView:
+	"""A view for the unique items and their counts in a bag.
+
+	.. versionadded:: 1.1
+	"""
+
+	__slots__ = ('bag', )
+
+	def __init__(self, bag):
+		self.bag = bag
+
+	def __repr__(self):
+		return '{0.__class__.__name__}({0.bag!r})'.format(self)
+
+	def __len__(self):
+		return self.bag.num_unique_elements()
+
+	def __iter__(self):
+		for elem in self.bag.unique_elements():
+			yield elem, self.bag.count(elem)
+
+	def __contains__(self, elem):
+		return elem in self.bag
+
+
+class CountsView:
+	"""A view for the unique items and their counts in a bag.
+
+	.. versionadded:: 1.1
+	"""
+
+	__slots__ = ('bag', )
+
+	def __init__(self, bag):
+		self.bag = bag
+
+	def __repr__(self):
+		return '{0.__class__.__name__}({0.bag!r})'.format(self)
+
+	def __len__(self):
+		return self.bag.num_unique_elements()
+
+	def __iter__(self):
+		for elem in self.bag.unique_elements():
+			yield elem, self.bag.count(elem)
+
+	def __contains__(self, item):
+		elem, count = item
+		return self.bag.count(elem) == count
+
 
 
 class _basebag(Set):
@@ -94,13 +148,7 @@ class _basebag(Set):
 		return len(self._dict)
 
 	def unique_elements(self):
-		"""Return a view of unique elements in this bag.
-
-		In Python 3:
-			This runs in O(1) time and returns a view of the unique elements
-		In Python 2:
-			This runs in O(n) and returns set of the current elements.
-		"""
+		"""Return a view of unique elements in this bag."""
 		return keys_set(self._dict)
 
 	def count(self, value):
@@ -117,6 +165,11 @@ class _basebag(Set):
 		"""
 		return self._dict.get(value, 0)
 
+	@deprecated(
+		"Use `heapq.nlargest(n, self.counts(), key=itemgetter(1))` instead or "
+		"`sorted(self.counts(), reverse=True, key=itemgetter(1))` for `n=None`",
+		'1.1',
+	)
 	def nlargest(self, n=None):
 		"""List the n most common elements and their counts.
 
@@ -128,9 +181,16 @@ class _basebag(Set):
 			n (int): The number of elements to return
 		"""
 		if n is None:
-			return sorted(self._dict.items(), key=itemgetter(1), reverse=True)
+			return sorted(self.counts(), key=itemgetter(1), reverse=True)
 		else:
-			return heapq.nlargest(n, self._dict.items(), key=itemgetter(1))
+			return heapq.nlargest(n, self.counts(), key=itemgetter(1))
+
+	def counts(self):
+		"""Return a view of the unique elements in self and their counts.
+
+		.. versionadded:: 1.1
+		"""
+		return CountsView(self)
 
 	@classmethod
 	def from_mapping(cls, mapping):

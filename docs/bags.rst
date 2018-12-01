@@ -1,3 +1,5 @@
+.. py:currentmodule:: collections_extended
+
 bags (Multisets)
 ================
 
@@ -9,9 +11,9 @@ hashable elements due to the implementation.
 
 There are two classes provided:
 
-:class:`collections_extended.bag`
+:class:`bag`
   A mutable (unhashable) bag.
-:class:`collections_extended.frozenbag`
+:class:`frozenbag`
   An immutable (implements :class:`collections.abc.Hashable`) version of a bag.
 
 Both classes implement :class:`collections.abc.Sized`,
@@ -171,10 +173,15 @@ API
 bag
 ^^^
 
-.. autoclass:: collections_extended.bag
+.. autoclass:: bag
 
 frozenbag
 ^^^^^^^^^
 
-.. autoclass:: collections_extended.frozenbag
+.. autoclass:: frozenbag
 
+CountsView
+^^^^^^^^^^
+
+.. autoclass:: CountsView
+	:no-undoc-members:
