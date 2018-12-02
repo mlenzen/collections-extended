@@ -4,6 +4,7 @@ git+https://github.com/mlenzen/alabaster.git
 bumpversion
 pytest
 sphinx>=1.8
+sphinx-autodoc-typehints
 wheel
 ipython
 flake8
@@ -11,3 +12,4 @@ tox
 coverage
 codecov
 flake8-docstrings
+mypy

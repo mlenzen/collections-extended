@@ -28,12 +28,15 @@ clean:
 lint:
 	flake8 --statistics --count
 
+mypy:
+	mypy collections_extended
+
 coverage:
 	coverage run --source collections_extended setup.py test
 	coverage report -m
 	coverage html
 
-publish: testall lint coverage publish-force
+publish: testall mypy lint coverage publish-force
 
 publish-force:
 	python setup.py sdist upload
