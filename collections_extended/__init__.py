@@ -1,11 +1,11 @@
 """collections_extended contains a few extra basic data structures."""
 from ._compat import Collection
-from .bags import bag, frozenbag
+from .bags import bag, frozenbag, CountsView, UniqueElementsView
 from .setlists import setlist, frozensetlist
 from .bijection import bijection
 from .range_map import RangeMap, MappedRange
-
-__version__ = '1.0.1'
+from .indexed_dict import IndexedDict
+from ._version import __version__
 
 __all__ = (
 	'collection',
@@ -13,15 +13,19 @@ __all__ = (
 	'frozensetlist',
 	'bag',
 	'frozenbag',
+	'CountsView',
+	'UniqueElementsView',
 	'bijection',
 	'RangeMap',
 	'MappedRange',
 	'Collection',
+	'IndexedDict',
+	'__version__',
 	)
 
 
 def collection(iterable=None, mutable=True, ordered=False, unique=False):
-	"""Return a Collection with the specified properties.
+	"""Return a :class:`Collection` with the specified properties.
 
 	Args:
 		iterable (Iterable): collection to instantiate new collection from.

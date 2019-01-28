@@ -1,14 +1,19 @@
-bags
-====
+.. py:currentmodule:: collections_extended
 
-Bags have constant time inclusion testing but can only contain hashable
-elements. See http://en.wikipedia.org/wiki/Multiset
+bags (Multisets)
+================
+
+`bag` is a multiset_ implementation for Python.
+Currently, bags have constant time inclusion testing but can only contain
+hashable elements due to the implementation.
+
+.. _multiset: http://en.wikipedia.org/wiki/Multiset
 
 There are two classes provided:
 
-:class:`collections_extended.bag`
+:class:`bag`
   A mutable (unhashable) bag.
-:class:`collections_extended.frozenbag`
+:class:`frozenbag`
   An immutable (implements :class:`collections.abc.Hashable`) version of a bag.
 
 Both classes implement :class:`collections.abc.Sized`,
@@ -16,36 +21,49 @@ Both classes implement :class:`collections.abc.Sized`,
 Both classes implement :class:`collections.abc.Collection` starting in Python
 3.6.
 
+Set Operations
+--------------
+:class:`bag` and :class:`frozenbag` use python operators for multiset
+operations:
+
+* `__add__` (`a + b`): The sum of two multisets
+* `__sub__` (`a - b`): The difference between a and b
+* `__and__` (`a & b`): The intersection of a and b
+* `__or__` (`a | b`): The union of a and b
+* `__xor__` (`a ^ b`): The symmetric difference between a and b
+
+:class:`bag` has the equivalent in-place operators defined.
+
 Comparison Methods
 ------------------
 Bags are comparable to Sets (including other bags). When comparing a bag to a
-Set, the Set is treated as a bag with all multiplicies equal to 1.
+Set, the Set is treated as a bag with all multiplicities equal to 1.
 The ordering comparison operators are implemented using multiset comparison.
 
 .. testsetup::
 
-  >>> from collections_extended import bag
+	>>> from collections_extended import bag
 
 .. code-block:: python
 
-  >>> bag() == set()
-  True
-  >>> bag('a') == set('a')
-  True
-  >>> bag('ab') == set('a')
-  False
-  >>> bag('a') == set('ab')
-  False
-  >>> bag('aa') == set('a')
-  False
-  >>> bag('aa') == set('ab')
-  False
-  >>> bag('ac') == set('ab')
-  False
-  >>> bag('ac') <= set('ab')
-  False
-  >>> bag('ac') >= set('ab')
-  False
+	>>> bag() == set()
+	True
+	>>> bag('a') == set('a')
+	True
+	>>> bag('ab') == set('a')
+	False
+	>>> bag('a') == set('ab')
+	False
+	>>> bag('aa') == set('a')
+	False
+	>>> bag('aa') == set('ab')
+	False
+	>>> bag('ac') == set('ab')
+	False
+	>>> bag('ac') <= set('ab')
+	False
+	>>> bag('ac') >= set('ab')
+	False
 	>>> bag('a') <= bag('a') < bag('aa')
 	True
 	>>> bag('aa') <= bag('a')
@@ -57,7 +75,7 @@ Compared to existing similar implementations
 collections.Counter
 ^^^^^^^^^^^^^^^^^^^
 
-Counters don't really behave like "collections" (Sized, Iterable, Container)
+Counters don't really behave like Collections - Sized, Iterable, Containers
 
 .. testsetup::
 
@@ -151,8 +169,12 @@ New Methods
 	Returns a shallow copy of self.  O(self.num_unique_elements())
 ``isdisjoint(other: Iterable)``
 	Tests if self is disjoint with any other Iterable.  O(len(other))
+``is_subset(other: Set)``
+	Tests if self is a subset of another Set.
+``is_superset(other: Set)``
+	Tests if self is a superset of another Set.
 ``from_mapping(map: Mapping)``
-  Classmethod to create a bag from a Mapping that maps elements to counts.
+	Classmethod to create a bag from a Mapping that maps elements to counts.
 
 The following are only for mutable bags (not frozenbags).
 
@@ -161,3 +183,25 @@ The following are only for mutable bags (not frozenbags).
 - ``discard(elem)``
 - ``remove(elem)``
 - ``clear()``
+
+API
+---
+
+bag
+^^^
+
+.. autoclass:: bag
+
+frozenbag
+^^^^^^^^^
+
+.. autoclass:: frozenbag
+
+Views
+^^^^^
+
+.. autoclass:: CountsView
+	:no-undoc-members:
+
+.. autoclass:: UniqueElementsView
+	:no-undoc-members:

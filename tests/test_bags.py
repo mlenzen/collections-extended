@@ -1,7 +1,10 @@
 """Test for bag classes."""
+import warnings
+
 import pytest
 
-from collections_extended.bags import _basebag, bag, frozenbag, _compat
+from collections_extended.bags import _basebag, bag, frozenbag
+from collections_extended._compat import is_py2
 
 
 def test_init():
@@ -38,7 +41,7 @@ def test_str():
 	assert "'c'" in str(_basebag('abracadabra'))
 	abra_elems = set(("'a'^5", "'b'^2", "'r'^2", "'c'", "'d'"))
 	assert compare_bag_string(bag('abracadabra')) == abra_elems
-	if not _compat.is_py2:
+	if not is_py2:
 		assert compare_bag_string(bag('abc')) == compare_bag_string(set('abc'))
 
 
@@ -54,9 +57,18 @@ def test_nlargest():
 	abra = _basebag('abracadabra')
 	sort_key = lambda e: (-e[1], e[0])
 	abra_counts = [('a', 5), ('b', 2), ('r', 2), ('c', 1), ('d', 1)]
-	assert (sorted(abra.nlargest(), key=sort_key) == abra_counts)
+	assert sorted(abra.nlargest(), key=sort_key) == abra_counts
 	assert sorted(abra.nlargest(3), key=sort_key) == abra_counts[:3]
 	assert _basebag('abcaba').nlargest(3) == [('a', 3), ('b', 2), ('c', 1)]
+
+
+def test_nlargest_deprecated():
+	"""Test that nlargest raises a DeprecationWarning."""
+	b = bag()
+	with warnings.catch_warnings():
+		warnings.simplefilter('error')
+		with pytest.raises(DeprecationWarning):
+			b.nlargest()
 
 
 def test_from_map():
@@ -252,7 +264,9 @@ def test_clear():
 
 def test_discard():
 	"""Test discard."""
-	b = bag('abc')
+	b = bag('aabc')
+	b.discard('a')
+	assert b == bag('abc')
 	b.discard('a')
 	assert b == bag('bc')
 	b.discard('a')
@@ -313,22 +327,34 @@ def test_iand():
 
 def test_ixor():
 	"""Test __ixor__."""
-	b = bag('abbc')
-	b ^= bag('bg')
+	b = bag('abbbccd')
+	b ^= bag('bbcdg')
 	assert b == bag('abcg')
+	b = bag('bbcdg')
+	b ^= bag('abbbccd')
+	assert b == bag('acbg')
 	b = bag('abbc')
 	b ^= set('bg')
 	assert b == bag('abcg')
 
 
 def test_isub():
-	"""Test __isub__."""
+	"""Test __isub__ and discard_all."""
 	b = bag('aabbc')
 	b -= bag('bd')
 	assert b == bag('aabc')
-	b = bag('aabbc')
+	b = bag('aabc')
 	b -= set('bd')
-	assert b == bag('aabc')
+	assert b == bag('aac')
+
+
+def test_remove_all():
+	b = bag('abc')
+	with pytest.raises(ValueError):
+		b.remove_all('cd')
+	assert b == bag('abc')
+	b.remove_all('bc')
+	assert b == bag('a')
 
 
 def test_iadd():
@@ -370,7 +396,7 @@ def test_pop():
 def test_hashability():
 	"""Test __hash__ for bags.
 
-	Since Multiset is mutable and FronzeMultiset is hashable, the second
+	Since bag is mutable and frozenbag is hashable, the second
 	should be usable for dictionary keys and the second should raise a key
 	or value error when used as a key or placed in a set.
 	"""
@@ -379,22 +405,21 @@ def test_hashability():
 
 	c = frozenbag([4, 4, 5, 5, b, b])  # make sure we can nest them
 	d = frozenbag([4, frozenbag([1, 3, 2, 1]), 4, 5, b, 5])
-	# c and d are the same; make sure nothing weird happes to hashes.
+	# c and d are the same; make sure nothing weird happens to hashes.
 	assert c == d  # Make sure both constructions work.
 
-	dic = {}
-	dic[b] = 3
-	dic[c] = 5
-	dic[d] = 7
+	dic = {
+		b: 3,
+		d: 5,
+		d: 7,
+		}
 	assert len(dic) == 2  # Make sure no duplicates in dictionary.
 	# Make sure TypeErrors are raised when using mutable bags for keys.
 	with pytest.raises(TypeError):
 		dic[a] = 4
 	with pytest.raises(TypeError):
-		set([a])
-	with pytest.raises(TypeError):
 		frozenbag([a, 1])
 	with pytest.raises(TypeError):
 		bag([a, 1])
-	# test commutativity of multiset instantiation.
+	# test commutativity of bag instantiation.
 	assert bag([4, 4, 5, 5, c]) == bag([4, 5, d, 4, 5])

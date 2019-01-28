@@ -136,6 +136,15 @@ html_theme_options = {
     'pypi_name': 'collections-extended',
     }
 
+autodoc_default_options = {
+    'members': None,
+    'member-order': 'bysource',
+    'undoc-members': None,
+    'exclude-members': '__weakref__',
+    'inherited-members': None,
+    }
+
+
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = [alabaster.get_path()]
 

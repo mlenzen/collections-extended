@@ -1,3 +1,5 @@
+import pytest
+
 from collections_extended import (
 	setlist,
 	frozensetlist,
@@ -5,26 +7,23 @@ from collections_extended import (
 	frozenbag,
 	bijection,
 	RangeMap,
-	MappedRange,
 	Collection,
 	)
 
 
-def test_subclass():
+@pytest.mark.parametrize('klass', [
+	setlist,
+	frozensetlist,
+	bag,
+	frozenbag,
+	bijection,
+	RangeMap,
+	list,
+	tuple,
+	set,
+	frozenset,
+	dict,
+	])
+def test_subclass(klass):
 	"""Test that all appropriate collections are subclasses of Collection."""
-	classes = (
-		setlist,
-		frozensetlist,
-		bag,
-		frozenbag,
-		bijection,
-		RangeMap,
-		MappedRange,
-		list,
-		tuple,
-		set,
-		frozenset,
-		dict,
-		)
-	for cls in classes:
-		assert issubclass(cls, Collection)
+	assert issubclass(klass, Collection)

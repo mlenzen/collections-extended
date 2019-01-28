@@ -4,13 +4,15 @@ collections_extended's documentation
 ``collections_extended`` is a Python module providing
  - a ``bag`` class, AKA **multiset**,
  - a ``setlist`` class, which is a **unique list** or **ordered set**,
- - a ``bijection`` class, and
- - a ``RangeMap`` which is a mapping from ranges to values.
+ - a ``bijection`` class,
+ - a ``RangeMap`` which is a mapping from ranges to values, and
+ - a ``IndexedDict`` class.
+
 There are also frozen (hashable) varieties of bags and setlists.
 
 The ABC :class:`collections.abc.Collection` is backported to Python versions < 3.6
 
-It is `tested against`_ Python 2.6, 2.7, 3.3, 3.4, 3.5, 3.6, PyPy & PyPy3.
+It is `tested against`_ Python 2.7, 3.3, 3.4, 3.5, 3.6, 3.7, PyPy & PyPy3.
 
 Contents:
 
@@ -22,8 +24,10 @@ Contents:
 	bags
 	range_map
 	bijection
-	api
+	indexed_dict
+	factory
 	contributing
+	changelog
 
 Other Packages of Interest
 ==========================

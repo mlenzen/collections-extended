@@ -20,10 +20,12 @@ class _basesetlist(Sequence, Set):
 	"""
 
 	def __init__(self, iterable=None, raise_on_duplicate=False):
-		"""Create a setlist.
+		"""Create a setlist, initializing from iterable if present.
 
 		Args:
 			iterable (Iterable): Values to initialize the setlist with.
+			raise_on_duplicate: Raise a ValueError if any duplicate values
+				are present.
 		"""
 		self._list = list()
 		self._dict = dict()
@@ -256,7 +258,10 @@ class _basesetlist(Sequence, Set):
 
 
 class setlist(_basesetlist, MutableSequence, MutableSet):
-	"""A mutable (unhashable) setlist."""
+	"""A mutable (unhashable) setlist.
+
+	.. automethod:: __init__
+	"""
 
 	def __str__(self):
 		return '{[%s}]' % ', '.join(repr(v) for v in self)
@@ -479,7 +484,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			pass
 
 	def difference_update(self, other):
-		"""Update self to include only the differene with other."""
+		"""Update self to include only the difference with other."""
 		other = set(other)
 		indices_to_delete = set()
 		for i, elem in enumerate(self):
@@ -542,9 +547,23 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		for index, value in enumerate(self._list):
 			self._dict[value] = index
 
+	def swap(self, i, j):
+		"""Swap the values at indices i & j.
+
+		.. versionadded:: 1.1
+		"""
+		i = self._fix_neg_index(i)
+		j = self._fix_neg_index(j)
+		self._list[i], self._list[j] = self._list[j], self._list[i]
+		self._dict[self._list[i]] = i
+		self._dict[self._list[j]] = j
+
 
 class frozensetlist(_basesetlist, Hashable):
-	"""An immutable (hashable) setlist."""
+	"""An immutable (hashable) setlist.
+
+	.. automethod:: __init__
+	"""
 
 	def __hash__(self):
 		if not hasattr(self, '_hash_value'):

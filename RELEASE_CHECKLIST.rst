@@ -17,8 +17,8 @@ Release Checklist
 	deactivate
 
 #. Check the PyPI listing page to make sure that the README displays properly.
-   If not, copy and paste the RestructuredText into http://rst.ninjs.org/ to
-   find out what broke the formatting.
+	If not, copy and paste the RestructuredText into http://rst.ninjs.org/ to
+	find out what broke the formatting.
 
 New Python Versions
 -------------------

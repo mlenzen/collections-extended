@@ -2,7 +2,10 @@ bijection
 =========
 
 Bijections are functions that map keys to unique values, ie.
-one-to-one, onto functions. See L https://en.wikipedia.org/wiki/Bijection
+one-to-one, onto functions. See: https://en.wikipedia.org/wiki/Bijection
+
+`bijection` maintains the inverse mapping on `bijection.inverse` which
+is itself an instance of `bijection`.
 
 Examples
 --------
@@ -19,3 +22,10 @@ Examples
 	>>> bij.inverse[1] = 'a'
 	>>> bij == bijection({'a': 1, 'c': 3})
 	True
+	>>> bij.inverse.inverse is bij
+	True
+
+API
+---
+
+.. autoclass:: collections_extended.bijection

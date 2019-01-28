@@ -47,4 +47,4 @@ docs:
 	#sphinx-apidoc -o docs/ collections_extended
 	make -C docs clean
 	make -C docs html
-	xdg-open docs/_build/html/index.html
+	#xdg-open docs/_build/html/index.html
