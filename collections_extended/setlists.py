@@ -112,7 +112,7 @@ class _basesetlist(Sequence, Set):
 		return self._list[index]
 
 	def count(self, value):
-		"""Return the number of occurences of value in self.
+		"""Return the number of occurrences of value in self.
 
 		This runs in O(1)
 
@@ -150,7 +150,7 @@ class _basesetlist(Sequence, Set):
 		else:
 			start = self._fix_neg_index(start)
 			end = self._fix_end_index(end)
-			if start <= index and index < end:
+			if start <= index < end:
 				return index
 			else:
 				raise ValueError
@@ -183,7 +183,7 @@ class _basesetlist(Sequence, Set):
 
 	def union(self, other):
 		out = self.copy()
-		out.update(other)
+		out._update(other)
 		return out
 
 	def intersection(self, other):
@@ -237,6 +237,8 @@ class _basesetlist(Sequence, Set):
 
 		Args:
 			sub (Sequence): An Iterable to search for
+			start (int): The index at which to start the search
+			end (int): The index at which to end the search
 		Returns:
 			int: The index of the first element of sub
 		Raises:
