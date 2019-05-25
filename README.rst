@@ -141,6 +141,6 @@ IndexedDict
 	A mapping that keeps insertion order and allows access by index.
 
 :Author: Michael Lenzen
-:Copyright: 2018 Michael Lenzen
+:Copyright: 2019 Michael Lenzen
 :License: Apache License, Version 2.0
 :Project Homepage: https://github.com/mlenzen/collections-extended
