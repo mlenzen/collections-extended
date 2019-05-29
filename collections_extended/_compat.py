@@ -3,12 +3,45 @@ import sys
 
 is_py2 = sys.version_info[0] == 2
 
+__all__ = (
+	'handle_rich_comp_not_implemented',
+	'keys_set',
+	'Collection',
+	'Hashable',
+	'Mapping',
+	'MutableMapping',
+	'MutableSequence',
+	'MutableSet',
+	'Sequence',
+	'Set',
+)
+
 if is_py2:
 	def keys_set(d):
 		"""Return a set of passed dictionary's keys."""
 		return set(d.keys())
+
+	from collections import (
+		Hashable,
+		Mapping,
+		MutableMapping,
+		MutableSequence,
+		MutableSet,
+		Sequence,
+		Set,
+		)
 else:
 	keys_set = dict.keys
+	from collections.abc import (
+		Hashable,
+		Mapping,
+		MutableMapping,
+		MutableSequence,
+		MutableSet,
+		Sequence,
+		Set,
+		)
+
 
 
 if sys.version_info < (3, 6):

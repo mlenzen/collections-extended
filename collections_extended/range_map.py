@@ -1,7 +1,7 @@
 """RangeMap class definition."""
 from bisect import bisect_left, bisect_right
-from collections.abc import Mapping, Set
 
+from ._compat import Mapping, Set
 from ._util import NOT_SET
 
 
