@@ -3,16 +3,53 @@ import sys
 
 is_py2 = sys.version_info[0] == 2
 
+__all__ = (
+	'handle_rich_comp_not_implemented',
+	'keys_set',
+	'Collection',
+	'Hashable',
+	'Mapping',
+	'MutableMapping',
+	'MutableSequence',
+	'MutableSet',
+	'Sequence',
+	'Set',
+)
+
 if is_py2:
 	def keys_set(d):
 		"""Return a set of passed dictionary's keys."""
 		return set(d.keys())
+
+	from collections import (
+		Container,
+		Hashable,
+		Iterable,
+		Mapping,
+		MutableMapping,
+		MutableSequence,
+		MutableSet,
+		Sequence,
+		Set,
+		Sized,
+		)
 else:
 	keys_set = dict.keys
+	from collections.abc import (
+		Container,
+		Hashable,
+		Iterable,
+		Mapping,
+		MutableMapping,
+		MutableSequence,
+		MutableSet,
+		Sequence,
+		Set,
+		Sized,
+		)
 
 
 if sys.version_info < (3, 6):
-	from collections import Sized, Iterable, Container
 
 	def _check_methods(C, *methods):
 		mro = C.__mro__
