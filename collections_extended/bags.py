@@ -1,4 +1,5 @@
 """Bag class definitions."""
+from collections import defaultdict
 import heapq
 from operator import itemgetter
 
@@ -461,10 +462,14 @@ class _basebag(Set):
 		return self.copy()._isub(other)
 
 	def __mul__(self, other):
+		"""Cartesian product with other."""
+		return self.product(other)
+
+	def product(self, other, operator=None):
 		"""Cartesian product of the two sets.
 
-		other can be any iterable.
-		Both self and other must contain elements that can be added together.
+		Optionally, pass an operator to combine elements instead of creating a
+		tuple.
 
 		This should run in O(m*n+l) where:
 			m is the number of unique elements in self
@@ -473,19 +478,24 @@ class _basebag(Set):
 				l is 0
 			else:
 				l is the len(other)
-		The +l will only really matter when other is an iterable with MANY
-		repeated elements.
-		For example: {'a'^2} * 'bbbbbbbbbbbbbbbbbbbbbbbbbb'
-		The algorithm will be dominated by counting the 'b's
+
+		Args:
+			other (Iterable): The iterable to take the product with.
+			operator (Callable): A function that accepts an element from self
+				and other and returns a combined value to include in the return
+				value.
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
-		values = dict()
+		values = defaultdict(int)
 		for elem, count in self.counts():
 			for other_elem, other_count in other.counts():
-				new_elem = elem + other_elem
+				if operator:
+					new_elem = operator(elem, other_elem)
+				else:
+					new_elem = (elem, other_elem)
 				new_count = count * other_count
-				values[new_elem] = new_count
+				values[new_elem] += new_count
 		return self.from_mapping(values)
 
 	def __xor__(self, other):

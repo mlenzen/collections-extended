@@ -1,4 +1,5 @@
 """Test for bag classes."""
+from operator import concat, mul
 import warnings
 
 import pytest
@@ -281,9 +282,22 @@ def test_sub():
 
 def test_mul():
 	"""Test __mul__."""
-	ms = _basebag('aab')
-	assert ms * set('a') == _basebag(('aa', 'aa', 'ba'))
-	assert ms * set() == _basebag()
+	assert bag('aab') * set('a') == bag((('a', 'a'), ('a', 'a'), ('b', 'a')))
+
+
+def test_mul_empty_set():
+	"""Test __mul__ on an empty set."""
+	assert bag('aab') * set() == bag()
+
+
+def test_product():
+	"""Test product"""
+	assert bag('aab').product(set('a'), operator=concat) == bag(('aa', 'aa', 'ba'))
+
+
+def test_product_commutative():
+	"""Test product for a commutative operator."""
+	assert bag((1, 2)).product([2, 1], operator=mul) == bag((2, 1, 4, 2))
 
 
 def test_xor():
