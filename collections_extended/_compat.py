@@ -22,30 +22,34 @@ if is_py2:
 		return set(d.keys())
 
 	from collections import (
+		Container,
 		Hashable,
+		Iterable,
 		Mapping,
 		MutableMapping,
 		MutableSequence,
 		MutableSet,
 		Sequence,
 		Set,
+		Sized,
 		)
 else:
 	keys_set = dict.keys
 	from collections.abc import (
+		Container,
 		Hashable,
+		Iterable,
 		Mapping,
 		MutableMapping,
 		MutableSequence,
 		MutableSet,
 		Sequence,
 		Set,
+		Sized,
 		)
 
 
-
 if sys.version_info < (3, 6):
-	from collections.abc import Sized, Iterable, Container
 
 	def _check_methods(C, *methods):
 		mro = C.__mro__
