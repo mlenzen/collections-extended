@@ -12,7 +12,7 @@ else:
 
 
 if sys.version_info < (3, 6):
-	from collections import Sized, Iterable, Container
+	from collections.abc import Sized, Iterable, Container
 
 	def _check_methods(C, *methods):
 		mro = C.__mro__

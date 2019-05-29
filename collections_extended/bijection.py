@@ -1,6 +1,6 @@
 """Class definition for bijection."""
 
-from collections import MutableMapping, Mapping
+from collections.abc import MutableMapping, Mapping
 
 
 class bijection(MutableMapping):

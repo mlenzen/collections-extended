@@ -1,7 +1,7 @@
 """Bag class definitions."""
 import heapq
 from operator import itemgetter
-from collections import Set, MutableSet, Hashable
+from collections.abc import Set, MutableSet, Hashable
 
 from ._compat import handle_rich_comp_not_implemented
 from ._util import deprecated

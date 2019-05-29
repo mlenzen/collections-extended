@@ -1,7 +1,7 @@
 """Setlist class definitions."""
 import random as random_
 
-from collections import (
+from collections.abc import (
 	Sequence,
 	Set,
 	MutableSequence,
