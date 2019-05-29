@@ -1,13 +1,24 @@
 -e .
-sphinxcontrib-napoleon
-git+https://github.com/mlenzen/alabaster.git
-bumpversion
-pytest
-sphinx>=1.8
-wheel
+
 ipython
-flake8
+
+# Packaging & Deploying
+bumpversion
+wheel
+
+# Tests
 tox
+pytest
+
+# Linting
+flake8
+flake8-docstrings
+
+# Coverage
 coverage
 codecov
-flake8-docstrings
+
+# Docs
+sphinx>=1.8
+sphinxcontrib-napoleon
+git+https://github.com/mlenzen/alabaster.git
