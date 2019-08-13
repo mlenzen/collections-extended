@@ -1,13 +1,13 @@
 """Setlist class definitions."""
-import random as random_
-
-from ._compat import (
-	Sequence,
-	Set,
+from collections.abc import (
+	Hashable,
 	MutableSequence,
 	MutableSet,
-	Hashable,
+	Sequence,
+	Set,
 	)
+import random as random_
+
 from . import _util
 
 

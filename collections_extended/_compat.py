@@ -3,50 +3,7 @@ import sys
 
 is_py2 = sys.version_info[0] == 2
 
-__all__ = (
-	'handle_rich_comp_not_implemented',
-	'keys_set',
-	'Collection',
-	'Hashable',
-	'Mapping',
-	'MutableMapping',
-	'MutableSequence',
-	'MutableSet',
-	'Sequence',
-	'Set',
-)
-
-if is_py2:
-	def keys_set(d):
-		"""Return a set of passed dictionary's keys."""
-		return set(d.keys())
-
-	from collections import (
-		Container,
-		Hashable,
-		Iterable,
-		Mapping,
-		MutableMapping,
-		MutableSequence,
-		MutableSet,
-		Sequence,
-		Set,
-		Sized,
-		)
-else:
-	keys_set = dict.keys
-	from collections.abc import (
-		Container,
-		Hashable,
-		Iterable,
-		Mapping,
-		MutableMapping,
-		MutableSequence,
-		MutableSet,
-		Sequence,
-		Set,
-		Sized,
-		)
+__all__ = ('Collection', )
 
 
 if sys.version_info < (3, 6):
@@ -76,15 +33,3 @@ if sys.version_info < (3, 6):
 
 else:
 	from collections.abc import Collection
-
-
-def handle_rich_comp_not_implemented():
-	"""Correctly handle unimplemented rich comparisons.
-
-	In Python 3, return NotImplemented.
-	In Python 2, raise a TypeError.
-	"""
-	if is_py2:
-		raise TypeError()
-	else:
-		return NotImplemented
