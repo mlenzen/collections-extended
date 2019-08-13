@@ -3,7 +3,6 @@ Python 2.7 EOL is 12/31/19.
 get rid of RangeMap's __getslice__, __setslice__ & __delslice__
 move type annotations out of stub files
 add last Python 2 compatible release to README
-update supported versions in relevant places
 Collection backport can have a metaclass=ABCMeta
 
 

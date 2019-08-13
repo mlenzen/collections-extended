@@ -1,4 +1,5 @@
 """Python 2/3 compatibility helpers."""
+from collections.abc import Sized, Iterable, Container
 import sys
 
 is_py2 = sys.version_info[0] == 2
