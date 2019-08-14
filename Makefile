@@ -1,12 +1,13 @@
 .PHONY: help
 help:
-	@echo "  clean       remove unwanted files like .pyc's"
-	@echo "  lint        check style with flake8"
-	@echo "  tests       run tests (using py.test)"
-	@echo "  testall     run tests for all Python versions (using tox)"
-	@echo "  coverage    run coverage report"
-	@echo "  publish     publish to PyPI"
-	@echo "  docs        create HMTL docs (using Sphinx)"
+	@echo "  clean         remove unwanted files like .pyc's"
+	@echo "  lint          check style with flake8"
+	@echo "  tests         run tests (using py.test)"
+	@echo "  testall       run tests for all Python versions (using tox)"
+	@echo "  coverage      run coverage report"
+	@echo "  publish       publish to PyPI"
+	@echo "  publish-force publish to PyPI ignoring tests and linting"
+	@echo "  docs          create HMTL docs (using Sphinx)"
 
 .PHONY: tests
 tests:
