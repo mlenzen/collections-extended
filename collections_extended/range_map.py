@@ -428,18 +428,3 @@ class RangeMap(Mapping):
 	def items(self):
 		"""Return a view of the item pairs."""
 		return RangeMapItemsView(self)
-
-	# Python2 - override slice methods
-	def __setslice__(self, i, j, value):
-		"""Implement __setslice__ to override behavior in Python 2.
-
-		This is required because empty slices pass integers in python2 as opposed
-		to None in python 3.
-		"""
-		raise SyntaxError("Assigning slices doesn't work in Python 2, use set.")
-
-	def __delslice__(self, i, j):
-		raise SyntaxError("Deleting slices doesn't work in Python 2, use delete.")
-
-	def __getslice__(self, i, j):
-		raise SyntaxError("Getting slices doesn't work in Python 2, use get_range.")
