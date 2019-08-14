@@ -2,6 +2,7 @@ Python 2.7 EOL is 12/31/19.
 
 move type annotations out of stub files
 Collection backport can have a metaclass=ABCMeta
-
+Bump major version.
+Ability to publish from python2 branch.
 
 collections_extended/__init__.py:2:from ._compat import Collection

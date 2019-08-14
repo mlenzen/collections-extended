@@ -69,7 +69,7 @@ Getting Started
 		raise ValueError
 	ValueError
 	>>> sl.index('d')
-x`	4
+	4
 
 	>>> bij = bijection({'a': 1, 'b': 2, 'c': 3})
 	>>> bij.inverse[2]
