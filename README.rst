@@ -27,7 +27,7 @@ a ``IndexedDict`` class, which is an ordered mapping whose elements can be acces
 in addition to key.
 There are also frozen (hashable) varieties of bags and setlists.
 
-Tested against Python 2.7, 3.3, 3.4, 3.5, 3.6, 3.7, PyPy & PyPy3.
+Tested against Python 3.4, 3.5, 3.6, 3.7 & PyPy3.
 
 Getting Started
 ===============
@@ -81,19 +81,17 @@ Getting Started
 	>>> bij == bijection({'a': 1, 'c': 3})
 	True
 
-	>>> us_presidents = RangeMap()
-	>>> us_presidents[date(1993, 1, 20):date(2001, 1, 20)] = 'Bill Clinton'
-	>>> us_presidents[date(2001, 1, 20):date(2009, 1, 20)] = 'George W. Bush'
-	>>> us_presidents[date(2009, 1, 20):] = 'Barack Obama'
-	>>> us_presidents[date(1995, 5, 10)]
-	'Bill Clinton'
-	>>> us_presidents[date(2001, 1, 20)]
-	'George W. Bush'
-	>>> us_presidents[date(2021, 3, 1)]
-	'Barack Obama'
-	>>> us_presidents[date(2017, 1, 20):] = 'Someone New'
-	>>> us_presidents[date(2021, 3, 1)]
-	'Someone New'
+	>>> version = RangeMap()
+	>>> version[date(2017, 10, 20): date(2017, 10, 27)] = '0.10.1'
+	>>> version[date(2017, 10, 27): date(2018, 2, 14)] = '1.0.0'
+	>>> version[date(2018, 2, 14):] = '1.0.1'
+	>>> version[date(2017, 10, 24)]
+	'0.10.1'
+	>>> version[date(2018, 7, 1)]
+	'1.0.1'
+	>>> version[date(2018, 6, 30):] = '1.0.2'
+	>>> version[date(2018, 7, 1)]
+	'1.0.2'
 
 	>>> idict = IndexedDict()
 	>>> idict['a'] = "A"
@@ -142,7 +140,13 @@ RangeMap
 IndexedDict
 	A mapping that keeps insertion order and allows access by index.
 
+Python 2
+--------
+
+The package no longer supports Python 2. The last version to support
+Python 2 was 1.0
+
 :Author: Michael Lenzen
-:Copyright: 2018 Michael Lenzen
+:Copyright: 2019 Michael Lenzen
 :License: Apache License, Version 2.0
 :Project Homepage: https://github.com/mlenzen/collections-extended

@@ -63,6 +63,12 @@ Ready to contribute? Here's how to set up `collections-extended` for local devel
 
 	$ git clone git@github.com:your_name_here/collections-extended.git
 
+#. Make sure you are excluding your editor's files from the repo
+
+	We don't want to use the project's gitignore to exclude every
+	editor's files, so set up your global gitignore.
+	See: https://help.github.com/articles/ignoring-files/
+
 #. Install your local copy into a virtualenv::
 
 	$ cd collections-extended
