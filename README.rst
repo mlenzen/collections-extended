@@ -69,7 +69,7 @@ Getting Started
 		raise ValueError
 	ValueError
 	>>> sl.index('d')
-	4
+x`	4
 
 	>>> bij = bijection({'a': 1, 'b': 2, 'c': 3})
 	>>> bij.inverse[2]
@@ -139,6 +139,12 @@ RangeMap
 	A mapping from ranges (of numbers/dates/etc)
 IndexedDict
 	A mapping that keeps insertion order and allows access by index.
+
+Python 2
+--------
+
+The package no longer supports Python 2. The last version to support
+Python 2 was 1.0
 
 :Author: Michael Lenzen
 :Copyright: 2019 Michael Lenzen
