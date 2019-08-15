@@ -1,10 +1,11 @@
 """util functions for collections_extended."""
 from functools import wraps
 import textwrap
+from typing import Iterable, Hashable, Dict, Callable
 import warnings
 
 
-def hash_iterable(it):
+def hash_iterable(it: Iterable[Hashable]) -> int:
 	"""Perform a O(1) memory hash of an iterable of arbitrary length.
 
 	hash(tuple(it)) creates a temporary tuple containing all values from it
@@ -27,12 +28,12 @@ class Sentinel(object):
 	Inspired by https://pypi.org/project/sentinels/
 	"""
 
-	_registry = {}
+	_registry: Dict = {}
 
 	def __getnewargs__(self):
-		return self._name,
+		return (self._name, )
 
-	def __new__(cls, _name):
+	def __new__(cls, _name: str):
 		"""Find the Sentinel object with name or create a new one."""
 		try:
 			return cls._registry[_name]
@@ -41,9 +42,9 @@ class Sentinel(object):
 			cls._registry[_name] = new
 			return new
 
-	def __init__(self, name):
+	def __init__(self, name: str):
 		super(Sentinel, self).__init__()
-		self._name = name
+		self._name: str = name
 
 	def __repr__(self):
 		return '<%s>' % self._name
@@ -60,12 +61,12 @@ class Sentinel(object):
 NOT_SET = Sentinel('not_set')
 
 
-def deprecated(msg, dep_version):
+def deprecated(msg: str, dep_version: str) -> Callable:
 	"""Decorate a function, method or class to mark as deprecated.
 
 	Raise DeprecationWarning and add a deprecation notice to the docstring.
 	"""
-	def wrapper(func):
+	def wrapper(func: Callable) -> Callable:
 		docstring = func.__doc__ or ''
 		docstring_msg = '.. deprecated:: {version} {msg}'.format(
 			version=dep_version,

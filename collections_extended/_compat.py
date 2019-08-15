@@ -1,6 +1,8 @@
 """Python version compatibility helpers."""
 import sys
 
+from ._util import Sentinel
+
 __all__ = ('Collection', )
 
 if sys.version_info < (3, 6):
@@ -8,7 +10,7 @@ if sys.version_info < (3, 6):
 	from collections.abc import Sized, Iterable, Container
 
 	def _check_methods(klass, *methods):
-		_missing = object()
+		_missing = Sentinel('missing')
 		for method in methods:
 			for superclass in klass.__mro__:
 				implementation = superclass.__dict__.get(method, _missing)

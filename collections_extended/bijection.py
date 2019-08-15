@@ -27,6 +27,7 @@ class bijection(MutableMapping):
 		self.__inverse = self.__new__(bijection)
 		self.__inverse._data = {}
 		self.__inverse.__inverse = self
+		# Can we just call self.update(iterable, **kwargs) here
 		if iterable:
 			if isinstance(iterable, Mapping):
 				for key, value in iterable.items():
