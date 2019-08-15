@@ -235,7 +235,6 @@ class _basebag(Set, Collection):
 
 	# Comparison methods
 
-	# TODO rename to issubset and deprecate this
 	def is_subset(self, other: Iterable[Hashable]) -> bool:
 		"""Check that every element in self has a count <= in other.
 
@@ -251,7 +250,6 @@ class _basebag(Set, Collection):
 				return False
 		return True
 
-	# TODO rename to issuperset and deprecate this
 	def is_superset(self, other: Iterable[Hashable]) -> bool:
 		"""Check that every element in self has a count >= in other.
 
@@ -333,7 +331,8 @@ class _basebag(Set, Collection):
 			other_bag = other
 		else:
 			other_bag = self._from_iterable(other)
-		for elem, old_count in self.counts():
+		# Make a copy so we can alter self while iterating
+		for elem, old_count in set(self.counts()):
 			other_count = other_bag.count(elem)
 			new_count = min(other_count, old_count)
 			self._set_count(elem, new_count)

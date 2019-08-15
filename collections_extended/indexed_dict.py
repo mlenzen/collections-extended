@@ -28,7 +28,7 @@ class IndexedDict(MutableMapping):
 				Mapping[Hashable, Hashable],
 				Iterable[Tuple[Hashable, Hashable]],
 				None,
-				],
+				] = None,
 			**kwargs: Hashable,
 			):
 		"""Create an IndexedDict and initialize it like a dict."""
@@ -46,7 +46,7 @@ class IndexedDict(MutableMapping):
 			key: Hashable = NOT_SET,
 			*,
 			index: int = NOT_SET,
-			default: Any = None,
+			d: Any = None,
 			) -> Any:
 		"""Return value with given key or index.
 
@@ -56,14 +56,14 @@ class IndexedDict(MutableMapping):
 			try:
 				index, value = self._dict[key]
 			except KeyError:
-				return default
+				return d
 			else:
 				return value
 		elif index is not NOT_SET and key is NOT_SET:
 			try:
 				key, value = self._list[index]
 			except IndexError:
-				return default
+				return d
 			else:
 				return value
 		else:
@@ -74,7 +74,7 @@ class IndexedDict(MutableMapping):
 			key: Hashable = NOT_SET,
 			*,
 			index: int = NOT_SET,
-			default: Any = None,
+			d: Any = None,
 			) -> Any:
 		"""Remove and return value with given key or index (last item by default).
 
@@ -83,7 +83,7 @@ class IndexedDict(MutableMapping):
 
 		This is generally O(N) unless removing last item, then O(1).
 		"""
-		has_default = default is not NOT_SET
+		has_default = d is not NOT_SET
 
 		if index is NOT_SET and key is not NOT_SET:
 			index, value = self._pop_key(key, has_default)
@@ -93,7 +93,7 @@ class IndexedDict(MutableMapping):
 			raise KEY_AND_INDEX_ERROR
 
 		if index is None:
-			return default
+			return d
 		else:
 			self._fix_indices_after_delete(index)
 			return value
@@ -190,7 +190,6 @@ class IndexedDict(MutableMapping):
 			self._dict[moved_key] = (index, moved_value)
 			return popped_value, index, moved_key, moved_value
 
-	# TODO take an index instead of boolean, deprecate old argument
 	def popitem(self, last: bool = True) -> Tuple[Hashable, Any]:
 		"""Remove and return last (default) or first (last=False) pair (key, value).
 

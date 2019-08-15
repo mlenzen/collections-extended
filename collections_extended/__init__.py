@@ -27,10 +27,10 @@ __all__ = (
 
 
 def collection(
-	iterable: Optional[Iterable[Any]] = ...,
-	mutable: bool = ...,
-	ordered: bool = ...,
-	unique: bool = ...,
+	iterable: Optional[Iterable[Any]] = None,
+	mutable: bool = True,
+	ordered: bool = False,
+	unique: bool = False,
 ) -> Collection:
 	"""Return a :class:`Collection` with the specified properties.
 

@@ -16,7 +16,7 @@ class bijection(MutableMapping):
 				Mapping[Hashable, Hashable],
 				Iterable[Tuple[Hashable, Hashable]],
 				None,
-				],
+				] = None,
 			**kwargs: Hashable,
 			):
 		"""Create a bijection from an iterable.
