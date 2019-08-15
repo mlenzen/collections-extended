@@ -20,44 +20,64 @@ def hash_iterable(it: Iterable[Hashable]) -> int:
 	return hash_value
 
 
-class Sentinel(object):
+class SentinelType(type):
+
+	_registry: Dict = {}
+
+
+class Sentinel(SentinelType, metaclass=SentinelType):
 	"""A class to create sentinel objects.
 
-	The benefits vs. object() are a good repr it is picklable.
+	The benefits vs. object() are a good repr and is picklable.
+
+	Sentinels are also instances of themselves, so you can use the Sentinel
+	as a type decorator. For example:
+
+	>>> NOT_SET = Sentinel('not_set')
+	>>> def f(arg: Union[int, None, NOT_SET] = NOT_SET):
+		pass
 
 	Inspired by https://pypi.org/project/sentinels/
 	"""
 
-	_registry: Dict = {}
+	# def __getnewargs__(self):
+	# 	return (self._name, )
 
-	def __getnewargs__(self):
-		return (self._name, )
-
-	def __new__(cls, _name: str):
+	def __new__(mcs, name: str, parents=None, dct=None):
 		"""Find the Sentinel object with name or create a new one."""
 		try:
-			return cls._registry[_name]
+			return mcs._registry[name]
 		except KeyError:
-			new = super(Sentinel, cls).__new__(cls)
-			cls._registry[_name] = new
+			parents = parents or tuple()
+			dct = dct or {}
+			new = super(SentinelType, mcs).__new__(mcs, name, parents, dct)
+			mcs._registry[name] = new
+			# new.__class__ = new
 			return new
 
 	def __init__(self, name: str):
-		super(Sentinel, self).__init__()
-		self._name: str = name
+		super(Sentinel, self).__init__(name, tuple(), {})
+		# super().__init__()
+		# self._name: str = name
 
 	def __repr__(self):
-		return '<%s>' % self._name
+		return '[%s]' % self.__name__
 
 	def __bool__(self):
 		return False
 
 	def __eq__(self, other):
-		if other.__class__ == self.__class__:
-			return self._name == other._name
-		return False
+		return self is other
+
+	@classmethod
+	def create_with_type(cls, name: str):
+		subclass = type(name, (Sentinel, ), {})
+		instance = subclass(name)
+		instance.type = subclass
+		return instance
 
 
+# NOT_SET = Sentinel.create_with_type('not_set')
 NOT_SET = Sentinel('not_set')
 
 
