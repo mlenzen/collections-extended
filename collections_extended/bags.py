@@ -1,9 +1,9 @@
 """Bag class definitions."""
 from collections import defaultdict
-from collections.abc import MutableSet
+from collections.abc import MutableSet, Hashable
 import heapq
 from operator import itemgetter
-from typing import Iterable, Generator, Dict, Hashable, Mapping, Callable, Tuple, Set
+from typing import Iterable, Generator, Dict, Mapping, Callable, Tuple, Set, AbstractSet
 
 from ._compat import Collection
 from ._util import deprecated
@@ -60,7 +60,7 @@ class CountsView:
 		return self.bag.count(elem) == count
 
 
-class _basebag(Set, Collection):
+class _basebag(AbstractSet, Collection):
 	"""Base class for bag classes.
 
 	Base class for bag and frozenbag. Is not mutable and not hashable, so there's
@@ -236,11 +236,7 @@ class _basebag(Set, Collection):
 	# Comparison methods
 
 	def is_subset(self, other: Iterable[Hashable]) -> bool:
-		"""Check that every element in self has a count <= in other.
-
-		Args:
-			other (Set)
-		"""
+		"""Check that every element in self has a count <= in other."""
 		if isinstance(other, _basebag):
 			other_bag = other
 		else:
@@ -251,11 +247,7 @@ class _basebag(Set, Collection):
 		return True
 
 	def is_superset(self, other: Iterable[Hashable]) -> bool:
-		"""Check that every element in self has a count >= in other.
-
-		Args:
-			other (Set)
-		"""
+		"""Check that every element in self has a count >= in other."""
 		if isinstance(other, _basebag):
 			other_bag = other
 		else:
@@ -266,27 +258,27 @@ class _basebag(Set, Collection):
 		return True
 
 	def __le__(self, other):
-		if not isinstance(other, Set):
+		if not isinstance(other, AbstractSet):
 			return NotImplemented
 		return len(self) <= len(other) and self.is_subset(other)
 
 	def __lt__(self, other):
-		if not isinstance(other, Set):
+		if not isinstance(other, AbstractSet):
 			return NotImplemented
 		return len(self) < len(other) and self.is_subset(other)
 
 	def __gt__(self, other):
-		if not isinstance(other, Set):
+		if not isinstance(other, AbstractSet):
 			return NotImplemented
 		return len(self) > len(other) and self.is_superset(other)
 
 	def __ge__(self, other):
-		if not isinstance(other, Set):
+		if not isinstance(other, AbstractSet):
 			return NotImplemented
 		return len(self) >= len(other) and self.is_superset(other)
 
 	def __eq__(self, other):
-		if not isinstance(other, Set):
+		if not isinstance(other, AbstractSet):
 			return False
 		if isinstance(other, _basebag):
 			return self._dict == other._dict

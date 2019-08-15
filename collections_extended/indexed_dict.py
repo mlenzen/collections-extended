@@ -2,7 +2,7 @@
 
 .. versionadded:: 1.1
 """
-from typing import Iterable, MutableMapping, Union, Mapping, Hashable, Tuple, Dict, List, Any
+from typing import Iterable, MutableMapping, Union, Mapping, Hashable, Tuple, Dict, List, Any, Optional
 
 from ._util import NOT_SET
 
@@ -73,8 +73,8 @@ class IndexedDict(MutableMapping):
 			self,
 			key: Hashable = NOT_SET,
 			*,
-			index: int = NOT_SET,
-			d: Any = None,
+			index: int = None,
+			d: Any = NOT_SET,
 			) -> Any:
 		"""Remove and return value with given key or index (last item by default).
 
@@ -85,7 +85,7 @@ class IndexedDict(MutableMapping):
 		"""
 		has_default = d is not NOT_SET
 
-		if index is NOT_SET and key is not NOT_SET:
+		if index is None and key is not NOT_SET:
 			index, value = self._pop_key(key, has_default)
 		elif key is NOT_SET:
 			key, index, value = self._pop_index(index, has_default)
@@ -119,12 +119,12 @@ class IndexedDict(MutableMapping):
 
 	def _pop_index(
 			self,
-			index: int,
+			index: Optional[int],
 			has_default: bool,
 			) -> Union[Tuple[Hashable, int, Any], Tuple[None, None, None]]:
 		"""Remove an element by index, or last element."""
 		try:
-			if index is NOT_SET:
+			if index is None:
 				index = len(self._list) - 1
 				key, value = self._list.pop()
 			else:
