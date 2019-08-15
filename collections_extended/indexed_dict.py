@@ -4,7 +4,7 @@
 """
 from typing import Iterable, MutableMapping, Union, Mapping, Hashable, Tuple, Dict, List, Any, Optional
 
-from ._util import NOT_SET
+from ._util import NOT_SET, fix_seq_index
 
 KEY_AND_INDEX_ERROR = TypeError(
 	"Specifying both `key` and `index` is not allowed"
@@ -83,70 +83,33 @@ class IndexedDict(MutableMapping):
 
 		This is generally O(N) unless removing last item, then O(1).
 		"""
-		has_default = d is not NOT_SET
+		try:
+			key, index, value = self._pop(key, index)
+		except (KeyError, IndexError):
+			if d is NOT_SET:
+				raise
+			else:
+				return d
+		self._fix_indices_after_delete(index)
+		return value
 
+	def _pop(self, key: Hashable, index: int) -> Any:
 		if index is None and key is not NOT_SET:
-			index, value = self._pop_key(key, has_default)
+			index, value = self._dict.pop(key)
+			self._list.pop(index)
 		elif key is NOT_SET:
-			key, index, value = self._pop_index(index, has_default)
+			index = fix_seq_index(self, index)
+			key, value = self._list.pop(index)
+			self._dict.pop(key)
 		else:
 			raise KEY_AND_INDEX_ERROR
-
-		if index is None:
-			return d
-		else:
-			self._fix_indices_after_delete(index)
-			return value
-
-	def _pop_key(
-			self,
-			key: Hashable,
-			has_default: bool,
-			) -> Union[Tuple[int, Any], Tuple[None, None]]:
-		"""Remove an element by key."""
-		try:
-			index, value = self._dict.pop(key)
-		except KeyError:
-			if has_default:
-				return None, None
-			else:
-				raise
-		key2, value2 = self._list.pop(index)
-		assert key is key2
-		assert value is value2
-
-		return index, value
-
-	def _pop_index(
-			self,
-			index: Optional[int],
-			has_default: bool,
-			) -> Union[Tuple[Hashable, int, Any], Tuple[None, None, None]]:
-		"""Remove an element by index, or last element."""
-		try:
-			if index is None:
-				index = len(self._list) - 1
-				key, value = self._list.pop()
-			else:
-				key, value = self._list.pop(index)
-				if index < 0:
-					index += len(self._list) + 1
-		except IndexError:
-			if has_default:
-				return None, None, None
-			else:
-				raise
-		index2, value2 = self._dict.pop(key)
-		assert index == index2
-		assert value is value2
-
 		return key, index, value
 
 	def fast_pop(
 			self,
 			key: Hashable = NOT_SET,
 			*,
-			index: int = NOT_SET,
+			index: int = None,
 			) -> Tuple[Any, int, Hashable, Any]:
 		"""Pop a specific item quickly by swapping it to the end.
 
@@ -160,10 +123,10 @@ class IndexedDict(MutableMapping):
 
 		Runs in O(1).
 		"""
-		if index is NOT_SET and key is not NOT_SET:
+		if index is None and key is not NOT_SET:
 			index, popped_value = self._dict.pop(key)
 		elif key is NOT_SET:
-			if index is NOT_SET:
+			if index is None:
 				index = len(self._list) - 1
 				key, popped_value2 = self._list[-1]
 			else:
@@ -197,23 +160,13 @@ class IndexedDict(MutableMapping):
 
 		Runs in O(1) for last item, O(N) for first one.
 		"""
+		index = None if last else 0
 		try:
-			if last:
-				key, value = self._list.pop()
-				index = len(self._list)
-			else:
-				key, value = self._list.pop(0)
-				index = 0
+			key, index, value = self._pop(NOT_SET, index)
 		except IndexError:
-			raise KeyError("IndexedDict is empty")
-
-		index2, value2 = self._dict.pop(key)
-		assert index == index2
-		assert value is value2
-
-		if not last:
-			self._fix_indices_after_delete()
-
+			# Do this for backwards compatibility
+			raise KeyError
+		self._fix_indices_after_delete(starting_index=index)
 		return key, value
 
 	def move_to_end(
@@ -280,7 +233,7 @@ class IndexedDict(MutableMapping):
 			data=repr(self._list),
 			)
 
-	def __getitem__(self, key: Hashable):
+	def __getitem__(self, key: Union[Hashable, None]):
 		"""Return value corresponding to given key.
 
 		Raises KeyError when the key is not present in the mapping.
@@ -289,7 +242,7 @@ class IndexedDict(MutableMapping):
 		"""
 		return self._dict[key][1]
 
-	def __setitem__(self, key: Hashable, value: Any):
+	def __setitem__(self, key: Union[Hashable, None], value: Any):
 		"""Set item with given key to given value.
 
 		If the key is already present in the mapping its order is unchanged,
@@ -305,7 +258,7 @@ class IndexedDict(MutableMapping):
 			self._list.append((key, value))
 		self._dict[key] = index, value
 
-	def __delitem__(self, key):
+	def __delitem__(self, key: Union[Hashable, None]):
 		"""Remove item with given key from the mapping.
 
 		Runs in O(n), unless removing last item, then in O(1).

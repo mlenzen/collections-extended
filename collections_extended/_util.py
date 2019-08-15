@@ -1,7 +1,7 @@
 """util functions for collections_extended."""
 from functools import wraps
 import textwrap
-from typing import Iterable, Hashable, Dict, Callable
+from typing import Iterable, Hashable, Dict, Callable, Sequence, Optional
 import warnings
 
 
@@ -96,3 +96,15 @@ def deprecated(msg: str, dep_version: str) -> Callable:
 		return inner
 
 	return wrapper
+
+
+def fix_seq_index(self: Sequence, index: Optional[int]):
+	"""Fix an index for a Sequence."""
+	length = len(self)
+	if index is None:
+		return length - 1
+	if index < 0:
+		index += length
+	if not 0 <= index < length:
+		raise IndexError('index is out of range')
+	return index

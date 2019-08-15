@@ -34,6 +34,7 @@ lint:
 
 .PHONY: mypy
 mypy:
+	# TODO type check tests
 	mypy collections_extended
 
 .PHONY: coverage
