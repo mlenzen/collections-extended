@@ -1,4 +1,6 @@
 """collections_extended contains a few extra basic data structures."""
+from typing import Any, Optional, Iterable
+
 from ._compat import Collection
 from .bags import bag, frozenbag, CountsView, UniqueElementsView
 from .setlists import setlist, frozensetlist
@@ -24,14 +26,19 @@ __all__ = (
 	)
 
 
-def collection(iterable=None, mutable=True, ordered=False, unique=False):
+def collection(
+	iterable: Optional[Iterable[Any]] = ...,
+	mutable: bool = ...,
+	ordered: bool = ...,
+	unique: bool = ...,
+) -> Collection:
 	"""Return a :class:`Collection` with the specified properties.
 
 	Args:
-		iterable (Iterable): collection to instantiate new collection from.
-		mutable (bool): Whether or not the new collection is mutable.
-		ordered (bool): Whether or not the new collection is ordered.
-		unique (bool): Whether or not the new collection contains only unique values.
+		iterable: collection to instantiate new collection from.
+		mutable: Whether or not the new collection is mutable.
+		ordered: Whether or not the new collection is ordered.
+		unique: Whether or not the new collection contains only unique values.
 	"""
 	if iterable is None:
 		iterable = tuple()
