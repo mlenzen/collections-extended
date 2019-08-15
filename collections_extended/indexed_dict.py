@@ -32,8 +32,8 @@ class IndexedDict(MutableMapping):
 			**kwargs: Hashable,
 			):
 		"""Create an IndexedDict and initialize it like a dict."""
-		self._dict: Dict[Hashable, Tuple[int, Any]] = {}  # key -> (index, value)
-		self._list: List[Tuple[Hashable, Any]] = []  # index -> (key, value)
+		self._dict: Dict[Union[Hashable, None], Tuple[int, Any]] = {}  # key -> (index, value)
+		self._list: List[Tuple[Union[Hashable, None], Any]] = []  # index -> (key, value)
 		self.update(iterable or [], **kwargs)
 
 	def clear(self):
@@ -43,7 +43,7 @@ class IndexedDict(MutableMapping):
 
 	def get(
 			self,
-			key: Hashable = NOT_SET,
+			key: Union[Hashable, None] = NOT_SET,
 			*,
 			index: int = NOT_SET,
 			d: Any = None,
@@ -71,7 +71,7 @@ class IndexedDict(MutableMapping):
 
 	def pop(
 			self,
-			key: Hashable = NOT_SET,
+			key: Union[Hashable, None] = NOT_SET,
 			*,
 			index: int = None,
 			d: Any = NOT_SET,
@@ -93,7 +93,7 @@ class IndexedDict(MutableMapping):
 		self._fix_indices_after_delete(index)
 		return value
 
-	def _pop(self, key: Hashable, index: int) -> Any:
+	def _pop(self, key: Union[Hashable, None], index: Optional[int]) -> Tuple[Union[Hashable, None], int, Any]:
 		if index is None and key is not NOT_SET:
 			index, value = self._dict.pop(key)
 			self._list.pop(index)
@@ -107,10 +107,10 @@ class IndexedDict(MutableMapping):
 
 	def fast_pop(
 			self,
-			key: Hashable = NOT_SET,
+			key: Union[Hashable, None] = NOT_SET,
 			*,
 			index: int = None,
-			) -> Tuple[Any, int, Hashable, Any]:
+			) -> Tuple[Any, int, Union[Hashable, None], Any]:
 		"""Pop a specific item quickly by swapping it to the end.
 
 		Remove value with given key or index (last item by default) fast
@@ -153,7 +153,7 @@ class IndexedDict(MutableMapping):
 			self._dict[moved_key] = (index, moved_value)
 			return popped_value, index, moved_key, moved_value
 
-	def popitem(self, last: bool = True) -> Tuple[Hashable, Any]:
+	def popitem(self, last: bool = True) -> Tuple[Union[Hashable, None], Any]:
 		"""Remove and return last (default) or first (last=False) pair (key, value).
 
 		Raises KeyError if the dictionary is empty.
@@ -171,22 +171,19 @@ class IndexedDict(MutableMapping):
 
 	def move_to_end(
 			self,
-			key: Hashable = NOT_SET,
-			index: int = NOT_SET,
+			key: Union[Hashable, None] = NOT_SET,
+			index: int = None,
 			last: bool = True,
 			):
 		"""Move an existing element to the end (or beginning if last==False).
 
 		Runs in O(N).
 		"""
-		if index is NOT_SET and key is not NOT_SET:
+		if index is None and key is not NOT_SET:
 			index, value = self._dict[key]
-		elif index is not NOT_SET and key is NOT_SET:
+		elif index is not None and key is NOT_SET:
+			index = fix_seq_index(self, index)
 			key, value = self._list[index]
-
-			# Normalize index
-			if index < 0:
-				index += len(self._list)
 		else:
 			raise KEY_EQ_INDEX_ERROR
 
@@ -216,7 +213,7 @@ class IndexedDict(MutableMapping):
 		"""
 		return self._dict[key][0]
 
-	def key(self, index: int) -> Hashable:
+	def key(self, index: int) -> Union[Hashable, None]:
 		"""Return key of a record at given index.
 
 		Runs in O(1).
