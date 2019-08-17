@@ -1,6 +1,3 @@
-# pylint: disable=redefined-outer-name
-# pylint: disable=W0212
-
 import pytest
 
 from collections_extended.indexed_dict import IndexedDict
@@ -11,7 +8,7 @@ def assert_internal_state(self):
 	Returns True, so it can be used in an assert expression itself."""
 
 	assert len(self._dict) == len(self._list)
-	for k, (i, v) in self._dict.items():
+	for k, (i, v) in self._dict.items():  # noqa
 		k2, v2 = self._list[i]
 		assert k2 == k
 		assert v2 is v
@@ -62,8 +59,29 @@ def test_get_key_found(d, indexing):
 
 
 @pytest.mark.parametrize("indexing", [{"key": "x"}, {"index": 100}, {"index": -6}])
+def test_get_specifying_missing_default(d, indexing):
+	assert d.get(default=5, **indexing) == 5
+
+
+def test_get_deprecated_param(d):
+	with pytest.deprecated_call():
+		assert d.get('x', d='XXX') == 'XXX'
+
+
+@pytest.mark.parametrize("indexing", [{"key": "x"}, {"index": 100}, {"index": -6}])
 def test_get_missing_default(d, indexing):
 	assert d.get(**indexing) is None
+
+
+def test_get_duplicate_default(d):
+	with pytest.raises(ValueError):
+		d.get(d=None, default=None)
+	with pytest.raises(ValueError):
+		d.get(d='XXX', default=None)
+	with pytest.raises(ValueError):
+		d.get(d=None, default='XXX')
+	with pytest.raises(ValueError):
+		d.get(d='XXX', default='XXX')
 
 
 def test_get_both_key_and_index(d):
@@ -93,6 +111,11 @@ def test_pop_missing_default(d, indexing):
 	assert list(d) == list("abcde")
 
 
+def test_pop_duplicate_default(d):
+	with pytest.raises(ValueError):
+		d.pop(d='XXX', default='XXX')
+
+
 def test_pop_missing_key_no_default(d):
 	with pytest.raises(KeyError):
 		d.pop("X")
@@ -104,6 +127,11 @@ def test_pop_missing_index_no_default(d, index):
 	with pytest.raises(IndexError):
 		d.pop(index=index)
 	assert list(d) == list("abcde")
+
+
+def test_deprecated_pop_default(d):
+	with pytest.deprecated_call():
+		assert d.pop(999, d='XXX') == 'XXX'
 
 
 def test_pop_empty_default():

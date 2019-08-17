@@ -188,7 +188,7 @@ class _basebag(Set):
 	@deprecated(
 		"Use `heapq.nlargest(n, self.counts(), key=itemgetter(1))` instead or "
 		"`sorted(self.counts(), reverse=True, key=itemgetter(1))` for `n=None`",
-		'1.1',
+		'1.0',
 		)
 	def nlargest(self, n=None):
 		"""List the n most common elements and their counts.
