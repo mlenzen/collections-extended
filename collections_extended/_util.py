@@ -61,6 +61,7 @@ NOT_SET = Sentinel('not_set')
 
 
 def deprecation_warning(msg):
+	"""Raise a deprecation warning."""
 	warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
 
 
