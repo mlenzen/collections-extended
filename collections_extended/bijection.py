@@ -18,13 +18,13 @@ class bijection(MutableMapping):
 				Iterable[Tuple[Hashable, Hashable]],
 				None,
 				] = None,
-			**kwargs: Hashable,
+			**kwargs: Hashable
 			):
 		"""Create a bijection from an iterable.
 
 		Matches dict.__init__.
 		"""
-		self._data: Dict[Hashable, Hashable] = {}
+		self._data = {}  # type: Dict[Hashable, Hashable]
 		self.__inverse = self.__new__(bijection)
 		self.__inverse._data = {}
 		self.__inverse.__inverse = self

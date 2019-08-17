@@ -102,8 +102,8 @@ class _basebag(AbstractSet, Collection):
 
 		This runs in O(len(iterable))
 		"""
-		self._dict: Dict[Hashable, int] = dict()
-		self._size: int = 0
+		self._dict = dict()  # type: Dict[Hashable, int]
+		self._size = 0  # type: int
 		if iterable:
 			if isinstance(iterable, _basebag):
 				# iterable: _basebag
@@ -508,7 +508,7 @@ class _basebag(AbstractSet, Collection):
 			other_bag = other
 		else:
 			other_bag = self._from_iterable(other)
-		values: Dict[Hashable, int] = defaultdict(int)
+		values = defaultdict(int)  # type: Dict[Hashable, int]
 		for elem, count in self.counts():
 			for other_elem, other_count in other_bag.counts():
 				if operator:

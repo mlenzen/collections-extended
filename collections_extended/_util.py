@@ -35,7 +35,7 @@ class Sentinel(object):
 	Inspired by https://pypi.org/project/sentinels/
 	"""
 
-	_registry: Dict = {}
+	_registry = {}  # type: Dict[str, Sentinel]
 
 	def __new__(cls, name: str):
 		"""Find the Sentinel object with name or create a new one."""
@@ -48,7 +48,7 @@ class Sentinel(object):
 
 	def __init__(self, name: str):
 		super(Sentinel, self).__init__()
-		self.name: str = name
+		self.name = name  # type: str
 
 	def __repr__(self):
 		return '<%s>' % self.name
