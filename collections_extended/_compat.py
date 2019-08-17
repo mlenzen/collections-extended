@@ -14,7 +14,7 @@ __all__ = (
 	'MutableSet',
 	'Sequence',
 	'Set',
-)
+	)
 
 if is_py2:
 	def keys_set(d):
