@@ -10,6 +10,8 @@ from ._compat import (
 	)
 from . import _util
 
+__all__ = ('setlist', 'frozensetlist')
+
 
 class _basesetlist(Sequence, Set):
 	"""A setlist is an ordered Collection of unique elements.

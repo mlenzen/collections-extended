@@ -3,6 +3,13 @@ from functools import wraps
 import textwrap
 import warnings
 
+__all__ = (
+	'hash_iterable',
+	'Sentinel',
+	'NOT_SET',
+	'deprecated',
+	)
+
 
 def hash_iterable(it):
 	"""Perform a O(1) memory hash of an iterable of arbitrary length.

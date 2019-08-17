@@ -13,6 +13,14 @@ from ._compat import (
 	)
 from ._util import deprecated
 
+__all__ = (
+	'BagView',
+	'CountsView',
+	'UniqueElementsView',
+	'bag',
+	'frozenbag',
+	)
+
 
 class BagView(Collection):
 	"""Base class for bag views."""
