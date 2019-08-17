@@ -73,6 +73,17 @@ def test_get_missing_default(d, indexing):
 	assert d.get(**indexing) is None
 
 
+def test_get_duplicate_default(d):
+	with pytest.raises(ValueError):
+		d.get(d=None, default=None)
+	with pytest.raises(ValueError):
+		d.get(d='XXX', default=None)
+	with pytest.raises(ValueError):
+		d.get(d=None, default='XXX')
+	with pytest.raises(ValueError):
+		d.get(d='XXX', default='XXX')
+
+
 def test_get_both_key_and_index(d):
 	with pytest.raises(TypeError):
 		d.get(key="a", index=4)
@@ -98,6 +109,11 @@ def test_pop_last(d):
 def test_pop_missing_default(d, indexing):
 	assert d.pop(d="XXX", **indexing) == "XXX"
 	assert list(d) == list("abcde")
+
+
+def test_pop_duplicate_default(d):
+	with pytest.raises(ValueError):
+		d.pop(d='XXX', default='XXX')
 
 
 def test_pop_missing_key_no_default(d):

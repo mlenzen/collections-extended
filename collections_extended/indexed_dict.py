@@ -33,7 +33,7 @@ class IndexedDict(collections.MutableMapping):
 		self._dict = {}
 		self._list = []
 
-	def get(self, key=NOT_SET, index=NOT_SET, default=None, d=NOT_SET):
+	def get(self, key=NOT_SET, index=NOT_SET, default=NOT_SET, d=NOT_SET):
 		"""Return value with given `key` or `index`.
 
 		If no value is found, return `default` (`None` by default).
@@ -46,16 +46,18 @@ class IndexedDict(collections.MutableMapping):
 			key: The key of the value to get
 			index: The index of the value to get
 			default: The value to return if `key` is not found or `index` is
-				out of bounds
+				out of bounds. If it is NOT_SET, None is returned.
 			d: DEPRECATED: Old parameter name for `default`
 		"""
 		if d is not NOT_SET:
-			if default is not None:
+			if default is not NOT_SET:
 				raise ValueError('Specified default and d')
 			deprecation_warning(
 				"IndexedDict.pop parameter 'd' has been renamed to 'default'"
 				)
 			default = d
+		if default is NOT_SET:
+			default = None
 
 		if index is NOT_SET and key is not NOT_SET:
 			try:
