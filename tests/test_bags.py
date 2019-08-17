@@ -63,10 +63,8 @@ def test_nlargest():
 def test_nlargest_deprecated():
 	"""Test that nlargest raises a DeprecationWarning."""
 	b = bag()
-	with warnings.catch_warnings():
-		warnings.simplefilter('error')
-		with pytest.raises(DeprecationWarning):
-			b.nlargest()
+	with pytest.deprecated_call():
+		b.nlargest()
 
 
 def test_from_map():

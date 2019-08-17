@@ -4,7 +4,9 @@
 """
 import collections
 
-from ._util import NOT_SET
+from ._util import NOT_SET, deprecation_warning
+
+__all__ = ('IndexedDict', )
 
 KEY_AND_INDEX_ERROR = TypeError(
 	"Specifying both `key` and `index` is not allowed")
@@ -31,38 +33,82 @@ class IndexedDict(collections.MutableMapping):
 		self._dict = {}
 		self._list = []
 
-	def get(self, key=NOT_SET, index=NOT_SET, d=None):
-		"""Return value with given key or index.
+	def get(self, key=NOT_SET, index=NOT_SET, default=NOT_SET, d=NOT_SET):
+		"""Return value with given `key` or `index`.
 
-		If no value is found, return d (None by default).
+		If no value is found, return `default` (`None` by default).
+
+		.. deprecated :: 1.1
+		The `d` parameter has been renamed `default`. `d` will be removed in
+		some future version.
+
+		Args:
+			key: The key of the value to get
+			index: The index of the value to get
+			default: The value to return if `key` is not found or `index` is
+				out of bounds. If it is NOT_SET, None is returned.
+			d: DEPRECATED: Old parameter name for `default`
 		"""
+		if d is not NOT_SET:
+			if default is not NOT_SET:
+				raise ValueError('Specified default and d')
+			deprecation_warning(
+				"IndexedDict.pop parameter 'd' has been renamed to 'default'"
+				)
+			default = d
+		if default is NOT_SET:
+			default = None
+
 		if index is NOT_SET and key is not NOT_SET:
 			try:
 				index, value = self._dict[key]
 			except KeyError:
-				return d
+				return default
 			else:
 				return value
 		elif index is not NOT_SET and key is NOT_SET:
 			try:
 				key, value = self._list[index]
 			except IndexError:
-				return d
+				return default
 			else:
 				return value
 		else:
 			raise KEY_EQ_INDEX_ERROR
 
-	def pop(self, key=NOT_SET, index=NOT_SET, d=NOT_SET):
-		"""Remove and return value with given key or index (last item by default).
+	def pop(self, key=NOT_SET, index=NOT_SET, default=NOT_SET, d=NOT_SET):
+		"""Remove and return value.
 
-		If key is not found, returns d if given,
-		otherwise raises KeyError or IndexError.
+		Optionally, specify the `key` or `index` of the value to pop.
+		If `key` is specified and is not found a `KeyError` is raised unless
+		`default` is specified. Likewise, if `index` is specified that is out of
+		bounds, an `IndexError` is raised unless `default` is specified.
+
+		Both `index` and `key` cannot be specified. If neither is specified,
+		then the last value is popped.
 
 		This is generally O(N) unless removing last item, then O(1).
-		"""
-		has_default = d is not NOT_SET
 
+		.. deprecated :: 1.1
+		The `d` parameter has been renamed `default`. `d` will be removed in
+		some future version.
+
+		Args:
+			key: The key of the value to pop
+			index: The index of the value to pop
+			default: The value to return if the key is not found or the index is
+				out of bounds
+			d: DEPRECATED: Old parameter name for `default`
+		"""
+		if d is not NOT_SET:
+			if default is not NOT_SET:
+				raise ValueError('Specified default and d')
+			deprecation_warning(
+				"IndexedDict.pop parameter 'd' has been renamed to 'default'"
+				)
+			default = d
+
+		has_default = default is not NOT_SET
 		if index is NOT_SET and key is not NOT_SET:
 			index, value = self._pop_key(key, has_default)
 		elif key is NOT_SET:
@@ -71,7 +117,7 @@ class IndexedDict(collections.MutableMapping):
 			raise KEY_AND_INDEX_ERROR
 
 		if index is None:
-			return d
+			return default
 		else:
 			self._fix_indices_after_delete(index)
 			return value

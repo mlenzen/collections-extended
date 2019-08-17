@@ -3,6 +3,13 @@ from functools import wraps
 import textwrap
 import warnings
 
+__all__ = (
+	'hash_iterable',
+	'Sentinel',
+	'NOT_SET',
+	'deprecated',
+	)
+
 
 def hash_iterable(it):
 	"""Perform a O(1) memory hash of an iterable of arbitrary length.
@@ -60,6 +67,11 @@ class Sentinel(object):
 NOT_SET = Sentinel('not_set')
 
 
+def deprecation_warning(msg):
+	"""Raise a deprecation warning."""
+	warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+
+
 def deprecated(msg, dep_version):
 	"""Decorate a function, method or class to mark as deprecated.
 
@@ -89,7 +101,7 @@ def deprecated(msg, dep_version):
 
 		@wraps(func)
 		def inner(*args, **kwargs):
-			warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+			deprecation_warning(msg)
 			return func(*args, **kwargs)
 
 		return inner

@@ -1,18 +1,25 @@
 """Bag class definitions."""
-from collections import defaultdict
-from collections.abc import Hashable, MutableSet, Set
 import heapq
+from abc import ABCMeta, abstractmethod
+from collections import defaultdict
+from collections.abc import Collection, Hashable, MutableSet, Set
 from operator import itemgetter
 
 from ._util import deprecated
 
+__all__ = (
+	'BagView',
+	'CountsView',
+	'UniqueElementsView',
+	'bag',
+	'frozenbag',
+	)
 
-class UniqueElementsView:
-	"""A view for the unique items and their counts in a bag.
 
-	.. versionadded:: 1.1
-	"""
+class BagView(Collection):
+	"""Base class for bag views."""
 
+	__metaclass__ = ABCMeta
 	__slots__ = ('bag', )
 
 	def __init__(self, bag):
@@ -24,6 +31,21 @@ class UniqueElementsView:
 	def __len__(self):
 		return self.bag.num_unique_elements()
 
+	@abstractmethod
+	def __iter__(self):
+		raise NotImplementedError
+
+	@abstractmethod
+	def __contains__(self, elem):
+		raise NotImplementedError
+
+
+class UniqueElementsView(BagView):
+	"""A view for the unique items and their counts in a bag.
+
+	.. versionadded:: 1.0
+	"""
+
 	def __iter__(self):
 		for elem in self.bag._dict:
 			yield elem
@@ -32,19 +54,13 @@ class UniqueElementsView:
 		return elem in self.bag
 
 
-class CountsView:
+class CountsView(BagView):
 	"""A view for the unique items and their counts in a bag.
 
-	.. versionadded:: 1.1
+	.. versionadded:: 1.0
 	"""
 
 	__slots__ = ('bag', )
-
-	def __init__(self, bag):
-		self.bag = bag
-
-	def __repr__(self):
-		return '{0.__class__.__name__}({0.bag!r})'.format(self)
 
 	def __len__(self):
 		return self.bag.num_unique_elements()
@@ -166,7 +182,7 @@ class _basebag(Set):
 	@deprecated(
 		"Use `heapq.nlargest(n, self.counts(), key=itemgetter(1))` instead or "
 		"`sorted(self.counts(), reverse=True, key=itemgetter(1))` for `n=None`",
-		'1.1',
+		'1.0',
 		)
 	def nlargest(self, n=None):
 		"""List the n most common elements and their counts.
