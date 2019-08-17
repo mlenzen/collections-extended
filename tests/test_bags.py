@@ -160,6 +160,22 @@ def test_rich_comp_subset():
 	assert b1 <= b2
 
 
+def test_subset():
+	"""Test issubset method."""
+	assert bag('abc').is_subset(bag('abc'))
+	assert bag('abc').is_subset(bag('abcd'))
+	assert bag('aaab').is_subset(bag('aaaab'))
+	assert not bag('aab').is_subset(bag('ab'))
+
+
+def test_superset():
+	"""Test issuperset method."""
+	assert bag('abc').is_superset(bag('abc'))
+	assert bag('abcd').is_superset(bag('abc'))
+	assert bag('aaaab').is_superset(bag('aaab'))
+	assert not bag('ab').is_superset(bag('aab'))
+
+
 def test_rich_comp_unorderable_eq_len():
 	"""Test rich comparisons for bags of equal length but unorderable."""
 	b1 = _basebag('abb')
