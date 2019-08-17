@@ -2,10 +2,21 @@
 
 .. versionadded:: 1.1
 """
-from collections import namedtuple
-from typing import Any, Dict, Hashable, Iterable, List, Mapping, MutableMapping, NamedTuple, Optional, Tuple, Union
+from typing import (
+	Any,
+	Dict,
+	Hashable,
+	Iterable,
+	List,
+	Mapping,
+	MutableMapping,
+	NamedTuple,
+	Optional,
+	Tuple,
+	Union,
+	)
 
-from ._util import NOT_SET, fix_seq_index
+from ._util import NOT_SET, deprecation_warning, fix_seq_index
 
 __all__ = ('IndexedDict', )
 
@@ -60,24 +71,46 @@ class IndexedDict(MutableMapping):
 			key: KeyType = NOT_SET,
 			*,
 			index: int = NOT_SET,
-			d: Any = None,
+			default: Any = NOT_SET,
+			d: Any = NOT_SET,
 			) -> Any:
-		"""Return value with given key or index.
+		"""Return value with given `key` or `index`.
 
-		If no value is found, return d (None by default).
+		If no value is found, return `default` (`None` by default).
+
+		.. deprecated :: 1.1
+		The `d` parameter has been renamed `default`. `d` will be removed in
+		some future version.
+
+		Args:
+			key: The key of the value to get
+			index: The index of the value to get
+			default: The value to return if `key` is not found or `index` is
+				out of bounds. If it is NOT_SET, None is returned.
+			d: DEPRECATED: Old parameter name for `default`
 		"""
+		if d is not NOT_SET:
+			if default is not NOT_SET:
+				raise ValueError('Specified default and d')
+			deprecation_warning(
+				"IndexedDict.pop parameter 'd' has been renamed to 'default'"
+				)
+			default = d
+		if default is NOT_SET:
+			default = None
+
 		if index is NOT_SET and key is not NOT_SET:
 			try:
 				dict_val = self._dict[key]
 			except KeyError:
-				return d
+				return default
 			else:
 				return dict_val.value
 		elif index is not NOT_SET and key is NOT_SET:
 			try:
 				list_val = self._list[index]
 			except IndexError:
-				return d
+				return default
 			else:
 				return list_val.val
 		else:
@@ -88,22 +121,47 @@ class IndexedDict(MutableMapping):
 			key: KeyType = NOT_SET,
 			*,
 			index: int = None,
+			default: Any = NOT_SET,
 			d: Any = NOT_SET,
 			) -> Any:
-		"""Remove and return value with given key or index (last item by default).
+		"""Remove and return value.
 
-		If key is not found, returns d if given,
-		otherwise raises KeyError or IndexError.
+		Optionally, specify the `key` or `index` of the value to pop.
+		If `key` is specified and is not found a `KeyError` is raised unless
+		`default` is specified. Likewise, if `index` is specified that is out of
+		bounds, an `IndexError` is raised unless `default` is specified.
+
+		Both `index` and `key` cannot be specified. If neither is specified,
+		then the last value is popped.
 
 		This is generally O(N) unless removing last item, then O(1).
+
+		.. deprecated :: 1.1
+		The `d` parameter has been renamed `default`. `d` will be removed in
+		some future version.
+
+		Args:
+			key: The key of the value to pop
+			index: The index of the value to pop
+			default: The value to return if the key is not found or the index is
+				out of bounds
+			d: DEPRECATED: Old parameter name for `default`
 		"""
+		if d is not NOT_SET:
+			if default is not NOT_SET:
+				raise ValueError('Specified default and d')
+			deprecation_warning(
+				"IndexedDict.pop parameter 'd' has been renamed to 'default'"
+				)
+			default = d
+
 		try:
 			key, index, value = self._pop(key, index)
 		except (KeyError, IndexError):
-			if d is NOT_SET:
+			if default is NOT_SET:
 				raise
 			else:
-				return d
+				return default
 		self._fix_indices_after_delete(index)
 		return value
 

@@ -4,6 +4,13 @@ import textwrap
 from typing import Iterable, Hashable, Dict, Callable, Sized, Optional
 import warnings
 
+__all__ = (
+	'hash_iterable',
+	'Sentinel',
+	'NOT_SET',
+	'deprecated',
+	)
+
 
 def hash_iterable(it: Iterable[Hashable]) -> int:
 	"""Perform a O(1) memory hash of an iterable of arbitrary length.
@@ -71,6 +78,11 @@ NOT_SET = Sentinel.create_with_type('not_set')
 # NOT_SET = Sentinel('not_set')
 
 
+def deprecation_warning(msg: str):
+	"""Raise a deprecation warning."""
+	warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+
+
 def deprecated(msg: str, dep_version: str) -> Callable:
 	"""Decorate a function, method or class to mark as deprecated.
 
@@ -100,7 +112,7 @@ def deprecated(msg: str, dep_version: str) -> Callable:
 
 		@wraps(func)
 		def inner(*args, **kwargs):
-			warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+			deprecation_warning(msg)
 			return func(*args, **kwargs)
 
 		return inner

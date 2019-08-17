@@ -1,7 +1,8 @@
 """Class definition for bijection."""
-
 from collections.abc import MutableMapping
 from typing import Mapping, Iterable, Tuple, Hashable, Dict, Union
+
+__all__ = ('bijection', )
 
 
 class bijection(MutableMapping):
