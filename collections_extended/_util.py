@@ -30,35 +30,45 @@ class Sentinel(object):
 
 	_registry: Dict = {}
 
-	def __getnewargs__(self):
-		return (self._name, )
-
-	def __new__(cls, _name: str):
+	def __new__(cls, name: str):
 		"""Find the Sentinel object with name or create a new one."""
 		try:
-			return cls._registry[_name]
+			return Sentinel._registry[name]
 		except KeyError:
 			new = super(Sentinel, cls).__new__(cls)
-			cls._registry[_name] = new
+			Sentinel._registry[name] = new
 			return new
 
 	def __init__(self, name: str):
 		super(Sentinel, self).__init__()
-		self._name: str = name
+		self.name: str = name
 
 	def __repr__(self):
-		return '<%s>' % self._name
+		return '<%s>' % self.name
 
 	def __bool__(self):
 		return False
 
 	def __eq__(self, other):
-		if other.__class__ == self.__class__:
-			return self._name == other._name
+		if isinstance(other, Sentinel):
+			return self.name == other.name
 		return False
 
+	def __reduce__(self):
+		return Sentinel, (self.name,)
 
-NOT_SET = Sentinel('not_set')
+	@classmethod
+	def create_with_type(cls, name: str):
+		subclass = type(name, (Sentinel, ), {
+			'__doc__': '{name} Sentinel'.format(name=name),
+			})
+		instance = subclass(name)
+		instance.type = subclass
+		return instance
+
+
+NOT_SET = Sentinel.create_with_type('not_set')
+# NOT_SET = Sentinel('not_set')
 
 
 def deprecated(msg: str, dep_version: str) -> Callable:
