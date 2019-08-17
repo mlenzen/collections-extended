@@ -165,7 +165,11 @@ class IndexedDict(MutableMapping):
 		self._fix_indices_after_delete(index)
 		return value
 
-	def _pop(self, key: KeyType, index: Optional[int]) -> Tuple[KeyType, int, Any]:
+	def _pop(
+			self,
+			key: KeyType,
+			index: Optional[int],
+			) -> Tuple[KeyType, int, Any]:
 		if index is None and key is not NOT_SET:
 			index, value = self._dict.pop(key)
 			self._list.pop(index)

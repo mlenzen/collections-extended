@@ -66,6 +66,7 @@ class Sentinel(object):
 
 	@classmethod
 	def create_with_type(cls, name: str):
+		"""Create a Sentinel with it's own type."""
 		subclass = type(name, (Sentinel, ), {
 			'__doc__': '{name} Sentinel'.format(name=name),
 			})

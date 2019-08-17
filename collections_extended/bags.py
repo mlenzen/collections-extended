@@ -2,9 +2,17 @@
 import heapq
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
-from collections.abc import Collection, Hashable, MutableSet, Set
+from collections.abc import Hashable, MutableSet
 from operator import itemgetter
-from typing import Iterable, Generator, Dict, Mapping, Callable, Tuple, Set, AbstractSet
+from typing import (
+	AbstractSet,
+	Callable,
+	Dict,
+	Generator,
+	Iterable,
+	Mapping,
+	Tuple
+	)
 
 from ._compat import Collection
 from ._util import deprecated

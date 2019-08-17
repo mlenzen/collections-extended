@@ -51,7 +51,7 @@ class bijection(MutableMapping):
 
 	@property
 	def inverse(self):
-		"""The inverse of this bijection."""
+		"""Access the inverse of this bijection."""
 		return self.__inverse
 
 	# Required for MutableMapping
@@ -93,12 +93,15 @@ class bijection(MutableMapping):
 		return bijection(self)
 
 	def items(self):
+		"""Return a view of the bijection's items."""
 		return self._data.items()
 
 	def keys(self):
+		"""Return a view of the bijection's keys."""
 		return self._data.keys()
 
 	def values(self):
+		"""Return a view of the bijection's values."""
 		return self.inverse.keys()
 
 	def __eq__(self, other):
