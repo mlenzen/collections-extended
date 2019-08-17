@@ -1,5 +1,5 @@
 """Class definition for bijection."""
-from ._compat import MutableMapping, Mapping
+from ._compat import Mapping, MutableMapping
 
 __all__ = ('bijection', )
 

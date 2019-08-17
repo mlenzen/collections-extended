@@ -1,14 +1,8 @@
 """Setlist class definitions."""
 import random as random_
 
-from ._compat import (
-	Sequence,
-	Set,
-	MutableSequence,
-	MutableSet,
-	Hashable,
-	)
 from . import _util
+from ._compat import Hashable, MutableSequence, MutableSet, Sequence, Set
 
 __all__ = ('setlist', 'frozensetlist')
 
@@ -479,7 +473,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 		Note:
 			This does not raise a ValueError for a missing value like remove does.
-			This is to match the behavior of set.discard
+			This matches the behavior of set.discard
 		"""
 		try:
 			self.remove(value)
@@ -539,7 +533,12 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 	# New methods
 	def shuffle(self, random=None):
-		"""Shuffle all of the elements in self randomly."""
+		"""Shuffle all of the elements in self in place.
+
+		Args:
+			random: A function returning a random float in [0.0, 1.0). If none
+				is passed, the default from `random.shuffle` will be used.
+		"""
 		random_.shuffle(self._list, random=random)
 		for i, elem in enumerate(self._list):
 			self._dict[elem] = i

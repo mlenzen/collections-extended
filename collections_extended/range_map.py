@@ -2,7 +2,7 @@
 from abc import ABCMeta, abstractmethod
 from bisect import bisect_left, bisect_right
 
-from ._compat import Mapping, Set, Collection
+from ._compat import Collection, Mapping, Set
 from ._util import NOT_SET
 
 
