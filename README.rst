@@ -6,8 +6,8 @@ README
 	:alt: Build Status
 
 
-.. image:: https://coveralls.io/repos/mlenzen/collections-extended/badge.svg?branch=master
-	:target: https://coveralls.io/r/mlenzen/collections-extended?branch=master
+.. image:: https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master
+	:target: https://coveralls.io/github/mlenzen/collections-extended?branch=master
 	:alt: Coverage
 
 Documentation: http://collections-extended.lenzm.net/
