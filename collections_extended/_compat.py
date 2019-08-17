@@ -1,8 +1,6 @@
 """Python 2/3 compatibility helpers."""
 import sys
 
-is_py2 = sys.version_info[0] == 2
-
 __all__ = (
 	'handle_rich_comp_not_implemented',
 	'keys_set',
@@ -14,7 +12,9 @@ __all__ = (
 	'MutableSet',
 	'Sequence',
 	'Set',
-)
+	)
+
+is_py2 = sys.version_info[0] == 2
 
 if is_py2:
 	def keys_set(d):

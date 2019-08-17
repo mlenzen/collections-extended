@@ -23,6 +23,7 @@ class PyTest(TestCommand):
 
 
 def long_description():
+	"""Read long description from README."""
 	path = join(dirname(__file__), 'README.rst')
 	with open(path, 'rt') as inf:
 		return inf.read()

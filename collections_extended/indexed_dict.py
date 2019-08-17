@@ -6,6 +6,8 @@ import collections
 
 from ._util import NOT_SET, deprecation_warning
 
+__all__ = ('IndexedDict', )
+
 KEY_AND_INDEX_ERROR = TypeError(
 	"Specifying both `key` and `index` is not allowed")
 KEY_EQ_INDEX_ERROR = TypeError(
