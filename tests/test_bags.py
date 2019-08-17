@@ -168,12 +168,22 @@ def test_subset():
 	assert not bag('aab').is_subset(bag('ab'))
 
 
+def test_subset_deprecated():
+	with pytest.deprecated_call():
+		bag().is_subset(bag())
+
+
 def test_superset():
 	"""Test issuperset method."""
 	assert bag('abc').is_superset(bag('abc'))
 	assert bag('abcd').is_superset(bag('abc'))
 	assert bag('aaaab').is_superset(bag('aaab'))
 	assert not bag('ab').is_superset(bag('aab'))
+
+
+def test_superset_deprecated():
+	with pytest.deprecated_call():
+		bag().is_superset(bag())
 
 
 def test_rich_comp_unorderable_eq_len():

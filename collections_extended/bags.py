@@ -257,7 +257,16 @@ class _basebag(Set):
 
 	# Comparison methods
 
+	@deprecated('Renamed to issubset', '1.1')
 	def is_subset(self, other):
+		"""Check that every element in self has a count <= in other.
+
+		Args:
+			other (Set)
+		"""
+		return self.issubset(other)
+
+	def issubset(self, other):
 		"""Check that every element in self has a count <= in other.
 
 		Args:
@@ -273,7 +282,16 @@ class _basebag(Set):
 					return False
 		return True
 
+	@deprecated('Renamed to issuperset', '1.1')
 	def is_superset(self, other):
+		"""Check that every element in self has a count >= in other.
+
+		Args:
+			other (Set)
+		"""
+		return self.issuperset(other)
+
+	def issuperset(self, other):
 		"""Check that every element in self has a count >= in other.
 
 		Args:
