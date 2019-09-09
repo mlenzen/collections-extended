@@ -2,11 +2,11 @@ collections_extended's documentation
 ====================================
 
 ``collections_extended`` is a Python module providing
- - a ``bag`` class, AKA **multiset**,
- - a ``setlist`` class, which is a **unique list** or **ordered set**,
- - a ``bijection`` class,
- - a ``RangeMap`` which is a mapping from ranges to values, and
- - a ``IndexedDict`` class.
+	- a ``bag`` class, AKA **multiset**,
+	- a ``setlist`` class, which is a **unique list** or **ordered set**,
+	- a ``bijection`` class,
+	- a ``RangeMap`` which is a mapping from ranges to values, and
+	- a ``IndexedDict`` class.
 
 There are also frozen (hashable) varieties of bags and setlists.
 
@@ -17,6 +17,7 @@ It is `tested against`_ Python 2.7, 3.4, 3.5, 3.6, 3.7, PyPy & PyPy3.
 Contents:
 
 .. toctree::
+
 	:maxdepth: 3
 
 	getting_started
@@ -25,6 +26,7 @@ Contents:
 	range_map
 	bijection
 	indexed_dict
+	sentinel
 	factory
 	contributing
 	changelog
