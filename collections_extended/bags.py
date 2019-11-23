@@ -1,18 +1,26 @@
 """Bag class definitions."""
 import heapq
+from abc import ABCMeta, abstractmethod
+from collections import defaultdict
+from collections.abc import Hashable, MutableSet, Set
 from operator import itemgetter
-from collections import Set, MutableSet, Hashable
 
-from ._compat import handle_rich_comp_not_implemented
+from ._compat import Collection
 from ._util import deprecated
 
+__all__ = (
+	'BagView',
+	'CountsView',
+	'UniqueElementsView',
+	'bag',
+	'frozenbag',
+	)
 
-class UniqueElementsView:
-	"""A view for the unique items and their counts in a bag.
 
-	.. versionadded:: 1.1
-	"""
+class BagView(Collection):
+	"""Base class for bag views."""
 
+	__metaclass__ = ABCMeta
 	__slots__ = ('bag', )
 
 	def __init__(self, bag):
@@ -24,6 +32,21 @@ class UniqueElementsView:
 	def __len__(self):
 		return self.bag.num_unique_elements()
 
+	@abstractmethod
+	def __iter__(self):
+		raise NotImplementedError
+
+	@abstractmethod
+	def __contains__(self, elem):
+		raise NotImplementedError
+
+
+class UniqueElementsView(BagView):
+	"""A view for the unique items and their counts in a bag.
+
+	.. versionadded:: 1.0
+	"""
+
 	def __iter__(self):
 		for elem in self.bag._dict:
 			yield elem
@@ -32,19 +55,13 @@ class UniqueElementsView:
 		return elem in self.bag
 
 
-class CountsView:
+class CountsView(BagView):
 	"""A view for the unique items and their counts in a bag.
 
-	.. versionadded:: 1.1
+	.. versionadded:: 1.0
 	"""
 
 	__slots__ = ('bag', )
-
-	def __init__(self, bag):
-		self.bag = bag
-
-	def __repr__(self):
-		return '{0.__class__.__name__}({0.bag!r})'.format(self)
 
 	def __len__(self):
 		return self.bag.num_unique_elements()
@@ -166,7 +183,7 @@ class _basebag(Set):
 	@deprecated(
 		"Use `heapq.nlargest(n, self.counts(), key=itemgetter(1))` instead or "
 		"`sorted(self.counts(), reverse=True, key=itemgetter(1))` for `n=None`",
-		'1.1',
+		'1.0',
 		)
 	def nlargest(self, n=None):
 		"""List the n most common elements and their counts.
@@ -269,22 +286,22 @@ class _basebag(Set):
 
 	def __le__(self, other):
 		if not isinstance(other, Set):
-			return handle_rich_comp_not_implemented()
+			return NotImplemented
 		return len(self) <= len(other) and self.is_subset(other)
 
 	def __lt__(self, other):
 		if not isinstance(other, Set):
-			return handle_rich_comp_not_implemented()
+			return NotImplemented
 		return len(self) < len(other) and self.is_subset(other)
 
 	def __gt__(self, other):
 		if not isinstance(other, Set):
-			return handle_rich_comp_not_implemented()
+			return NotImplemented
 		return len(self) > len(other) and self.is_superset(other)
 
 	def __ge__(self, other):
 		if not isinstance(other, Set):
-			return handle_rich_comp_not_implemented()
+			return NotImplemented
 		return len(self) >= len(other) and self.is_superset(other)
 
 	def __eq__(self, other):
@@ -462,10 +479,14 @@ class _basebag(Set):
 		return self.copy()._isub(other)
 
 	def __mul__(self, other):
+		"""Cartesian product with other."""
+		return self.product(other)
+
+	def product(self, other, operator=None):
 		"""Cartesian product of the two sets.
 
-		other can be any iterable.
-		Both self and other must contain elements that can be added together.
+		Optionally, pass an operator to combine elements instead of creating a
+		tuple.
 
 		This should run in O(m*n+l) where:
 			m is the number of unique elements in self
@@ -474,19 +495,24 @@ class _basebag(Set):
 				l is 0
 			else:
 				l is the len(other)
-		The +l will only really matter when other is an iterable with MANY
-		repeated elements.
-		For example: {'a'^2} * 'bbbbbbbbbbbbbbbbbbbbbbbbbb'
-		The algorithm will be dominated by counting the 'b's
+
+		Args:
+			other (Iterable): The iterable to take the product with.
+			operator (Callable): A function that accepts an element from self
+				and other and returns a combined value to include in the return
+				value.
 		"""
 		if not isinstance(other, _basebag):
 			other = self._from_iterable(other)
-		values = dict()
+		values = defaultdict(int)
 		for elem, count in self.counts():
 			for other_elem, other_count in other.counts():
-				new_elem = elem + other_elem
+				if operator:
+					new_elem = operator(elem, other_elem)
+				else:
+					new_elem = (elem, other_elem)
 				new_count = count * other_count
-				values[new_elem] = new_count
+				values[new_elem] += new_count
 		return self.from_mapping(values)
 
 	def __xor__(self, other):

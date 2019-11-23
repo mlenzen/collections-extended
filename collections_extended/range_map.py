@@ -1,11 +1,13 @@
 """RangeMap class definition."""
+from abc import ABCMeta, abstractmethod
 from bisect import bisect_left, bisect_right
-from collections import Mapping, Set
+from collections.abc import Mapping, Set
 
-from ._util import NOT_SET
+from ._compat import Collection
+from .sentinel import NOT_SET
 
 
-class MappedRange():
+class MappedRange:
 	"""Represents a subrange of a RangeMap.
 
 	This is a glorified namedtuple.
@@ -49,10 +51,10 @@ class MappedRange():
 			)
 
 
-class RangeMapView:
+class RangeMapView(Collection):
 	"""Base class for views of RangeMaps."""
 
-	__slots__ = '_mapping',
+	__metaclass__ = ABCMeta
 
 	def __init__(self, mapping):
 		"""Create a RangeMapView from a RangeMap."""
@@ -60,6 +62,14 @@ class RangeMapView:
 
 	def __len__(self):
 		return len(self._mapping)
+
+	@abstractmethod
+	def __iter__(self):
+		raise NotImplementedError
+
+	@abstractmethod
+	def __contains__(self, item):
+		raise NotImplementedError
 
 	def __repr__(self):
 		return '{0.__class__.__name__}({0._mapping!r})'.format(self)
@@ -77,8 +87,6 @@ class RangeMapKeysView(RangeMapView, Set):
 	iterates over the keys that start each subrange.
 	"""
 
-	__slots__ = ()
-
 	def __contains__(self, key):
 		return key in self.mapping
 
@@ -93,8 +101,6 @@ class RangeMapItemsView(RangeMapView, Set):
 	Since iterating over all the items is impossible, the view only
 	iterates over the items that start each subrange.
 	"""
-
-	__slots__ = ()
 
 	def __contains__(self, item):
 		# TODO should item be a MappedRange instead of a 2-tuple
@@ -115,10 +121,8 @@ class RangeMapValuesView(RangeMapView):
 	"""A view on the values that mark the start of subranges of a RangeMap.
 
 	Since iterating over all the values is impossible, the view only
-	oterates over the values that start each subrange.
+	iterates over the values that start each subrange.
 	"""
-
-	__slots__ = ()
 
 	def __contains__(self, value):
 		for mapped_range in self.mapping.ranges():
@@ -428,18 +432,3 @@ class RangeMap(Mapping):
 	def items(self):
 		"""Return a view of the item pairs."""
 		return RangeMapItemsView(self)
-
-	# Python2 - override slice methods
-	def __setslice__(self, i, j, value):
-		"""Implement __setslice__ to override behavior in Python 2.
-
-		This is required because empty slices pass integers in python2 as opposed
-		to None in python 3.
-		"""
-		raise SyntaxError("Assigning slices doesn't work in Python 2, use set.")
-
-	def __delslice__(self, i, j):
-		raise SyntaxError("Deleting slices doesn't work in Python 2, use delete.")
-
-	def __getslice__(self, i, j):
-		raise SyntaxError("Getting slices doesn't work in Python 2, use get_range.")

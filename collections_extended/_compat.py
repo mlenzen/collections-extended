@@ -1,53 +1,35 @@
-"""Python 2/3 compatibility helpers."""
+"""Python version compatibility helpers."""
 import sys
 
-is_py2 = sys.version_info[0] == 2
-
-if is_py2:
-	def keys_set(d):
-		"""Return a set of passed dictionary's keys."""
-		return set(d.keys())
-else:
-	keys_set = dict.keys
-
+__all__ = ('Collection', )
 
 if sys.version_info < (3, 6):
-	from collections import Sized, Iterable, Container
+	from abc import ABCMeta
+	from collections.abc import Sized, Iterable, Container
 
-	def _check_methods(C, *methods):
-		mro = C.__mro__
+	def _check_methods(klass, *methods):
+		_missing = object()
 		for method in methods:
-			for B in mro:
-				if method in B.__dict__:
-					if B.__dict__[method] is None:
-						return NotImplemented
+			for superclass in klass.__mro__:
+				implementation = superclass.__dict__.get(method, _missing)
+				if implementation is _missing:
+					continue
+				elif implementation is None:
+					return NotImplemented
+				else:
 					break
-			else:
-				return NotImplemented
 		return True
 
-	class Collection(Sized, Iterable, Container):
-		"""Backport from Python3.6."""
+	class Collection(Sized, Iterable, Container, metaclass=ABCMeta):
+		"""Backport from Python3.6+."""
 
 		__slots__ = tuple()
 
 		@classmethod
-		def __subclasshook__(cls, C):
-			if cls is Collection:
-				return _check_methods(C, "__len__", "__iter__", "__contains__")
-			return NotImplemented
+		def __subclasshook__(cls, klass):
+			if cls is not Collection:
+				return NotImplemented
+			return _check_methods(klass, "__len__", "__iter__", "__contains__")
 
 else:
 	from collections.abc import Collection
-
-
-def handle_rich_comp_not_implemented():
-	"""Correctly handle unimplemented rich comparisons.
-
-	In Python 3, return NotImplemented.
-	In Python 2, raise a TypeError.
-	"""
-	if is_py2:
-		raise TypeError()
-	else:
-		return NotImplemented

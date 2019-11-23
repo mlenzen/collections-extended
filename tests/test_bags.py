@@ -1,10 +1,10 @@
 """Test for bag classes."""
+from operator import concat, mul
 import warnings
 
 import pytest
 
 from collections_extended.bags import _basebag, bag, frozenbag
-from collections_extended._compat import is_py2
 
 
 def test_init():
@@ -41,8 +41,6 @@ def test_str():
 	assert "'c'" in str(_basebag('abracadabra'))
 	abra_elems = set(("'a'^5", "'b'^2", "'r'^2", "'c'", "'d'"))
 	assert compare_bag_string(bag('abracadabra')) == abra_elems
-	if not is_py2:
-		assert compare_bag_string(bag('abc')) == compare_bag_string(set('abc'))
 
 
 def test_count():
@@ -65,10 +63,8 @@ def test_nlargest():
 def test_nlargest_deprecated():
 	"""Test that nlargest raises a DeprecationWarning."""
 	b = bag()
-	with warnings.catch_warnings():
-		warnings.simplefilter('error')
-		with pytest.raises(DeprecationWarning):
-			b.nlargest()
+	with pytest.deprecated_call():
+		b.nlargest()
 
 
 def test_from_map():
@@ -281,9 +277,22 @@ def test_sub():
 
 def test_mul():
 	"""Test __mul__."""
-	ms = _basebag('aab')
-	assert ms * set('a') == _basebag(('aa', 'aa', 'ba'))
-	assert ms * set() == _basebag()
+	assert bag('aab') * set('a') == bag((('a', 'a'), ('a', 'a'), ('b', 'a')))
+
+
+def test_mul_empty_set():
+	"""Test __mul__ on an empty set."""
+	assert bag('aab') * set() == bag()
+
+
+def test_product():
+	"""Test product"""
+	assert bag('aab').product(set('a'), operator=concat) == bag(('aa', 'aa', 'ba'))
+
+
+def test_product_commutative():
+	"""Test product for a commutative operator."""
+	assert bag((1, 2)).product([2, 1], operator=mul) == bag((2, 1, 4, 2))
 
 
 def test_xor():

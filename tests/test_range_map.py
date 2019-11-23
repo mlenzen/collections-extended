@@ -5,7 +5,6 @@ import datetime
 # from hypothesis.strategies import integers
 import pytest
 
-from collections_extended._compat import is_py2
 from collections_extended.range_map import RangeMap, MappedRange
 
 
@@ -196,18 +195,10 @@ def test_dates():
 def test_version_differences():
 	"""Test python 2 and 3 differences."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
-	if is_py2:
-		with pytest.raises(SyntaxError):
-			rm[3:] = 'a'
-		with pytest.raises(SyntaxError):
-			del rm[4:5]
-		with pytest.raises(SyntaxError):
-			assert rm[2:] == RangeMap({2: 'b', 3: 'a'})
-	else:
-		rm[3:] = 'a'
-		assert rm == RangeMap({1: 'a', 2: 'b', 3: 'a'})
-		del rm[1:2]
-		assert rm == RangeMap({2: 'b', 3: 'a'})
+	rm[3:] = 'a'
+	assert rm == RangeMap({1: 'a', 2: 'b', 3: 'a'})
+	del rm[1:2]
+	assert rm == RangeMap({2: 'b', 3: 'a'})
 
 
 def test_slice_errors():
@@ -257,11 +248,6 @@ def test_delete():
 def test_delitem_beginning():
 	"""Test RangeMap.__delitem__ at the beginning."""
 	rm = RangeMap({1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e'})
-	if not is_py2:
-		with pytest.raises(TypeError):
-			del rm[2]
-		with pytest.raises(ValueError):
-			del rm[2:4:2]
 	rm.delete(1, 2)
 	assert rm == RangeMap({2: 'b', 3: 'c', 4: 'd', 5: 'e'})
 
@@ -375,11 +361,7 @@ def test_get_range():
 		rm.get_range(stop=3) ==
 		RangeMap.from_iterable(((None, 1, 'z'), (1, 2, 'a'), (2, 3, 'b')))
 		)
-	if is_py2:
-		with pytest.raises(SyntaxError):
-			rm[2:3]
-	else:
-		assert rm[2:3] == rm.get_range(2, 3)
+	assert rm[2:3] == rm.get_range(2, 3)
 
 
 def test_start_gt_stop():

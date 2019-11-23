@@ -1,6 +1,6 @@
 import pickle
 
-from collections_extended._util import Sentinel, NOT_SET
+from collections_extended.sentinel import Sentinel, NOT_SET
 
 
 class TestSentinel:

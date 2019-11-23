@@ -22,6 +22,13 @@ class PyTest(TestCommand):
 		sys.exit(errcode)
 
 
+def long_description():
+	"""Read long description from README."""
+	path = join(dirname(__file__), 'README.rst')
+	with open(path, 'rt') as inf:
+		return inf.read()
+
+
 setup(
 	name='collections-extended',
 	packages=['collections_extended'],
@@ -43,16 +50,12 @@ setup(
 		'unique list',
 		],
 	classifiers=[
-		'Development Status :: 4 - Beta',
+		'Development Status :: 5 - Production/Stable',
 		'Intended Audience :: Developers',
 		'License :: OSI Approved :: Apache Software License',
 		'Operating System :: OS Independent',
 		'Programming Language :: Python',
-		'Programming Language :: Python :: 2',
-		'Programming Language :: Python :: 2.7',
 		'Programming Language :: Python :: 3',
-		'Programming Language :: Python :: 3.3',
-		'Programming Language :: Python :: 3.4',
 		'Programming Language :: Python :: 3.5',
 		'Programming Language :: Python :: 3.6',
 		'Programming Language :: Python :: 3.7',
@@ -61,7 +64,8 @@ setup(
 		'Topic :: Software Development :: Libraries',
 		'Topic :: Software Development :: Libraries :: Python Modules',
 		],
-	long_description=open(join(dirname(__file__), 'README.rst')).read(),
+	long_description=long_description(),
+	long_description_content_type='text/x-rst',
 	install_requires=['setuptools'],
 	tests_require=['pytest'],
 	package_data={'': ['README.rst', 'LICENSE', 'CONTRIBUTING.rst']},
