@@ -27,7 +27,7 @@ a ``IndexedDict`` class, which is an ordered mapping whose elements can be acces
 in addition to key.
 There are also frozen (hashable) varieties of bags and setlists.
 
-Tested against Python 3.5, 3.6, 3.7 & PyPy3.
+Tested against Python 3.5, 3.6, 3.7, 3.8 & PyPy3.
 
 Getting Started
 ===============
