@@ -1,16 +1,11 @@
 """Bag class definitions."""
-from abc import ABCMeta, abstractmethod
 import heapq
+from abc import ABCMeta, abstractmethod
 from collections import defaultdict
+from collections.abc import Hashable, MutableSet, Set
 from operator import itemgetter
 
-from ._compat import (
-	Collection,
-	Hashable,
-	MutableSet,
-	Set,
-	handle_rich_comp_not_implemented,
-	)
+from ._compat import Collection
 from ._util import deprecated
 
 __all__ = (
@@ -291,22 +286,22 @@ class _basebag(Set):
 
 	def __le__(self, other):
 		if not isinstance(other, Set):
-			return handle_rich_comp_not_implemented()
+			return NotImplemented
 		return len(self) <= len(other) and self.is_subset(other)
 
 	def __lt__(self, other):
 		if not isinstance(other, Set):
-			return handle_rich_comp_not_implemented()
+			return NotImplemented
 		return len(self) < len(other) and self.is_subset(other)
 
 	def __gt__(self, other):
 		if not isinstance(other, Set):
-			return handle_rich_comp_not_implemented()
+			return NotImplemented
 		return len(self) > len(other) and self.is_superset(other)
 
 	def __ge__(self, other):
 		if not isinstance(other, Set):
-			return handle_rich_comp_not_implemented()
+			return NotImplemented
 		return len(self) >= len(other) and self.is_superset(other)
 
 	def __eq__(self, other):

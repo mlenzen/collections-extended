@@ -27,7 +27,7 @@ a ``IndexedDict`` class, which is an ordered mapping whose elements can be acces
 in addition to key.
 There are also frozen (hashable) varieties of bags and setlists.
 
-Tested against Python 2.7, 3.4, 3.5, 3.6, 3.7, PyPy & PyPy3.
+Tested against Python 3.4, 3.5, 3.6, 3.7 & PyPy3.
 
 Getting Started
 ===============
@@ -139,6 +139,12 @@ RangeMap
 	A mapping from ranges (of numbers/dates/etc)
 IndexedDict
 	A mapping that keeps insertion order and allows access by index.
+
+Python 2
+--------
+
+The package no longer supports Python 2. The last version to support
+Python 2 was 1.0
 
 :Author: Michael Lenzen
 :Copyright: 2019 Michael Lenzen

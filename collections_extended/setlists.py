@@ -1,8 +1,14 @@
 """Setlist class definitions."""
 import random as random_
+from collections.abc import (
+	Hashable,
+	MutableSequence,
+	MutableSet,
+	Sequence,
+	Set,
+	)
 
 from . import _util
-from ._compat import Hashable, MutableSequence, MutableSet, Sequence, Set
 
 __all__ = ('setlist', 'frozensetlist')
 
