@@ -4,7 +4,7 @@ from bisect import bisect_left, bisect_right
 from collections.abc import Mapping, Set
 
 from ._compat import Collection
-from ._util import NOT_SET
+from .sentinel import NOT_SET
 
 
 class MappedRange:

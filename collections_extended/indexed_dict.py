@@ -4,7 +4,8 @@
 """
 import collections
 
-from ._util import NOT_SET, deprecation_warning
+from ._util import deprecation_warning
+from .sentinel import NOT_SET
 
 __all__ = ('IndexedDict', )
 
