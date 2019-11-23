@@ -70,6 +70,6 @@ setup(
 	install_requires=['setuptools'],
 	tests_require=['pytest'],
 	package_data={'': ['README.rst', 'LICENSE', 'CONTRIBUTING.rst']},
-	python_requires='>=2.7,!=3.0,!=3.1,!=3.2,!=3.3',
+	python_requires='>=3.5',
 	cmdclass={'test': PyTest},
 	)
