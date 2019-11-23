@@ -286,6 +286,12 @@ class IndexedDict(collections.MutableMapping):
 			data=repr(self._list),
 			)
 
+	def __str__(self):
+		return "{class_name}({data})".format(
+			class_name=self.__class__.__name__,
+			data=repr({k: self[k] for k in self}),
+			)
+
 	def __getitem__(self, key):
 		"""Return value corresponding to given key.
 
