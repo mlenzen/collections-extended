@@ -3,8 +3,8 @@
 Change Log
 ==========
 
-Version 1.1
------------
+Version 2.0.0
+-------------
 
 Unreleased
 
@@ -13,3 +13,8 @@ Unreleased
 * Add :meth:`setlist.swap`
 * Add :meth:`bag.count`, :class:`CountsView` & :class:`UniqueElementsView`
 * Add :meth:`bag.is_subset` and :meth:`is_superset`
+
+Version 1.0.3
+-------------
+
+TODO
