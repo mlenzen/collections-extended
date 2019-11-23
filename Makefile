@@ -32,7 +32,9 @@ clean:
 lint:
 	flake8 --statistics --count
 
+.PHONY: mypy
 mypy:
+	# TODO type check tests
 	mypy collections_extended
 
 .PHONY: coverage

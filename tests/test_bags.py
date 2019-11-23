@@ -73,14 +73,13 @@ def test_from_map():
 	assert _basebag.from_mapping({'a': 1, 'b': 2, 'c': 0}) == _basebag('abb')
 
 
-def test_copy():
+@pytest.mark.parametrize('b', [_basebag(), _basebag('abc')])
+def test_copy(b):
 	"""Test copy."""
-	b = _basebag()
-	assert b.copy() == b
-	assert b.copy() is not b
-	b = _basebag('abc')
-	assert b.copy() == b
-	assert b.copy() is not b
+	copy = b.copy()
+	assert copy == b
+	assert copy is not b
+	assert copy._dict is not b._dict
 
 
 def test_len():

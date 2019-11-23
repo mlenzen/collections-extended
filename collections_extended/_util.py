@@ -1,12 +1,13 @@
 """util functions for collections_extended."""
 from functools import wraps
 import textwrap
+from typing import Iterable, Hashable, Dict, Callable, Sized, Optional
 import warnings
 
 __all__ = ('hash_iterable', 'deprecated')
 
 
-def hash_iterable(it):
+def hash_iterable(it: Iterable[Hashable]) -> int:
 	"""Perform a O(1) memory hash of an iterable of arbitrary length.
 
 	hash(tuple(it)) creates a temporary tuple containing all values from it
@@ -21,17 +22,17 @@ def hash_iterable(it):
 	return hash_value
 
 
-def deprecation_warning(msg):
+def deprecation_warning(msg: str):
 	"""Raise a deprecation warning."""
 	warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
 
 
-def deprecated(msg, dep_version):
+def deprecated(msg: str, dep_version: str) -> Callable:
 	"""Decorate a function, method or class to mark as deprecated.
 
 	Raise DeprecationWarning and add a deprecation notice to the docstring.
 	"""
-	def wrapper(func):
+	def wrapper(func: Callable) -> Callable:
 		docstring = func.__doc__ or ''
 		docstring_msg = '.. deprecated:: {version} {msg}'.format(
 			version=dep_version,
@@ -61,3 +62,15 @@ def deprecated(msg, dep_version):
 		return inner
 
 	return wrapper
+
+
+def fix_seq_index(self: Sized, index: Optional[int]) -> int:
+	"""Fix an index for a Sequence."""
+	length = len(self)
+	if index is None:
+		return length - 1
+	if index < 0:
+		index += length
+	if not 0 <= index < length:
+		raise IndexError('index is out of range')
+	return index

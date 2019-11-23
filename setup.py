@@ -66,7 +66,7 @@ setup(
 		],
 	long_description=long_description(),
 	long_description_content_type='text/x-rst',
-	install_requires=['setuptools'],
+	install_requires=['setuptools', 'typing'],
 	tests_require=['pytest'],
 	package_data={'': ['README.rst', 'LICENSE', 'CONTRIBUTING.rst']},
 	cmdclass={'test': PyTest},

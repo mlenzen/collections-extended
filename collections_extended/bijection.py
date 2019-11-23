@@ -1,5 +1,6 @@
 """Class definition for bijection."""
-from collections.abc import Mapping, MutableMapping
+from collections.abc import MutableMapping
+from typing import Mapping, Iterable, Tuple, Hashable, Dict, Union
 
 __all__ = ('bijection', )
 
@@ -10,23 +11,32 @@ class bijection(MutableMapping):
 	.. automethod:: __init__
 	"""
 
-	def __init__(self, iterable=None, **kwarg):
+	def __init__(
+			self,
+			iterable: Union[
+				Mapping[Hashable, Hashable],
+				Iterable[Tuple[Hashable, Hashable]],
+				None,
+				] = None,
+			**kwargs: Hashable
+			):
 		"""Create a bijection from an iterable.
 
 		Matches dict.__init__.
 		"""
-		self._data = {}
+		self._data = {}  # type: Dict[Hashable, Hashable]
 		self.__inverse = self.__new__(bijection)
 		self.__inverse._data = {}
 		self.__inverse.__inverse = self
-		if iterable is not None:
+		# Can we just call self.update(iterable, **kwargs) here
+		if iterable:
 			if isinstance(iterable, Mapping):
 				for key, value in iterable.items():
 					self[key] = value
 			else:
 				for pair in iterable:
 					self[pair[0]] = pair[1]
-		for key, value in kwarg.items():
+		for key, value in kwargs.items():
 			self[key] = value
 
 	def __repr__(self):
@@ -41,7 +51,7 @@ class bijection(MutableMapping):
 
 	@property
 	def inverse(self):
-		"""Return the inverse of this bijection."""
+		"""Access the inverse of this bijection."""
 		return self.__inverse
 
 	# Required for MutableMapping
@@ -62,7 +72,7 @@ class bijection(MutableMapping):
 		self.inverse._data[value] = key
 
 	# Required for MutableMapping
-	def __delitem__(self, key):
+	def __delitem__(self, key: Hashable):
 		value = self._data.pop(key)
 		del self.inverse._data[value]
 
@@ -70,7 +80,7 @@ class bijection(MutableMapping):
 	def __iter__(self):
 		return iter(self._data)
 
-	def __contains__(self, key):
+	def __contains__(self, key: Hashable):
 		return key in self._data
 
 	def clear(self):
@@ -83,15 +93,15 @@ class bijection(MutableMapping):
 		return bijection(self)
 
 	def items(self):
-		"""See Mapping.items."""
+		"""Return a view of the bijection's items."""
 		return self._data.items()
 
 	def keys(self):
-		"""See Mapping.keys."""
+		"""Return a view of the bijection's keys."""
 		return self._data.keys()
 
 	def values(self):
-		"""See Mapping.values."""
+		"""Return a view of the bijection's values."""
 		return self.inverse.keys()
 
 	def __eq__(self, other):

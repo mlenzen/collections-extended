@@ -4,9 +4,6 @@ ipython
 
 # Packaging & Deploying
 bumpversion
-pytest
-sphinx>=1.8
-sphinx-autodoc-typehints
 wheel
 
 # Tests
@@ -25,5 +22,5 @@ codecov
 # Docs
 sphinx>=1.8
 sphinxcontrib-napoleon
+sphinx-autodoc-typehints
 git+https://github.com/mlenzen/alabaster.git
->>>>>>> master

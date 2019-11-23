@@ -8,7 +8,7 @@ from collections.abc import (
 	Set,
 	)
 
-from . import _util
+from ._util import hash_iterable, fix_seq_index
 
 __all__ = ('setlist', 'frozensetlist')
 
@@ -47,18 +47,12 @@ class _basesetlist(Sequence, Set):
 				)
 
 	# Convenience methods
-	def _fix_neg_index(self, index):
-		if index < 0:
-			index += len(self)
-		if index < 0:
-			raise IndexError('index is out of range')
-		return index
 
 	def _fix_end_index(self, index):
-		if index is None:
+		if index is None or index == len(self):
 			return len(self)
 		else:
-			return self._fix_neg_index(index)
+			return fix_seq_index(self, index)
 
 	def _append(self, value):
 		# Checking value in self will check that value is Hashable
@@ -149,7 +143,7 @@ class _basesetlist(Sequence, Set):
 		except KeyError:
 			raise ValueError
 		else:
-			start = self._fix_neg_index(start)
+			start = fix_seq_index(self, start)
 			end = self._fix_end_index(end)
 			if start <= index < end:
 				return index
@@ -323,7 +317,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			for i, v in enumerate(self._list):
 				self._dict[v] = i
 		else:
-			index = self._fix_neg_index(index)
+			index = fix_seq_index(self, index)
 			old_value = self._list[index]
 			if value in self:
 				if value == old_value:
@@ -339,7 +333,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 			indices_to_delete = set(self.index(e) for e in self._list[index])
 			self._delete_values_by_index(indices_to_delete)
 		else:
-			index = self._fix_neg_index(index)
+			index = fix_seq_index(self, index)
 			value = self._list[index]
 			del self._dict[value]
 			for elem in self._list[index + 1:]:
@@ -358,7 +352,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		"""
 		if value in self:
 			raise ValueError
-		index = self._fix_neg_index(index)
+		index = self._fix_end_index(index)
 		self._dict[value] = index
 		for elem in self._list[index:]:
 			self._dict[elem] += 1
@@ -560,8 +554,8 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 
 		.. versionadded:: 1.1
 		"""
-		i = self._fix_neg_index(i)
-		j = self._fix_neg_index(j)
+		i = fix_seq_index(self, i)
+		j = fix_seq_index(self, j)
 		self._list[i], self._list[j] = self._list[j], self._list[i]
 		self._dict[self._list[i]] = i
 		self._dict[self._list[j]] = j
@@ -575,5 +569,5 @@ class frozensetlist(_basesetlist, Hashable):
 
 	def __hash__(self):
 		if not hasattr(self, '_hash_value'):
-			self._hash_value = _util.hash_iterable(self)
+			self._hash_value = hash_iterable(self)
 		return self._hash_value
