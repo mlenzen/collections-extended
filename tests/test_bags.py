@@ -432,3 +432,12 @@ def test_hashability():
 		bag([a, 1])
 	# test commutativity of bag instantiation.
 	assert bag([4, 4, 5, 5, c]) == bag([4, 5, d, 4, 5])
+
+
+def test_deprecations():
+	b1 = bag()
+	b2 = bag()
+	with pytest.deprecated_call():
+		b1.is_subset(b2)
+	with pytest.deprecated_call():
+		b1.is_superset(b2)
