@@ -1,7 +1,7 @@
 """Python version compatibility helpers."""
 import sys
 
-from ._util import Sentinel
+from .sentinel import Sentinel
 
 __all__ = ('Collection', )
 
