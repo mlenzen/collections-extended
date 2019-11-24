@@ -355,3 +355,11 @@ def test_repr():
 	d["Y"] = 2
 	d[None] = None
 	assert repr(d) == "IndexedDict([(1, 'X'), ('Y', 2), (None, None)])"
+
+
+def test_str():
+	d = IndexedDict()
+	d[1] = "X"
+	d["Y"] = 2
+	d[None] = None
+	assert str(d) == "IndexedDict({1: 'X', 'Y': 2, None: None})"

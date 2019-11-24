@@ -32,7 +32,7 @@ def long_description():
 setup(
 	name='collections-extended',
 	packages=['collections_extended'],
-	version='1.0.2',
+	version='1.0.3',
 	description=(
 		'Extra Python Collections - bags (multisets) and setlists (ordered'
 		' sets)'
@@ -70,5 +70,6 @@ setup(
 	install_requires=['setuptools', 'typing'],
 	tests_require=['pytest'],
 	package_data={'': ['README.rst', 'LICENSE', 'CONTRIBUTING.rst']},
+	python_requires='>=3.5',
 	cmdclass={'test': PyTest},
 	)

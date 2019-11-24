@@ -31,3 +31,12 @@ required, add version number to:
 #. setup.py classifiers
 #. README.rst description
 #. docs/index.rst list of versions
+
+New Year
+--------
+
+When a new year arrives, it needs to be updated in:
+
+* README.rst
+* docs/index.rst
+* docs/conf.py

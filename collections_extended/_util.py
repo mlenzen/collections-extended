@@ -31,6 +31,13 @@ def deprecated(msg: str, dep_version: str) -> Callable:
 	"""Decorate a function, method or class to mark as deprecated.
 
 	Raise DeprecationWarning and add a deprecation notice to the docstring.
+
+	Args:
+		msg: The message to document
+		dep_version: The version in which this was deprecated
+	See:
+		https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-deprecated
+
 	"""
 	def wrapper(func: Callable) -> Callable:
 		docstring = func.__doc__ or ''

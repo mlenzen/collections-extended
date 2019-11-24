@@ -259,7 +259,7 @@ class _basebag(AbstractSet, Collection):
 
 	# Comparison methods
 
-	def is_subset(self, other: Iterable[Hashable]) -> bool:
+	def issubset(self, other: Iterable[Hashable]) -> bool:
 		"""Check that every element in self has a count <= in other."""
 		if isinstance(other, _basebag):
 			other_bag = other
@@ -270,7 +270,9 @@ class _basebag(AbstractSet, Collection):
 				return False
 		return True
 
-	def is_superset(self, other: Iterable[Hashable]) -> bool:
+	is_subset = deprecated('Renamed to issubset', '2.0')(issubset)
+
+	def issuperset(self, other: Iterable[Hashable]) -> bool:
 		"""Check that every element in self has a count >= in other."""
 		if isinstance(other, _basebag):
 			other_bag = other
@@ -280,6 +282,8 @@ class _basebag(AbstractSet, Collection):
 			if not self.count(elem) >= count:
 				return False
 		return True
+
+	is_superset = deprecated('Renamed to issupserset', '2.0')(issuperset)
 
 	def __le__(self, other):
 		if not isinstance(other, AbstractSet):
