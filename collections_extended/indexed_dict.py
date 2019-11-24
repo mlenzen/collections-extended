@@ -9,6 +9,7 @@ from .sentinel import NOT_SET
 
 __all__ = ('IndexedDict', )
 
+# TODO these should be ValueErrors
 KEY_AND_INDEX_ERROR = TypeError(
 	"Specifying both `key` and `index` is not allowed")
 KEY_EQ_INDEX_ERROR = TypeError(
@@ -201,30 +202,47 @@ class IndexedDict(collections.MutableMapping):
 			self._dict[moved_key] = (index, moved_value)
 			return popped_value, index, moved_key, moved_value
 
-	def popitem(self, last=True):
-		"""Remove and return last (default) or first (last=False) pair (key, value).
+	def popitem(self, last=NOT_SET, *, key=NOT_SET, index=NOT_SET):
+		"""Remove and return a (key, value) tuple.
 
-		Raises KeyError if the dictionary is empty.
+		By default, the last item is popped.
+		Optionally, specify the `key` or `index` of the value to pop.
+		The `last` parameter is included to match the OrderedDict API. If `last`
+		is passed then the first or last item is returned based on its
+		truthiness.
 
-		Runs in O(1) for last item, O(N) for first one.
+		At most one of `index`, `last` and `key` can be specified.
+
+		This is generally O(N) unless removing last item, then O(1).
+
+		Args:
+			key: The key of the value to pop
+			index: The index of the value to pop
+			last: Whether or not to pip the last item
+
+		Raises:
+			KeyError: If the dictionary is empty or a key is specified that is
+				not present
+			IndexError: If `index` is specified and is out of bounds
+			ValueError: If more than one of `last`, `index` and `key` are
+				specified
+
 		"""
-		try:
-			if last:
-				key, value = self._list.pop()
-				index = len(self._list)
-			else:
-				key, value = self._list.pop(0)
-				index = 0
-		except IndexError:
-			raise KeyError("IndexedDict is empty")
-
-		index2, value2 = self._dict.pop(key)
-		assert index == index2
-		assert value is value2
-
-		if not last:
-			self._fix_indices_after_delete()
-
+		if not self:
+			raise KeyError('IndexedDict is empty')
+		if sum(x is not NOT_SET for x in (last, key, index)) > 1:
+			raise ValueError(
+				"Cannot specify more than one of key, index and last"
+				)
+		if key is not NOT_SET:
+			index, value = self._pop_key(key=key, has_default=False)
+		else:
+			if last is not NOT_SET:
+				index = -1 if last else 0
+			if index is NOT_SET:
+				index = -1
+			key, index, value = self._pop_index(index, has_default=False)
+		self._fix_indices_after_delete(starting_index=index)
 		return key, value
 
 	def move_to_end(self, key=NOT_SET, index=NOT_SET, last=True):

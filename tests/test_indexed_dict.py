@@ -199,6 +199,26 @@ def test_popitem_first(d):
 	assert list(d) == list("bcde")
 
 
+def test_popitem_last(d):
+	assert d.popitem(last=True) == ("e", 14)
+	assert list(d) == list("abcd")
+
+
+def test_popitem_index(d):
+	assert d.popitem(index=2) == ('c', 12)
+	assert list(d) == list('abde')
+
+
+def test_popitem_key(d):
+	assert d.popitem(key='d') == ('d', 13)
+	assert list(d) == list('abce')
+
+
+def test_popitem_multiple_params(d):
+	with pytest.raises(ValueError):
+		d.popitem(last=True, index=-1)
+
+
 def test_popitem_empty():
 	d = IndexedDict()
 	with pytest.raises(KeyError):
