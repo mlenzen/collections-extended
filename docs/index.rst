@@ -20,7 +20,6 @@ not be developed for Python 2 but serious bugs may be fixed.
 Contents:
 
 .. toctree::
-
 	:maxdepth: 3
 
 	getting_started

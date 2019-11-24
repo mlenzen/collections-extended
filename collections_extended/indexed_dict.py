@@ -41,6 +41,7 @@ class IndexedDict(collections.MutableMapping):
 		If no value is found, return `default` (`None` by default).
 
 		.. deprecated :: 1.1
+
 		The `d` parameter has been renamed `default`. `d` will be removed in
 		some future version.
 
@@ -50,6 +51,7 @@ class IndexedDict(collections.MutableMapping):
 			default: The value to return if `key` is not found or `index` is
 				out of bounds. If it is NOT_SET, None is returned.
 			d: DEPRECATED: Old parameter name for `default`
+
 		"""
 		if d is not NOT_SET:
 			if default is not NOT_SET:
@@ -92,6 +94,7 @@ class IndexedDict(collections.MutableMapping):
 		This is generally O(N) unless removing last item, then O(1).
 
 		.. deprecated :: 1.1
+
 		The `d` parameter has been renamed `default`. `d` will be removed in
 		some future version.
 
@@ -101,6 +104,7 @@ class IndexedDict(collections.MutableMapping):
 			default: The value to return if the key is not found or the index is
 				out of bounds
 			d: DEPRECATED: Old parameter name for `default`
+
 		"""
 		if d is not NOT_SET:
 			if default is not NOT_SET:
