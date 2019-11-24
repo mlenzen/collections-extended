@@ -50,6 +50,8 @@ class UniqueElementsView(BagView):
 	def __iter__(self):
 		for elem in self.bag._dict:
 			yield elem
+		for elem in self.bag._list:
+			raise NotImplementedError
 
 	def __contains__(self, elem):
 		return elem in self.bag
@@ -63,10 +65,8 @@ class CountsView(BagView):
 
 	__slots__ = ('bag', )
 
-	def __len__(self):
-		return self.bag.num_unique_elements()
-
 	def __iter__(self):
+		raise NotImplementedError
 		for elem in self.bag.unique_elements():
 			yield elem, self.bag.count(elem)
 
@@ -77,6 +77,9 @@ class CountsView(BagView):
 
 class _basebag(Set):
 	"""Base class for bag classes.
+
+	bags have performance like dicts for Hashable elements and list-like
+	performance for unhashable items.
 
 	Base class for bag and frozenbag. Is not mutable and not hashable, so there's
 	no reason to use this instead of either bag or frozenbag.
@@ -93,11 +96,13 @@ class _basebag(Set):
 
 		This runs in O(len(iterable))
 		"""
-		self._dict = dict()
+		self._dict = {}
+		self._list = []
 		self._size = 0
 		if iterable:
 			if isinstance(iterable, _basebag):
 				self._dict = iterable._dict.copy()
+				self._list = iterable._list.copy()
 				self._size = iterable._size
 			else:
 				for value in iterable:
@@ -106,11 +111,24 @@ class _basebag(Set):
 	def _set_count(self, elem, count):
 		if count < 0:
 			raise ValueError
-		self._size += count - self.count(elem)
-		if count == 0:
-			self._dict.pop(elem, None)
+		if isinstance(elem, Hashable):
+			self._size += count - self.count(elem)
+			if count == 0:
+				self._dict.pop(elem, None)
+			else:
+				self._dict[elem] = count
 		else:
-			self._dict[elem] = count
+			found_count = 0
+			for item in self._list:
+				if item == elem:
+					if found_count >= count:
+						self._size -= 1
+						raise NotImplementedError
+					else:
+						found_count += 1
+			for _ in range(count - found_count):
+				self._list.append(elem)
+				self._size += 1
 
 	def _increment_count(self, elem, count=1):
 		self._set_count(elem, self.count(elem) + count)
@@ -120,12 +138,10 @@ class _basebag(Set):
 		return cls(it)
 
 	def copy(self):
-		"""Create a shallow copy of self.
-
-		This runs in O(len(self.num_unique_elements()))
-		"""
+		"""Create a shallow copy of self."""
 		out = self._from_iterable(None)
 		out._dict = self._dict.copy()
+		out._list = self._list.copy()
 		out._size = self._size
 		return out
 
@@ -160,6 +176,7 @@ class _basebag(Set):
 
 		This runs in O(1) time
 		"""
+		raise NotImplementedError
 		return len(self._dict)
 
 	def unique_elements(self):
@@ -171,14 +188,16 @@ class _basebag(Set):
 
 		If value is not in the bag no Error is raised, instead 0 is returned.
 
-		This runs in O(1) time
-
 		Args:
 			value: The element of self to get the count of
 		Returns:
 			int: The count of value in self
+
 		"""
-		return self._dict.get(value, 0)
+		try:
+			return self._dict.get(value, 0)
+		except TypeError:
+			return len(item for item in self._list if item == value)
 
 	@deprecated(
 		"Use `heapq.nlargest(n, self.counts(), key=itemgetter(1))` instead or "
@@ -233,10 +252,7 @@ class _basebag(Set):
 	# implementing Container methods
 
 	def __contains__(self, value):
-		"""Return the multiplicity of the element.
-
-		This runs in O(1)
-		"""
+		"""Return the multiplicity of the element."""
 		return self.count(value)
 
 	# implementing Iterable methods
@@ -253,16 +269,13 @@ class _basebag(Set):
 	# Comparison methods
 
 	def issubset(self, other):
-		"""Check that every element in self has a count <= in other.
-
-		Args:
-			other (Set)
-		"""
+		"""Check that every element in self has a count <= in other."""
 		if isinstance(other, _basebag):
 			for elem, count in self.counts():
 				if not count <= other.count(elem):
 					return False
 		else:
+			raise NotImplementedError
 			for elem in self:
 				if self.count(elem) > 1 or elem not in other:
 					return False
@@ -271,16 +284,13 @@ class _basebag(Set):
 	is_subset = deprecated('Renamed to issubset', '2.0')(issubset)
 
 	def issuperset(self, other):
-		"""Check that every element in self has a count >= in other.
-
-		Args:
-			other (Set)
-		"""
+		"""Check that every element in self has a count >= in other."""
 		if isinstance(other, _basebag):
 			for elem, count in other.counts():
 				if not self.count(elem) >= count:
 					return False
 		else:
+			raise NotImplementedError
 			for elem in other:
 				if elem not in self:
 					return False
