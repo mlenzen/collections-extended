@@ -383,3 +383,7 @@ def test_str():
 	d["Y"] = 2
 	d[None] = None
 	assert str(d) == "IndexedDict({1: 'X', 'Y': 2, None: None})"
+
+
+def test_items(d):
+	assert list(d.items()) == [(chr(ord("a") + i), 10 + i) for i in range(5)]

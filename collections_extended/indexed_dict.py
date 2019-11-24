@@ -305,9 +305,19 @@ class IndexedDict(collections.MutableMapping):
 			)
 
 	def __str__(self):
-		return "{class_name}({data})".format(
+		# When Python 3.5 support is dropped, we can rely on dict order and this
+		# can be simplified to:
+		# return "{class_name}({data})".format(
+		# 	class_name=self.__class__.__name__,
+		# 	data=repr(dict(self)),
+		# 	)
+		data = ', '.join(
+			'{k!r}: {v!r}'.format(k=k, v=v)
+			for k, v in self.items()
+			)
+		return "{class_name}({{{data}}})".format(
 			class_name=self.__class__.__name__,
-			data=repr({k: self[k] for k in self}),
+			data=data,
 			)
 
 	def __getitem__(self, key):
