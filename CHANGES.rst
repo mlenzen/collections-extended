@@ -20,6 +20,8 @@ Unreleased
     the elements.
 * Make :class:`MappedRange` a class instead of a namedtuple
 * Add change log
+* bags no longer inherit from Set
+    * can no longer compare as equal to Sets
 
 Version 1.0.2
 -------------

@@ -2,7 +2,7 @@
 import heapq
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
-from collections.abc import Hashable, MutableSet, Set
+from collections.abc import Hashable, Set
 from operator import itemgetter
 
 from ._compat import Collection
@@ -75,7 +75,7 @@ class CountsView(BagView):
 		return self.bag.count(elem) == count
 
 
-class _basebag(Set):
+class _basebag(Collection):
 	"""Base class for bag classes.
 
 	Base class for bag and frozenbag. Is not mutable and not hashable, so there's
@@ -256,16 +256,13 @@ class _basebag(Set):
 		"""Check that every element in self has a count <= in other.
 
 		Args:
-			other (Set)
+			other (Iterable)
 		"""
-		if isinstance(other, _basebag):
-			for elem, count in self.counts():
-				if not count <= other.count(elem):
-					return False
-		else:
-			for elem in self:
-				if self.count(elem) > 1 or elem not in other:
-					return False
+		if not isinstance(other, _basebag):
+			return self.issubset(frozenbag(other))
+		for elem, count in self.counts():
+			if not count <= other.count(elem):
+				return False
 		return True
 
 	is_subset = deprecated('Renamed to issubset', '2.0')(issubset)
@@ -274,51 +271,41 @@ class _basebag(Set):
 		"""Check that every element in self has a count >= in other.
 
 		Args:
-			other (Set)
+			other (Iterable)
 		"""
-		if isinstance(other, _basebag):
-			for elem, count in other.counts():
-				if not self.count(elem) >= count:
-					return False
-		else:
-			for elem in other:
-				if elem not in self:
-					return False
+		if not isinstance(other, _basebag):
+			return self.issuperset(bag(other))
+		for elem, count in other.counts():
+			if not self.count(elem) >= count:
+				return False
 		return True
 
 	is_superset = deprecated('Renamed to issupserset', '2.0')(issuperset)
 
 	def __le__(self, other):
-		if not isinstance(other, Set):
+		if not isinstance(other, _basebag):
 			return NotImplemented
 		return len(self) <= len(other) and self.is_subset(other)
 
 	def __lt__(self, other):
-		if not isinstance(other, Set):
+		if not isinstance(other, _basebag):
 			return NotImplemented
 		return len(self) < len(other) and self.is_subset(other)
 
 	def __gt__(self, other):
-		if not isinstance(other, Set):
+		if not isinstance(other, _basebag):
 			return NotImplemented
 		return len(self) > len(other) and self.is_superset(other)
 
 	def __ge__(self, other):
-		if not isinstance(other, Set):
+		if not isinstance(other, _basebag):
 			return NotImplemented
 		return len(self) >= len(other) and self.is_superset(other)
 
 	def __eq__(self, other):
-		if not isinstance(other, Set):
+		if not isinstance(other, _basebag):
 			return False
-		if isinstance(other, _basebag):
-			return self._dict == other._dict
-		if not len(self) == len(other):
-			return False
-		for elem in other:
-			if self.count(elem) != 1:
-				return False
-		return True
+		return self._dict == other._dict
 
 	def __ne__(self, other):
 		return not (self == other)
@@ -531,7 +518,7 @@ class _basebag(Set):
 		return self.copy()._ixor(other)
 
 
-class bag(_basebag, MutableSet):
+class bag(_basebag):
 	"""bag is a mutable unhashable bag.
 
 	.. automethod:: __init__
@@ -604,12 +591,7 @@ class frozenbag(_basebag, Hashable):
 	"""
 
 	def __hash__(self):
-		"""Compute the hash value of a frozenbag.
-
-		This was copied directly from _collections_abc.Set._hash in Python3 which
-		is identical to _abcoll.Set._hash
-		We can't call it directly because Python2 raises a TypeError.
-		"""
+		"""Compute the hash value of a frozenbag."""
 		if not hasattr(self, '_hash_value'):
-			self._hash_value = self._hash()
+			self._hash_value = Set._hash(self)
 		return self._hash_value

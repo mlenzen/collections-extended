@@ -36,9 +36,8 @@ operations:
 
 Comparison Methods
 ------------------
-Bags are comparable to Sets (including other bags). When comparing a bag to a
-Set, the Set is treated as a bag with all multiplicities equal to 1.
-The ordering comparison operators are implemented using multiset comparison.
+Bags are comparable only to other bags.
+Ordering comparisons are done setwise.
 
 .. testsetup::
 
@@ -46,23 +45,9 @@ The ordering comparison operators are implemented using multiset comparison.
 
 .. code-block:: python
 
-	>>> bag() == set()
-	True
-	>>> bag('a') == set('a')
-	True
-	>>> bag('ab') == set('a')
+	>>> bag('ac') <= bag('ab')
 	False
-	>>> bag('a') == set('ab')
-	False
-	>>> bag('aa') == set('a')
-	False
-	>>> bag('aa') == set('ab')
-	False
-	>>> bag('ac') == set('ab')
-	False
-	>>> bag('ac') <= set('ab')
-	False
-	>>> bag('ac') >= set('ab')
+	>>> bag('ac') >= bag('ab')
 	False
 	>>> bag('a') <= bag('a') < bag('aa')
 	True
@@ -169,10 +154,10 @@ New Methods
 	Returns a shallow copy of self.  O(self.num_unique_elements())
 ``isdisjoint(other: Iterable)``
 	Tests if self is disjoint with any other Iterable.  O(len(other))
-``is_subset(other: Set)``
-	Tests if self is a subset of another Set.
-``is_superset(other: Set)``
-	Tests if self is a superset of another Set.
+``is_subset(other: Iterable)``
+	Tests if self is a subset of another Iterable.
+``is_superset(other: Iterable)``
+	Tests if self is a superset of another Iterable.
 ``from_mapping(map: Mapping)``
 	Classmethod to create a bag from a Mapping that maps elements to counts.
 

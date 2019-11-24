@@ -1,6 +1,5 @@
 """Test for bag classes."""
 from operator import concat, mul
-import warnings
 
 import pytest
 
@@ -103,8 +102,8 @@ def test_contains():
 	('ab', 'ab'),
 	])
 def test_compare_eq_set(bag_data, set_data):
-	"""Test comparisons to Sets that should be equal."""
-	assert _basebag(bag_data) == set(set_data)
+	"""Test comparisons to Sets that should be not equal."""
+	assert _basebag(bag_data) != set(set_data)
 
 
 @pytest.mark.parametrize("bag_data, set_data", [
@@ -119,8 +118,8 @@ def test_compare_ne_set(bag_data, set_data):
 
 
 def test_compare_unorderable():
-	assert not _basebag('ac') <= set('ab')
-	assert not _basebag('ac') >= set('ab')
+	assert not _basebag('ac') <= _basebag('ab')
+	assert not _basebag('ac') >= _basebag('ab')
 
 
 def test_rich_comp_equal():
