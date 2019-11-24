@@ -480,12 +480,9 @@ class _basebag(Collection):
 		tuple.
 
 		This should run in O(m*n+l) where:
-			m is the number of unique elements in self
-			n is the number of unique elements in other
-			if other is a bag:
-				l is 0
-			else:
-				l is the len(other)
+			* `m` is the number of unique elements in `self`
+			* `n` is the number of unique elements in `other`
+			* `l` is 0 if `other` is a bag, else `l` is the `len(other)`
 
 		Args:
 			other (Iterable): The iterable to take the product with.
