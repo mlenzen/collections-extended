@@ -106,8 +106,8 @@ Before you submit a pull request, check that it meets these guidelines:
 3. The pull request should work for all supported versions. Check
    https://travis-ci.org/mlenzen/collections-extended/pull_requests
    and make sure that the tests pass for all supported Python versions.
-4.
- Add the feature/bug to the appropriate section in the CHANGELOG
+4. Add the feature/bug to the appropriate section in HISTORY.rst
+5. Review and update the relevant docs.
 
 Tips
 ----
