@@ -12,9 +12,14 @@ Unreleased
 * Improve efficiency for large bag operations
 * Add :meth:`setlist.swap`
 * Add :meth:`bag.count`, :class:`CountsView` & :class:`UniqueElementsView`
-* Add :meth:`bag.is_subset` and :meth:`is_superset`
+* Add :meth:`bag.issubset` and :meth:`issuperset`
+* Add support for Python 3.8
+* Drop support for Python 2.6, 2.7, 3.3, 3.4
+* Add :class:`Sentinel`
+* When multiplying bags, the cartesian product creates a tuple instead of adding
+    the elements.
+* Make :class:`MappedRange` a class instead of a namedtuple
+* Add change log
 
-Version 1.0.3
+Version 1.0.2
 -------------
-
-TODO
