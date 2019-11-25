@@ -1,5 +1,6 @@
 """Class definition for bijection."""
 from collections.abc import Mapping, MutableMapping
+from typing import Any, Hashable, Iterable, Tuple, Union
 
 __all__ = ('bijection', )
 
@@ -10,7 +11,14 @@ class bijection(MutableMapping):
 	.. automethod:: __init__
 	"""
 
-	def __init__(self, iterable=None, **kwarg):
+	def __init__(
+			self,
+			iterable: Union[
+				Mapping[Hashable, Hashable],
+				Iterable[Tuple[Hashable, Hashable]]
+				] = None,
+			**kwarg: Tuple[Hashable, Hashable],
+			):
 		"""Create a bijection from an iterable.
 
 		Matches dict.__init__.
@@ -40,7 +48,7 @@ class bijection(MutableMapping):
 				)
 
 	@property
-	def inverse(self):
+	def inverse(self) -> 'bijection':
 		"""Return the inverse of this bijection."""
 		return self.__inverse
 
@@ -49,11 +57,11 @@ class bijection(MutableMapping):
 		return len(self._data)
 
 	# Required for MutableMapping
-	def __getitem__(self, key):
+	def __getitem__(self, key: Hashable) -> Hashable:
 		return self._data[key]
 
 	# Required for MutableMapping
-	def __setitem__(self, key, value):
+	def __setitem__(self, key: Hashable, value: Hashable):
 		if key in self:
 			del self.inverse._data[self[key]]
 		if value in self.inverse:
@@ -62,7 +70,7 @@ class bijection(MutableMapping):
 		self.inverse._data[value] = key
 
 	# Required for MutableMapping
-	def __delitem__(self, key):
+	def __delitem__(self, key: Hashable):
 		value = self._data.pop(key)
 		del self.inverse._data[value]
 
@@ -70,7 +78,7 @@ class bijection(MutableMapping):
 	def __iter__(self):
 		return iter(self._data)
 
-	def __contains__(self, key):
+	def __contains__(self, key: Hashable) -> bool:
 		return key in self._data
 
 	def clear(self):
@@ -78,7 +86,7 @@ class bijection(MutableMapping):
 		self._data.clear()
 		self.inverse._data.clear()
 
-	def copy(self):
+	def copy(self) -> 'bijection':
 		"""Return a copy of this bijection."""
 		return bijection(self)
 
@@ -94,5 +102,5 @@ class bijection(MutableMapping):
 		"""See Mapping.values."""
 		return self.inverse.keys()
 
-	def __eq__(self, other):
+	def __eq__(self, other: Any):
 		return isinstance(other, bijection) and self._data == other._data

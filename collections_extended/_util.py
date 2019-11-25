@@ -1,12 +1,14 @@
 """util functions for collections_extended."""
+from collections.abc import Iterable
 from functools import wraps
 import textwrap
+from typing import Callable
 import warnings
 
-__all__ = ('hash_iterable', 'deprecated')
+__all__ = ('hash_iterable', 'deprecated', 'deprecation_warning')
 
 
-def hash_iterable(it):
+def hash_iterable(it: Iterable) -> int:
 	"""Perform a O(1) memory hash of an iterable of arbitrary length.
 
 	hash(tuple(it)) creates a temporary tuple containing all values from it
@@ -21,12 +23,12 @@ def hash_iterable(it):
 	return hash_value
 
 
-def deprecation_warning(msg):
+def deprecation_warning(msg: str):
 	"""Raise a deprecation warning."""
 	warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
 
 
-def deprecated(msg, dep_version):
+def deprecated(msg: str, dep_version: str) -> Callable:
 	"""Decorate a function, method or class to mark as deprecated.
 
 	Raise DeprecationWarning and add a deprecation notice to the docstring.
@@ -38,7 +40,7 @@ def deprecated(msg, dep_version):
 		https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-deprecated
 
 	"""
-	def wrapper(func):
+	def wrapper(func: Callable) -> Callable:
 		docstring = func.__doc__ or ''
 		docstring_msg = '.. deprecated:: {version} {msg}'.format(
 			version=dep_version,

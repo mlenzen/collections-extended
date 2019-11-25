@@ -1,10 +1,12 @@
 """collections_extended contains a few extra basic data structures."""
+from collections.abc import Iterable
+
 from ._compat import Collection
-from .bags import bag, frozenbag, UniqueElementsView, CountsView, Bag
+from .bags import Bag, CountsView, UniqueElementsView, bag, frozenbag
 from .bijection import bijection
 from .indexed_dict import IndexedDict
-from .range_map import RangeMap, MappedRange
-from .setlists import frozensetlist, setlist, SetList
+from .range_map import MappedRange, RangeMap
+from .setlists import SetList, frozensetlist, setlist
 
 __all__ = (
 	'Collection',
@@ -20,7 +22,12 @@ __all__ = (
 	)
 
 
-def collection(iterable=None, mutable=True, ordered=False, unique=False):
+def collection(
+		iterable: Iterable = None,
+		mutable=True,
+		ordered=False,
+		unique=False,
+		) -> Collection:
 	"""Return a :class:`Collection` with the specified properties.
 
 	Args:
