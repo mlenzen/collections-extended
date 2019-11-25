@@ -2,6 +2,7 @@
 from abc import ABCMeta, abstractmethod
 from bisect import bisect_left, bisect_right
 from collections.abc import Mapping, Set
+from typing import Any, Hashable, Iterator, Iterable, Union, Tuple, Generator, Optional, overload
 
 from ._compat import Collection
 from .sentinel import NOT_SET
@@ -17,7 +18,7 @@ class MappedRange:
 
 	__slots__ = ('start', 'stop', 'value')
 
-	def __init__(self, start, stop, value):
+	def __init__(self, start: Hashable, stop: Hashable, value: Any):
 		"""Create a mapped range.
 
 		Args:
@@ -30,7 +31,7 @@ class MappedRange:
 		self.value = value
 
 	# Implement __iter__ so we can unpack this
-	def __iter__(self):
+	def __iter__(self) -> Iterator:
 		yield self.start
 		yield self.stop
 		yield self.value
@@ -56,11 +57,11 @@ class RangeMapView(Collection):
 
 	__metaclass__ = ABCMeta
 
-	def __init__(self, mapping):
+	def __init__(self, mapping: 'RangeMap'):
 		"""Create a RangeMapView from a RangeMap."""
 		self._mapping = mapping
 
-	def __len__(self):
+	def __len__(self) -> int:
 		return len(self._mapping)
 
 	@abstractmethod
@@ -68,14 +69,14 @@ class RangeMapView(Collection):
 		raise NotImplementedError
 
 	@abstractmethod
-	def __contains__(self, item):
+	def __contains__(self, item: Any):
 		raise NotImplementedError
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		return '{0.__class__.__name__}({0._mapping!r})'.format(self)
 
 	@property
-	def mapping(self):
+	def mapping(self) -> 'RangeMap':
 		"""Return the underlying RangeMap."""
 		return self._mapping
 
@@ -87,10 +88,10 @@ class RangeMapKeysView(RangeMapView, Set):
 	iterates over the keys that start each subrange.
 	"""
 
-	def __contains__(self, key):
+	def __contains__(self, key: Hashable) -> bool:
 		return key in self.mapping
 
-	def __iter__(self):
+	def __iter__(self) -> Iterator[Hashable]:
 		for mapped_range in self.mapping.ranges():
 			yield mapped_range.start
 
@@ -135,7 +136,7 @@ class RangeMapValuesView(RangeMapView):
 			yield mapped_range.value
 
 
-def _check_start_stop(start, stop):
+def _check_start_stop(start: Hashable, stop: Hashable):
 	"""Check that start and stop are valid - orderable and in the right order.
 
 	Raises:
@@ -146,7 +147,7 @@ def _check_start_stop(start, stop):
 		raise ValueError('stop must be > start')
 
 
-def _check_key_slice(key):
+def _check_key_slice(key: slice):
 	if not isinstance(key, slice):
 		raise TypeError('Can only set and delete slices')
 	if key.step is not None:
@@ -159,7 +160,14 @@ class RangeMap(Mapping):
 	.. automethod:: __init__
 	"""
 
-	def __init__(self, iterable=None, default_value=NOT_SET):
+	def __init__(
+			self,
+			iterable: Union[
+				Mapping[Hashable, Any],
+				Iterable[Tuple[Hashable, Hashable, Any]],
+				] = None,
+			default_value: Any = NOT_SET,
+			):
 		"""Create a RangeMap.
 
 		A mapping or other iterable can be passed to initialize the RangeMap.
@@ -188,18 +196,21 @@ class RangeMap(Mapping):
 				self._init_from_iterable(iterable)
 
 	@classmethod
-	def from_mapping(cls, mapping):
+	def from_mapping(cls, mapping: Mapping[Hashable, Any]) -> 'RangeMap':
 		"""Create a RangeMap from a mapping of interval starts to values."""
 		obj = cls()
 		obj._init_from_mapping(mapping)
 		return obj
 
-	def _init_from_mapping(self, mapping):
+	def _init_from_mapping(self, mapping: Mapping[Hashable, Any]):
 		for key, value in sorted(mapping.items()):
 			self.set(value, key)
 
 	@classmethod
-	def from_iterable(cls, iterable):
+	def from_iterable(
+			cls,
+			iterable: Iterable[Hashable, Hashable, Any],
+			) -> 'RangeMap':
 		"""Create a RangeMap from an iterable of tuples defining each range.
 
 		Each element of the iterable is a tuple (start, stop, value).
@@ -208,35 +219,35 @@ class RangeMap(Mapping):
 		obj._init_from_iterable(iterable)
 		return obj
 
-	def _init_from_iterable(self, iterable):
+	def _init_from_iterable(self, iterable: Iterable[Hashable, Hashable, Any]):
 		for start, stop, value in iterable:
 			self.set(value, start=start, stop=stop)
 
-	def __str__(self):
+	def __str__(self) -> str:
 		range_format = '({range.start}, {range.stop}): {range.value}'
 		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
 		return 'RangeMap(%s)' % values
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		range_format = '({range.start!r}, {range.stop!r}, {range.value!r})'
 		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
 		return 'RangeMap([%s])' % values
 
-	def _bisect_left(self, key):
+	def _bisect_left(self, key: Hashable) -> int:
 		"""Return the index of the key or the last key < key."""
 		if key is None:
 			return 0
 		else:
 			return bisect_left(self._keys, key, lo=1)
 
-	def _bisect_right(self, key):
+	def _bisect_right(self, key: Hashable) -> int:
 		"""Return the index of the first key > key."""
 		if key is None:
 			return 1
 		else:
 			return bisect_right(self._keys, key, lo=1)
 
-	def ranges(self, start=None, stop=None):
+	def ranges(self, start: Hashable = None, stop: Hashable = None) -> Generator[MappedRange]:
 		"""Generate MappedRanges for all mapped ranges.
 
 		Yields:
@@ -257,7 +268,7 @@ class RangeMap(Mapping):
 				stop_key = candidate_keys[i + 1]
 				yield MappedRange(start_key, stop_key, value)
 
-	def __contains__(self, key):
+	def __contains__(self, key: Hashable) -> bool:
 		try:
 			self._getitem(key)
 		except KeyError:
@@ -278,7 +289,7 @@ class RangeMap(Mapping):
 
 	__nonzero__ = __bool__
 
-	def _getitem(self, key):
+	def _getitem(self, key: Hashable) -> Any:
 		"""Get the value for a key (not a slice)."""
 		loc = self._bisect_right(key) - 1
 		value = self._values[loc]
@@ -287,22 +298,18 @@ class RangeMap(Mapping):
 		else:
 			return value
 
-	def get(self, key, restval=None):
+	def get(self, key: Hashable, restval: Any = None) -> Any:
 		"""Get the value of the range containing key, otherwise return restval."""
 		try:
 			return self._getitem(key)
 		except KeyError:
 			return restval
 
-	def get_range(self, start=None, stop=None):
-		"""Return a RangeMap for the range start to stop.
-
-		Returns:
-			A RangeMap
-		"""
+	def get_range(self, start: Hashable = None, stop: Hashable = None) -> 'RangeMap':
+		"""Return a RangeMap for the range start to stop."""
 		return self.from_iterable(self.ranges(start, stop))
 
-	def set(self, value, start=None, stop=None):
+	def set(self, value: Any, start: Hashable = None, stop: Hashable = None):
 		"""Set the range from start to stop to value."""
 		_check_start_stop(start, stop)
 		# start_index, stop_index will denote the sections we are replacing
@@ -331,7 +338,7 @@ class RangeMap(Mapping):
 		self._keys[start_index:stop_index] = new_keys
 		self._values[start_index:stop_index] = new_values
 
-	def delete(self, start=None, stop=None):
+	def delete(self, start: Hashable = None, stop: Hashable = None):
 		"""Delete the range from start to stop from self.
 
 		Raises:
@@ -349,7 +356,7 @@ class RangeMap(Mapping):
 		# this is inefficient, we've already found the sub ranges
 		self.set(NOT_SET, start=start, stop=stop)
 
-	def empty(self, start=None, stop=None):
+	def empty(self, start: Hashable = None, stop: Hashable = None):
 		"""Empty the range from start to stop.
 
 		Like delete, but no Error is raised if the entire range isn't mapped.
@@ -362,7 +369,7 @@ class RangeMap(Mapping):
 		self._values = [NOT_SET]
 
 	@property
-	def start(self):
+	def start(self) -> Optional[Hashable]:
 		"""Get the start key of the first range.
 
 		None if RangeMap is empty or unbounded to the left.
@@ -378,7 +385,7 @@ class RangeMap(Mapping):
 			return self._keys[0]
 
 	@property
-	def end(self):
+	def end(self) -> Optional[Hashable]:
 		"""Get the stop key of the last range.
 
 		None if RangeMap is empty or unbounded to the right.
@@ -389,7 +396,7 @@ class RangeMap(Mapping):
 			# This is unbounded to the right
 			return None
 
-	def __eq__(self, other):
+	def __eq__(self, other: Any) -> bool:
 		if isinstance(other, RangeMap):
 			return (
 				self._keys == other._keys and
@@ -397,6 +404,12 @@ class RangeMap(Mapping):
 				)
 		else:
 			return False
+
+	@overload
+	def __getitem__(self, key: slice) -> 'RangeMap': ...
+
+	@overload
+	def __getitem__(self, key: Hashable) -> Any: ...
 
 	def __getitem__(self, key):
 		try:
@@ -406,29 +419,29 @@ class RangeMap(Mapping):
 		else:
 			return self.get_range(key.start, key.stop)
 
-	def __setitem__(self, key, value):
+	def __setitem__(self, key: slice, value: Any):
 		_check_key_slice(key)
 		self.set(value, key.start, key.stop)
 
-	def __delitem__(self, key):
+	def __delitem__(self, key: slice):
 		_check_key_slice(key)
 		self.delete(key.start, key.stop)
 
-	def __len__(self):
+	def __len__(self) -> int:
 		count = 0
 		for v in self._values:
 			if v is not NOT_SET:
 				count += 1
 		return count
 
-	def keys(self):
+	def keys(self) -> RangeMapKeysView:
 		"""Return a view of the keys."""
 		return RangeMapKeysView(self)
 
-	def values(self):
+	def values(self) -> RangeMapValuesView:
 		"""Return a view of the values."""
 		return RangeMapValuesView(self)
 
-	def items(self):
+	def items(self) -> RangeMapItemsView:
 		"""Return a view of the item pairs."""
 		return RangeMapItemsView(self)
