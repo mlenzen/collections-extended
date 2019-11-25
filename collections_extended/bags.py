@@ -265,8 +265,6 @@ class _basebag(Collection):
 				return False
 		return True
 
-	is_subset = deprecated('Renamed to issubset', '2.0')(issubset)
-
 	def issuperset(self, other):
 		"""Check that every element in self has a count >= in other.
 
@@ -279,8 +277,6 @@ class _basebag(Collection):
 			if not self.count(elem) >= count:
 				return False
 		return True
-
-	is_superset = deprecated('Renamed to issupserset', '2.0')(issuperset)
 
 	def __le__(self, other):
 		if not isinstance(other, _basebag):
@@ -412,11 +408,9 @@ class _basebag(Collection):
 		"""Intersection is the minimum of corresponding counts.
 
 		This runs in O(l + n) where:
-			n is self.num_unique_elements()
-			if other is a bag:
-				l = 1
-			else:
-				l = len(other)
+			* n is self.num_unique_elements()
+			* `l = 1` if other is a bag else `l = len(other)`
+
 		"""
 		return self.copy()._iand(other)
 
@@ -434,11 +428,8 @@ class _basebag(Collection):
 		"""Union is the maximum of all elements.
 
 		This runs in O(m + n) where:
-			n is self.num_unique_elements()
-			if other is a bag:
-				m = other.num_unique_elements()
-			else:
-				m = len(other)
+			* `n = self.num_unique_elements()`
+			* m = other.num_unique_elements() if other is a bag else m = len(other)
 		"""
 		return self.copy()._ior(other)
 
@@ -448,10 +439,12 @@ class _basebag(Collection):
 		self + other = self & other + self | other
 
 		This runs in O(m + n) where:
-			n is self.num_unique_elements()
-			m is len(other)
+			* n is self.num_unique_elements()
+			* m is len(other)
+
 		Args:
 			other (Iterable): elements to add to self
+
 		"""
 		return self.copy()._iadd(other)
 
@@ -462,10 +455,12 @@ class _basebag(Collection):
 		For bags this is count(x) = max(0, self.count(x)-other.count(x))
 
 		This runs in O(m + n) where:
-			n is self.num_unique_elements()
-			m is len(other)
+			* n is self.num_unique_elements()
+			* m is len(other)
+
 		Args:
 			other (Iterable): elements to remove
+
 		"""
 		return self.copy()._isub(other)
 

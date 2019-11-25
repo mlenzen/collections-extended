@@ -114,16 +114,17 @@ Quirks
 API
 ---
 
+_basesetlist
+^^^^^^^^^^^^
+
+.. autoclass:: collections_extended._basesetlist
+
 setlist
 ^^^^^^^
 
 .. autoclass:: collections_extended.setlist
 
-	:show-inheritance:
-
 frozensetlist
 ^^^^^^^^^^^^^
 
 .. autoclass:: collections_extended.frozensetlist
-
-	:show-inheritance:

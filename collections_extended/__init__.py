@@ -1,10 +1,10 @@
 """collections_extended contains a few extra basic data structures."""
 from ._compat import Collection
-from .bags import bag, frozenbag, UniqueElementsView, CountsView
+from .bags import bag, frozenbag, UniqueElementsView, CountsView, _basebag
 from .bijection import bijection
 from .indexed_dict import IndexedDict
 from .range_map import RangeMap, MappedRange
-from .setlists import frozensetlist, setlist
+from .setlists import frozensetlist, setlist, _basesetlist
 
 __all__ = (
 	'Collection',

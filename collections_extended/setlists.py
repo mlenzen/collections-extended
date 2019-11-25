@@ -14,7 +14,7 @@ __all__ = ('setlist', 'frozensetlist')
 
 
 class _basesetlist(Sequence, Set):
-	"""A setlist is an ordered Collection of unique elements.
+	"""A setlist is an ordered `Collection` of unique elements.
 
 	_basesetlist is the superclass of setlist and frozensetlist.  It is immutable
 	and unhashable.
