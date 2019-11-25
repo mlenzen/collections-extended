@@ -14,6 +14,9 @@ Breaking Changes
   the elements.
 * bags no longer inherit from Set
   * can no longer compare as equal to Sets
+* Rename and expose bag and set base classes
+  * `_basebag` -> :class:`Bag`
+  * `_basesetlist` -> :class:`SetList`
 
 Added
 """""

@@ -114,10 +114,10 @@ Quirks
 API
 ---
 
-_basesetlist
-^^^^^^^^^^^^
+SetList
+^^^^^^^
 
-.. autoclass:: collections_extended._basesetlist
+.. autoclass:: collections_extended.SetList
 
 setlist
 ^^^^^^^

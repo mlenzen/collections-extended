@@ -10,14 +10,14 @@ from collections.abc import (
 
 from . import _util
 
-__all__ = ('setlist', 'frozensetlist')
+__all__ = ('SetList', 'setlist', 'frozensetlist')
 
 
-class _basesetlist(Sequence, Set):
+class SetList(Sequence, Set):
 	"""A setlist is an ordered `Collection` of unique elements.
 
-	_basesetlist is the superclass of setlist and frozensetlist.  It is immutable
-	and unhashable.
+	`SetList` is the superclass of `setlist` and `frozensetlist`. It is
+	immutable and unhashable.
 	"""
 
 	def __init__(self, iterable=None, raise_on_duplicate=False):
@@ -47,6 +47,7 @@ class _basesetlist(Sequence, Set):
 				)
 
 	# Convenience methods
+
 	def _fix_neg_index(self, index):
 		if index < 0:
 			index += len(self)
@@ -158,7 +159,7 @@ class _basesetlist(Sequence, Set):
 
 	@classmethod
 	def _check_type(cls, other, operand_name):
-		if not isinstance(other, _basesetlist):
+		if not isinstance(other, SetList):
 			message = (
 				"unsupported operand type(s) for {operand_name}: "
 				"'{self_type}' and '{other_type}'").format(
@@ -217,7 +218,7 @@ class _basesetlist(Sequence, Set):
 	# Comparison
 
 	def __eq__(self, other):
-		if not isinstance(other, _basesetlist):
+		if not isinstance(other, SetList):
 			return False
 		if not len(self) == len(other):
 			return False
@@ -260,7 +261,7 @@ class _basesetlist(Sequence, Set):
 		return self.__class__(self)
 
 
-class setlist(_basesetlist, MutableSequence, MutableSet):
+class setlist(SetList, MutableSequence, MutableSet):
 	"""A mutable (unhashable) setlist.
 
 	.. automethod:: __init__
@@ -567,7 +568,7 @@ class setlist(_basesetlist, MutableSequence, MutableSet):
 		self._dict[self._list[j]] = j
 
 
-class frozensetlist(_basesetlist, Hashable):
+class frozensetlist(SetList, Hashable):
 	"""An immutable (hashable) setlist.
 
 	.. automethod:: __init__

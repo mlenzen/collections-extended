@@ -9,6 +9,7 @@ from ._compat import Collection
 from ._util import deprecated
 
 __all__ = (
+	'Bag',
 	'BagView',
 	'CountsView',
 	'UniqueElementsView',
@@ -75,7 +76,7 @@ class CountsView(BagView):
 		return self.bag.count(elem) == count
 
 
-class _basebag(Collection):
+class Bag(Collection):
 	"""Base class for bag classes.
 
 	Base class for bag and frozenbag. Is not mutable and not hashable, so there's
@@ -96,7 +97,7 @@ class _basebag(Collection):
 		self._dict = dict()
 		self._size = 0
 		if iterable:
-			if isinstance(iterable, _basebag):
+			if isinstance(iterable, Bag):
 				self._dict = iterable._dict.copy()
 				self._size = iterable._size
 			else:
@@ -258,7 +259,7 @@ class _basebag(Collection):
 		Args:
 			other (Iterable)
 		"""
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			return self.issubset(frozenbag(other))
 		for elem, count in self.counts():
 			if not count <= other.count(elem):
@@ -271,7 +272,7 @@ class _basebag(Collection):
 		Args:
 			other (Iterable)
 		"""
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			return self.issuperset(bag(other))
 		for elem, count in other.counts():
 			if not self.count(elem) >= count:
@@ -279,27 +280,27 @@ class _basebag(Collection):
 		return True
 
 	def __le__(self, other):
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			return NotImplemented
 		return len(self) <= len(other) and self.is_subset(other)
 
 	def __lt__(self, other):
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			return NotImplemented
 		return len(self) < len(other) and self.is_subset(other)
 
 	def __gt__(self, other):
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			return NotImplemented
 		return len(self) > len(other) and self.is_superset(other)
 
 	def __ge__(self, other):
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			return NotImplemented
 		return len(self) >= len(other) and self.is_superset(other)
 
 	def __eq__(self, other):
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			return False
 		return self._dict == other._dict
 
@@ -311,12 +312,12 @@ class _basebag(Collection):
 	def _iadd(self, other):
 		"""Add all of the elements of other to self.
 
-		if isinstance(it, _basebag):
+		if isinstance(it, Bag):
 				This runs in O(it.num_unique_elements())
 		else:
 				This runs in O(len(it))
 		"""
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			for elem, count in other.counts():
 				self._increment_count(elem, count)
 		else:
@@ -327,13 +328,13 @@ class _basebag(Collection):
 	def _iand(self, other):
 		"""Set multiplicity of each element to the minimum of the two collections.
 
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			This runs in O(other.num_unique_elements())
 		else:
 			This runs in O(len(other))
 		"""
 		# TODO do we have to create a bag from the other first?
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			other = self._from_iterable(other)
 		for elem, old_count in set(self.counts()):
 			other_count = other.count(elem)
@@ -344,13 +345,13 @@ class _basebag(Collection):
 	def _ior(self, other):
 		"""Set multiplicity of each element to the maximum of the two collections.
 
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			This runs in O(other.num_unique_elements())
 		else:
 			This runs in O(len(other))
 		"""
 		# TODO do we have to create a bag from the other first?
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			other = self._from_iterable(other)
 		for elem, other_count in other.counts():
 			old_count = self.count(elem)
@@ -361,12 +362,12 @@ class _basebag(Collection):
 	def _ixor(self, other):
 		"""Set self to the symmetric difference between the sets.
 
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			This runs in O(other.num_unique_elements())
 		else:
 			This runs in O(len(other))
 		"""
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			for elem, other_count in other.counts():
 				count = abs(self.count(elem) - other_count)
 				self._set_count(elem, count)
@@ -385,12 +386,12 @@ class _basebag(Collection):
 	def _isub(self, other):
 		"""Discard the elements of other from self.
 
-		if isinstance(it, _basebag):
+		if isinstance(it, Bag):
 			This runs in O(it.num_unique_elements())
 		else:
 			This runs in O(len(it))
 		"""
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			for elem, other_count in other.counts():
 				try:
 					self._increment_count(elem, -other_count)
@@ -485,7 +486,7 @@ class _basebag(Collection):
 				and other and returns a combined value to include in the return
 				value.
 		"""
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			other = self._from_iterable(other)
 		values = defaultdict(int)
 		for elem, count in self.counts():
@@ -510,7 +511,7 @@ class _basebag(Collection):
 		return self.copy()._ixor(other)
 
 
-class bag(_basebag):
+class bag(Bag):
 	"""bag is a mutable unhashable bag.
 
 	.. automethod:: __init__
@@ -569,14 +570,14 @@ class bag(_basebag):
 
 	# In-place operations
 
-	__ior__ = _basebag._ior
-	__iand__ = _basebag._iand
-	__ixor__ = _basebag._ixor
-	__isub__ = _basebag._isub
-	__iadd__ = _basebag._iadd
+	__ior__ = Bag._ior
+	__iand__ = Bag._iand
+	__ixor__ = Bag._ixor
+	__isub__ = Bag._isub
+	__iadd__ = Bag._iadd
 
 
-class frozenbag(_basebag, Hashable):
+class frozenbag(Bag, Hashable):
 	"""frozenbag is an immutable, hashable bag.
 
 	.. automethod:: __init__

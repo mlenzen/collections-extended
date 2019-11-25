@@ -11,7 +11,7 @@ hashable elements due to the implementation.
 
 There are three classes provided:
 
-:class:`_basebag`
+:class:`Bag`
   An abstract base class for bags.
 :class:`bag`
   A mutable (unhashable) bag.
@@ -177,10 +177,10 @@ The following are only for mutable bags (not frozenbags).
 API
 ---
 
-_basebag
-^^^^^^^^
+Bag
+^^^
 
-.. autoclass:: _basebag
+.. autoclass:: Bag
 
 bag
 ^^^
