@@ -282,22 +282,22 @@ class Bag(Collection):
 	def __le__(self, other):
 		if not isinstance(other, Bag):
 			return NotImplemented
-		return len(self) <= len(other) and self.is_subset(other)
+		return len(self) <= len(other) and self.issubset(other)
 
 	def __lt__(self, other):
 		if not isinstance(other, Bag):
 			return NotImplemented
-		return len(self) < len(other) and self.is_subset(other)
+		return len(self) < len(other) and self.issubset(other)
 
 	def __gt__(self, other):
 		if not isinstance(other, Bag):
 			return NotImplemented
-		return len(self) > len(other) and self.is_superset(other)
+		return len(self) > len(other) and self.issuperset(other)
 
 	def __ge__(self, other):
 		if not isinstance(other, Bag):
 			return NotImplemented
-		return len(self) >= len(other) and self.is_superset(other)
+		return len(self) >= len(other) and self.issuperset(other)
 
 	def __eq__(self, other):
 		if not isinstance(other, Bag):
@@ -559,7 +559,7 @@ class bag(Bag):
 		Raises a ValueError if the multiplicity of any elem in other is greater
 		than in self.
 		"""
-		if not self.is_superset(other):
+		if not self.issuperset(other):
 			raise ValueError('Passed collection is not a subset of this bag')
 		self.discard_all(other)
 
