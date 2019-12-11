@@ -19,14 +19,21 @@ testall:
 
 .PHONY: clean
 clean:
-	rm -rf build
+	rm -rf build 
+	rm -rf .cache 
 	rm -rf dist
-	rm -rf data_structures.egg-info
+	rm -rf .eggs 
+	rm -rf htmlcov
+	rm -rf .mypy_cache 
+	rm -rf .pytest_cache 
+	rm -rf .tox
+	rm -rf *.egg-info
 	find . -name *.pyc -delete
 	find . -name *.pyo -delete
 	find . -name *~ -delete
 	find . -name __pycache__ -delete
 	find . -name *,cover -delete
+	make -C docs clean
 
 .PHONY: lint
 lint:
