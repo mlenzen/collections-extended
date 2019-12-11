@@ -26,6 +26,7 @@ class Sentinel:
             return new
 
     def __init__(self, name):
+        """Create a Sentinel with ``name``."""
         super(Sentinel, self).__init__()
         self._name = name
 

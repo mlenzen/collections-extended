@@ -25,6 +25,7 @@ class BagView(Collection):
     __slots__ = ("bag",)
 
     def __init__(self, bag):
+        """Create a view of a bag."""
         self.bag = bag
 
     def __repr__(self):

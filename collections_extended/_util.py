@@ -38,6 +38,7 @@ def deprecated(msg, dep_version):
         https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-deprecated
 
     """
+
     def wrapper(func):
         docstring = func.__doc__ or ""
         docstring_msg = ".. deprecated:: {version} {msg}".format(

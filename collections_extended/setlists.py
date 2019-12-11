@@ -349,7 +349,7 @@ class setlist(SetList, MutableSequence, MutableSet):
             index = self._fix_neg_index(index)
             value = self._list[index]
             del self._dict[value]
-            for elem in self._list[index + 1:]:
+            for elem in self._list[index + 1 :]:  # noqa black likes it like this
                 self._dict[elem] -= 1
             del self._list[index]
 
