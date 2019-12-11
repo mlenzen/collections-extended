@@ -8,22 +8,25 @@ from collections_extended import (
     bijection,
     RangeMap,
     Collection,
-    )
+)
 
 
-@pytest.mark.parametrize('klass', [
-    setlist,
-    frozensetlist,
-    bag,
-    frozenbag,
-    bijection,
-    RangeMap,
-    list,
-    tuple,
-    set,
-    frozenset,
-    dict,
-    ])
+@pytest.mark.parametrize(
+    "klass",
+    [
+        setlist,
+        frozensetlist,
+        bag,
+        frozenbag,
+        bijection,
+        RangeMap,
+        list,
+        tuple,
+        set,
+        frozenset,
+        dict,
+    ],
+)
 def test_subclass(klass):
     """Test that all appropriate collections are subclasses of Collection."""
     assert issubclass(klass, Collection)

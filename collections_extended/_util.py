@@ -3,7 +3,7 @@ from functools import wraps
 import textwrap
 import warnings
 
-__all__ = ('hash_iterable', 'deprecated')
+__all__ = ("hash_iterable", "deprecated")
 
 
 def hash_iterable(it):
@@ -38,24 +38,19 @@ def deprecated(msg, dep_version):
         https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-deprecated
 
     """
+
     def wrapper(func):
-        docstring = func.__doc__ or ''
-        docstring_msg = '.. deprecated:: {version} {msg}'.format(
-            version=dep_version,
-            msg=msg,
-            )
+        docstring = func.__doc__ or ""
+        docstring_msg = ".. deprecated:: {version} {msg}".format(
+            version=dep_version, msg=msg,
+        )
         if docstring:
             # We don't know how far to indent this message
             # so instead we just dedent everything.
             string_list = docstring.splitlines()
             first_line = string_list[0]
-            remaining = textwrap.dedent(''.join(string_list[1:]))
-            docstring = '\n'.join([
-                first_line,
-                remaining,
-                '',
-                docstring_msg,
-                ])
+            remaining = textwrap.dedent("".join(string_list[1:]))
+            docstring = "\n".join([first_line, remaining, "", docstring_msg,])
         else:
             docstring = docstring_msg
         func.__doc__ = docstring

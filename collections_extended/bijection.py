@@ -1,7 +1,7 @@
 """Class definition for bijection."""
 from collections.abc import Mapping, MutableMapping
 
-__all__ = ('bijection', )
+__all__ = ("bijection",)
 
 
 class bijection(MutableMapping):
@@ -31,13 +31,12 @@ class bijection(MutableMapping):
 
     def __repr__(self):
         if len(self._data) == 0:
-            return '{0}()'.format(self.__class__.__name__)
+            return "{0}()".format(self.__class__.__name__)
         else:
-            repr_format = '{class_name}({values!r})'
+            repr_format = "{class_name}({values!r})"
             return repr_format.format(
-                class_name=self.__class__.__name__,
-                values=self._data,
-                )
+                class_name=self.__class__.__name__, values=self._data,
+            )
 
     @property
     def inverse(self):

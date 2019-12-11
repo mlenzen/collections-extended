@@ -9,26 +9,26 @@ from ._compat import Collection
 from ._util import deprecated
 
 __all__ = (
-    'Bag',
-    'BagView',
-    'CountsView',
-    'UniqueElementsView',
-    'bag',
-    'frozenbag',
-    )
+    "Bag",
+    "BagView",
+    "CountsView",
+    "UniqueElementsView",
+    "bag",
+    "frozenbag",
+)
 
 
 class BagView(Collection):
     """Base class for bag views."""
 
     __metaclass__ = ABCMeta
-    __slots__ = ('bag', )
+    __slots__ = ("bag",)
 
     def __init__(self, bag):
         self.bag = bag
 
     def __repr__(self):
-        return '{0.__class__.__name__}({0.bag!r})'.format(self)
+        return "{0.__class__.__name__}({0.bag!r})".format(self)
 
     def __len__(self):
         return self.bag.num_unique_elements()
@@ -62,7 +62,7 @@ class CountsView(BagView):
     .. versionadded:: 1.0
     """
 
-    __slots__ = ('bag', )
+    __slots__ = ("bag",)
 
     def __len__(self):
         return self.bag.num_unique_elements()
@@ -132,27 +132,26 @@ class Bag(Collection):
 
     def __repr__(self):
         if self._size == 0:
-            return '{0}()'.format(self.__class__.__name__)
+            return "{0}()".format(self.__class__.__name__)
         else:
-            repr_format = '{class_name}({values!r})'
+            repr_format = "{class_name}({values!r})"
             return repr_format.format(
-                class_name=self.__class__.__name__,
-                values=tuple(self),
-                )
+                class_name=self.__class__.__name__, values=tuple(self),
+            )
 
     def __str__(self):
         if self._size == 0:
-            return '{class_name}()'.format(class_name=self.__class__.__name__)
+            return "{class_name}()".format(class_name=self.__class__.__name__)
         else:
-            format_single = '{elem!r}'
-            format_mult = '{elem!r}^{mult}'
+            format_single = "{elem!r}"
+            format_mult = "{elem!r}^{mult}"
             strings = []
             for elem, mult in self.counts():
                 if mult > 1:
                     strings.append(format_mult.format(elem=elem, mult=mult))
                 else:
                     strings.append(format_single.format(elem=elem))
-            return '{%s}' % ', '.join(strings)
+            return "{%s}" % ", ".join(strings)
 
     # New public methods (not overriding/implementing anything)
 
@@ -184,8 +183,8 @@ class Bag(Collection):
     @deprecated(
         "Use `heapq.nlargest(n, self.counts(), key=itemgetter(1))` instead or "
         "`sorted(self.counts(), reverse=True, key=itemgetter(1))` for `n=None`",
-        '1.0',
-        )
+        "1.0",
+    )
     def nlargest(self, n=None):
         """List the n most common elements and their counts.
 
@@ -524,7 +523,7 @@ class bag(Bag):
         try:
             value = next(it)
         except StopIteration:
-            raise KeyError('pop from an empty bag')
+            raise KeyError("pop from an empty bag")
         self.remove(value)
         return value
 
@@ -560,7 +559,7 @@ class bag(Bag):
         than in self.
         """
         if not self.issuperset(other):
-            raise ValueError('Passed collection is not a subset of this bag')
+            raise ValueError("Passed collection is not a subset of this bag")
         self.discard_all(other)
 
     def clear(self):
@@ -585,6 +584,6 @@ class frozenbag(Bag, Hashable):
 
     def __hash__(self):
         """Compute the hash value of a frozenbag."""
-        if not hasattr(self, '_hash_value'):
+        if not hasattr(self, "_hash_value"):
             self._hash_value = Set._hash(self)
         return self._hash_value

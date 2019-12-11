@@ -15,7 +15,7 @@ class MappedRange:
     .. automethod:: __init__
     """
 
-    __slots__ = ('start', 'stop', 'value')
+    __slots__ = ("start", "stop", "value")
 
     def __init__(self, start, stop, value):
         """Create a mapped range.
@@ -36,19 +36,17 @@ class MappedRange:
         yield self.value
 
     def __str__(self):
-        return '[{start!r}, {stop!r}) -> {value!r}'.format(
-            start=self.start,
-            stop=self.stop,
-            value=self.value,
-            )
+        return "[{start!r}, {stop!r}) -> {value!r}".format(
+            start=self.start, stop=self.stop, value=self.value,
+        )
 
     def __repr__(self):
-        return '{class_name}({start!r}, {stop!r}, {value!r})'.format(
+        return "{class_name}({start!r}, {stop!r}, {value!r})".format(
             class_name=self.__class__.__name__,
             start=self.start,
             stop=self.stop,
             value=self.value,
-            )
+        )
 
 
 class RangeMapView(Collection):
@@ -72,7 +70,7 @@ class RangeMapView(Collection):
         raise NotImplementedError
 
     def __repr__(self):
-        return '{0.__class__.__name__}({0._mapping!r})'.format(self)
+        return "{0.__class__.__name__}({0._mapping!r})".format(self)
 
     @property
     def mapping(self):
@@ -143,14 +141,14 @@ def _check_start_stop(start, stop):
         TypeError: if unorderable
     """
     if start is not None and stop is not None and stop <= start:
-        raise ValueError('stop must be > start')
+        raise ValueError("stop must be > start")
 
 
 def _check_key_slice(key):
     if not isinstance(key, slice):
-        raise TypeError('Can only set and delete slices')
+        raise TypeError("Can only set and delete slices")
     if key.step is not None:
-        raise ValueError('Cannot set or delete slices with steps')
+        raise ValueError("Cannot set or delete slices with steps")
 
 
 class RangeMap(Mapping):
@@ -213,14 +211,14 @@ class RangeMap(Mapping):
             self.set(value, start=start, stop=stop)
 
     def __str__(self):
-        range_format = '({range.start}, {range.stop}): {range.value}'
-        values = ', '.join([range_format.format(range=r) for r in self.ranges()])
-        return 'RangeMap(%s)' % values
+        range_format = "({range.start}, {range.stop}): {range.value}"
+        values = ", ".join([range_format.format(range=r) for r in self.ranges()])
+        return "RangeMap(%s)" % values
 
     def __repr__(self):
-        range_format = '({range.start!r}, {range.stop!r}, {range.value!r})'
-        values = ', '.join([range_format.format(range=r) for r in self.ranges()])
-        return 'RangeMap([%s])' % values
+        range_format = "({range.start!r}, {range.stop!r}, {range.value!r})"
+        values = ", ".join([range_format.format(range=r) for r in self.ranges()])
+        return "RangeMap([%s])" % values
 
     def _bisect_left(self, key):
         """Return the index of the key or the last key < key."""
@@ -391,10 +389,7 @@ class RangeMap(Mapping):
 
     def __eq__(self, other):
         if isinstance(other, RangeMap):
-            return (
-                self._keys == other._keys and
-                self._values == other._values
-                )
+            return self._keys == other._keys and self._values == other._values
         else:
             return False
 

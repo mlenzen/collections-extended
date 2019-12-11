@@ -65,7 +65,7 @@ def test_get_specifying_missing_default(d, indexing):
 
 def test_get_deprecated_param(d):
     with pytest.deprecated_call():
-        assert d.get('x', d='XXX') == 'XXX'
+        assert d.get("x", d="XXX") == "XXX"
 
 
 @pytest.mark.parametrize("indexing", [{"key": "x"}, {"index": 100}, {"index": -6}])
@@ -77,11 +77,11 @@ def test_get_duplicate_default(d):
     with pytest.raises(ValueError):
         d.get(d=None, default=None)
     with pytest.raises(ValueError):
-        d.get(d='XXX', default=None)
+        d.get(d="XXX", default=None)
     with pytest.raises(ValueError):
-        d.get(d=None, default='XXX')
+        d.get(d=None, default="XXX")
     with pytest.raises(ValueError):
-        d.get(d='XXX', default='XXX')
+        d.get(d="XXX", default="XXX")
 
 
 def test_get_both_key_and_index(d):
@@ -113,7 +113,7 @@ def test_pop_missing_default(d, indexing):
 
 def test_pop_duplicate_default(d):
     with pytest.raises(ValueError):
-        d.pop(d='XXX', default='XXX')
+        d.pop(d="XXX", default="XXX")
 
 
 def test_pop_missing_key_no_default(d):
@@ -131,7 +131,7 @@ def test_pop_missing_index_no_default(d, index):
 
 def test_deprecated_pop_default(d):
     with pytest.deprecated_call():
-        assert d.pop(999, d='XXX') == 'XXX'
+        assert d.pop(999, d="XXX") == "XXX"
 
 
 def test_pop_empty_default():
@@ -205,13 +205,13 @@ def test_popitem_last(d):
 
 
 def test_popitem_index(d):
-    assert d.popitem(index=2) == ('c', 12)
-    assert list(d) == list('abde')
+    assert d.popitem(index=2) == ("c", 12)
+    assert list(d) == list("abde")
 
 
 def test_popitem_key(d):
-    assert d.popitem(key='d') == ('d', 13)
-    assert list(d) == list('abce')
+    assert d.popitem(key="d") == ("d", 13)
+    assert list(d) == list("abce")
 
 
 def test_popitem_multiple_params(d):

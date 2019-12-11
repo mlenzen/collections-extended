@@ -1,7 +1,7 @@
 """Python version compatibility helpers."""
 import sys
 
-__all__ = ('Collection', )
+__all__ = ("Collection",)
 
 if sys.version_info < (3, 6):
     from abc import ABCMeta
@@ -30,6 +30,7 @@ if sys.version_info < (3, 6):
             if cls is not Collection:
                 return NotImplemented
             return _check_methods(klass, "__len__", "__iter__", "__contains__")
+
 
 else:
     from collections.abc import Collection

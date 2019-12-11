@@ -7,13 +7,11 @@ import collections
 from ._util import deprecation_warning
 from .sentinel import NOT_SET
 
-__all__ = ('IndexedDict', )
+__all__ = ("IndexedDict",)
 
 # TODO these should be ValueErrors
-KEY_AND_INDEX_ERROR = TypeError(
-    "Specifying both `key` and `index` is not allowed")
-KEY_EQ_INDEX_ERROR = TypeError(
-    "Exactly one of `key` and `index` must be specified")
+KEY_AND_INDEX_ERROR = TypeError("Specifying both `key` and `index` is not allowed")
+KEY_EQ_INDEX_ERROR = TypeError("Exactly one of `key` and `index` must be specified")
 
 
 class IndexedDict(collections.MutableMapping):
@@ -55,10 +53,10 @@ class IndexedDict(collections.MutableMapping):
         """
         if d is not NOT_SET:
             if default is not NOT_SET:
-                raise ValueError('Specified default and d')
+                raise ValueError("Specified default and d")
             deprecation_warning(
                 "IndexedDict.pop parameter 'd' has been renamed to 'default'"
-                )
+            )
             default = d
         if default is NOT_SET:
             default = None
@@ -108,10 +106,10 @@ class IndexedDict(collections.MutableMapping):
         """
         if d is not NOT_SET:
             if default is not NOT_SET:
-                raise ValueError('Specified default and d')
+                raise ValueError("Specified default and d")
             deprecation_warning(
                 "IndexedDict.pop parameter 'd' has been renamed to 'default'"
-                )
+            )
             default = d
 
         has_default = default is not NOT_SET
@@ -233,11 +231,9 @@ class IndexedDict(collections.MutableMapping):
 
         """
         if not self:
-            raise KeyError('IndexedDict is empty')
+            raise KeyError("IndexedDict is empty")
         if sum(x is not NOT_SET for x in (last, key, index)) > 1:
-            raise ValueError(
-                "Cannot specify more than one of key, index and last"
-                )
+            raise ValueError("Cannot specify more than one of key, index and last")
         if key is not NOT_SET:
             index, value = self._pop_key(key=key, has_default=False)
         else:
@@ -304,9 +300,8 @@ class IndexedDict(collections.MutableMapping):
 
     def __repr__(self):
         return "{class_name}({data})".format(
-            class_name=self.__class__.__name__,
-            data=repr(self._list),
-            )
+            class_name=self.__class__.__name__, data=repr(self._list),
+        )
 
     def __str__(self):
         # When Python 3.5 support is dropped, we can rely on dict order and this
@@ -315,14 +310,10 @@ class IndexedDict(collections.MutableMapping):
         #     class_name=self.__class__.__name__,
         #     data=repr(dict(self)),
         #     )
-        data = ', '.join(
-            '{k!r}: {v!r}'.format(k=k, v=v)
-            for k, v in self.items()
-            )
+        data = ", ".join("{k!r}: {v!r}".format(k=k, v=v) for k, v in self.items())
         return "{class_name}({{{data}}})".format(
-            class_name=self.__class__.__name__,
-            data=data,
-            )
+            class_name=self.__class__.__name__, data=data,
+        )
 
     def __getitem__(self, key):
         """Return value corresponding to given key.

@@ -7,17 +7,17 @@ from .range_map import RangeMap, MappedRange
 from .setlists import frozensetlist, setlist, SetList
 
 __all__ = (
-    'Collection',
-    'Bag',
-    'bag',
-    'frozenbag',
-    'bijection',
-    'IndexedDict',
-    'RangeMap',
-    'SetList',
-    'frozensetlist',
-    'setlist',
-    )
+    "Collection",
+    "Bag",
+    "bag",
+    "frozenbag",
+    "bijection",
+    "IndexedDict",
+    "RangeMap",
+    "SetList",
+    "frozensetlist",
+    "setlist",
+)
 
 
 def collection(iterable=None, mutable=True, ordered=False, unique=False):

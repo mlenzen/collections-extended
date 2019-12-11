@@ -6,11 +6,11 @@ from collections.abc import (
     MutableSet,
     Sequence,
     Set,
-    )
+)
 
 from . import _util
 
-__all__ = ('SetList', 'setlist', 'frozensetlist')
+__all__ = ("SetList", "setlist", "frozensetlist")
 
 
 class SetList(Sequence, Set):
@@ -38,13 +38,12 @@ class SetList(Sequence, Set):
 
     def __repr__(self):
         if len(self) == 0:
-            return '{0}()'.format(self.__class__.__name__)
+            return "{0}()".format(self.__class__.__name__)
         else:
-            repr_format = '{class_name}({values!r})'
+            repr_format = "{class_name}({values!r})"
             return repr_format.format(
-                class_name=self.__class__.__name__,
-                values=tuple(self),
-                )
+                class_name=self.__class__.__name__, values=tuple(self),
+            )
 
     # Convenience methods
 
@@ -52,7 +51,7 @@ class SetList(Sequence, Set):
         if index < 0:
             index += len(self)
         if index < 0:
-            raise IndexError('index is out of range')
+            raise IndexError("index is out of range")
         return index
 
     def _fix_end_index(self, index):
@@ -73,9 +72,9 @@ class SetList(Sequence, Set):
         new_values = set()
         for value in values:
             if value in new_values:
-                raise ValueError('New values contain duplicates')
+                raise ValueError("New values contain duplicates")
             elif value in self:
-                raise ValueError('New values contain elements already present in self')
+                raise ValueError("New values contain elements already present in self")
             else:
                 new_values.add(value)
         for value in values:
@@ -162,15 +161,12 @@ class SetList(Sequence, Set):
         if not isinstance(other, SetList):
             message = (
                 "unsupported operand type(s) for {operand_name}: "
-                "'{self_type}' and '{other_type}'").format(
-                    operand_name=operand_name,
-                    self_type=cls,
-                    other_type=type(other),
-                    )
+                "'{self_type}' and '{other_type}'"
+            ).format(operand_name=operand_name, self_type=cls, other_type=type(other),)
             raise TypeError(message)
 
     def __add__(self, other):
-        self._check_type(other, '+')
+        self._check_type(other, "+")
         out = self.copy()
         out._extend(other)
         return out
@@ -200,19 +196,19 @@ class SetList(Sequence, Set):
         return self.union(other) - self.intersection(other)
 
     def __sub__(self, other):
-        self._check_type(other, '-')
+        self._check_type(other, "-")
         return self.difference(other)
 
     def __and__(self, other):
-        self._check_type(other, '&')
+        self._check_type(other, "&")
         return self.intersection(other)
 
     def __or__(self, other):
-        self._check_type(other, '|')
+        self._check_type(other, "|")
         return self.union(other)
 
     def __xor__(self, other):
-        self._check_type(other, '^')
+        self._check_type(other, "^")
         return self.symmetric_difference(other)
 
     # Comparison
@@ -268,7 +264,7 @@ class setlist(SetList, MutableSequence, MutableSet):
     """
 
     def __str__(self):
-        return '{[%s}]' % ', '.join(repr(v) for v in self)
+        return "{[%s}]" % ", ".join(repr(v) for v in self)
 
     # Helper methods
     def _delete_all(self, elems_to_delete, raise_errors):
@@ -278,11 +274,11 @@ class setlist(SetList, MutableSequence, MutableSet):
                 elem_index = self._dict[elem]
             except KeyError:
                 if raise_errors:
-                    raise ValueError('Passed values contain elements not in self')
+                    raise ValueError("Passed values contain elements not in self")
             else:
                 if elem_index in indices_to_delete:
                     if raise_errors:
-                        raise ValueError('Passed vales contain duplicates')
+                        raise ValueError("Passed vales contain duplicates")
                 indices_to_delete.add(elem_index)
         self._delete_values_by_index(indices_to_delete)
 
@@ -343,7 +339,7 @@ class setlist(SetList, MutableSequence, MutableSet):
             index = self._fix_neg_index(index)
             value = self._list[index]
             del self._dict[value]
-            for elem in self._list[index + 1:]:
+            for elem in self._list[index + 1 :]:
                 self._dict[elem] -= 1
             del self._list[index]
 
@@ -399,7 +395,7 @@ class setlist(SetList, MutableSequence, MutableSet):
         Raises:
             ValueError: If any values are already present
         """
-        self._check_type(values, '+=')
+        self._check_type(values, "+=")
         self.extend(values)
         return self
 
@@ -519,22 +515,22 @@ class setlist(SetList, MutableSequence, MutableSet):
         self._delete_values_by_index(indices_to_delete)
 
     def __isub__(self, other):
-        self._check_type(other, '-=')
+        self._check_type(other, "-=")
         self.difference_update(other)
         return self
 
     def __iand__(self, other):
-        self._check_type(other, '&=')
+        self._check_type(other, "&=")
         self.intersection_update(other)
         return self
 
     def __ior__(self, other):
-        self._check_type(other, '|=')
+        self._check_type(other, "|=")
         self.update(other)
         return self
 
     def __ixor__(self, other):
-        self._check_type(other, '^=')
+        self._check_type(other, "^=")
         self.symmetric_difference_update(other)
         return self
 
@@ -575,6 +571,6 @@ class frozensetlist(SetList, Hashable):
     """
 
     def __hash__(self):
-        if not hasattr(self, '_hash_value'):
+        if not hasattr(self, "_hash_value"):
             self._hash_value = _util.hash_iterable(self)
         return self._hash_value

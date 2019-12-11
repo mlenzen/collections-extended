@@ -1,6 +1,6 @@
 """Sentinel class."""
 
-__all__ = ('Sentinel', 'NOT_SET')
+__all__ = ("Sentinel", "NOT_SET")
 
 
 class Sentinel:
@@ -14,7 +14,7 @@ class Sentinel:
     _registry = {}
 
     def __getnewargs__(self):
-        return self._name,
+        return (self._name,)
 
     def __new__(cls, _name):
         """Find the Sentinel object with name or create a new one."""
@@ -30,7 +30,7 @@ class Sentinel:
         self._name = name
 
     def __repr__(self):
-        return '<%s>' % self._name
+        return "<%s>" % self._name
 
     def __bool__(self):
         return False
@@ -41,4 +41,4 @@ class Sentinel:
         return False
 
 
-NOT_SET = Sentinel('not_set')
+NOT_SET = Sentinel("not_set")
