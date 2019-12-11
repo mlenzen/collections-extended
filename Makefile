@@ -29,8 +29,15 @@ clean:
 	find . -name *,cover -delete
 
 .PHONY: lint
-lint:
+lint: flake8 mypy
+
+.PHONY: flake8
+flake8:
 	flake8 --statistics --count
+
+.PHONY: mypy
+mypy:
+	mypy collections_extended
 
 .PHONY: coverage
 coverage:
