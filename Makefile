@@ -36,8 +36,19 @@ clean:
 	make -C docs clean
 
 .PHONY: lint
-lint:
+lint: flake8 black-check
+
+PHONY: flake8
+flake8:
 	flake8 --statistics --count
+
+.PHONY: black
+black:
+	black *.py collections_extended/*.py tests/*.py
+
+.PHONY: black-check
+black-check:
+	black --check *.py collections_extended/*.py tests/*.py
 
 .PHONY: coverage
 coverage:
