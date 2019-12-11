@@ -9,19 +9,19 @@ Examples
 
 .. code-block:: python
 
-	>>> from collections_extended import RangeMap
-	>>> from datetime import date
-	>>> version = RangeMap()
-	>>> version[date(2017, 10, 20): date(2017, 10, 27)] = '0.10.1'
-	>>> version[date(2017, 10, 27): date(2018, 2, 14)] = '1.0.0'
-	>>> version[date(2018, 2, 14):] = '1.0.1'
-	>>> version[date(2017, 10, 24)]
-	'0.10.1'
-	>>> version[date(2018, 7, 1)]
-	'1.0.1'
-	>>> version[date(2018, 6, 30):] = '1.0.2'
-	>>> version[date(2018, 7, 1)]
-	'1.0.2'
+    >>> from collections_extended import RangeMap
+    >>> from datetime import date
+    >>> version = RangeMap()
+    >>> version[date(2017, 10, 20): date(2017, 10, 27)] = '0.10.1'
+    >>> version[date(2017, 10, 27): date(2018, 2, 14)] = '1.0.0'
+    >>> version[date(2018, 2, 14):] = '1.0.1'
+    >>> version[date(2017, 10, 24)]
+    '0.10.1'
+    >>> version[date(2018, 7, 1)]
+    '1.0.1'
+    >>> version[date(2018, 6, 30):] = '1.0.2'
+    >>> version[date(2018, 7, 1)]
+    '1.0.2'
 
 Creating RangeMaps
 ------------------
@@ -60,4 +60,4 @@ API
 .. autoclass:: collections_extended.RangeMap
 
 .. autoclass:: collections_extended.MappedRange
-	:no-undoc-members:
+    :no-undoc-members:

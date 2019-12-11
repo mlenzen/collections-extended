@@ -61,38 +61,38 @@ Ready to contribute? Here's how to set up `collections-extended` for local devel
 #. Fork the `collections-extended` repo on GitHub.
 #. Clone your fork locally::
 
-	$ git clone git@github.com:your_name_here/collections-extended.git
+    $ git clone git@github.com:your_name_here/collections-extended.git
 
 #. Make sure you are excluding your editor's files from the repo
 
-	We don't want to use the project's gitignore to exclude every
-	editor's files, so set up your global gitignore.
-	See: https://help.github.com/articles/ignoring-files/
+    We don't want to use the project's gitignore to exclude every
+    editor's files, so set up your global gitignore.
+    See: https://help.github.com/articles/ignoring-files/
 
 #. Install your local copy into a virtualenv::
 
-	$ cd collections-extended
-	$ python -m venv .venv
-	$ . .venv/bin/activate
-	$ pip install -r requirements.txt
+    $ cd collections-extended
+    $ python -m venv .venv
+    $ . .venv/bin/activate
+    $ pip install -r requirements.txt
 
 #. Create a branch for local development::
 
-	$ git checkout -b name-of-your-bugfix-or-feature
+    $ git checkout -b name-of-your-bugfix-or-feature
 
 #. Make your changes locally.
 
 #. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
 
-	$ flake8
-	$ py.test
-	$ tox
+    $ flake8
+    $ py.test
+    $ tox
 
 #. Commit your changes and push your branch to GitHub::
 
-	$ git add .
-	$ git commit -m "Your detailed description of your changes."
-	$ git push origin name-of-your-bugfix-or-feature
+    $ git add .
+    $ git commit -m "Your detailed description of your changes."
+    $ git push origin name-of-your-bugfix-or-feature
 
 #. Submit a pull request through the GitHub website.
 
@@ -114,5 +114,5 @@ Tips
 
 To run a subset of tests::
 
-	$ py.test tests/test_example.py
-	$ py.test tests/test_example.py::test_func
+    $ py.test tests/test_example.py
+    $ py.test tests/test_example.py::test_func

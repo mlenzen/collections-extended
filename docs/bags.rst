@@ -43,18 +43,18 @@ Ordering comparisons are done setwise.
 
 .. testsetup::
 
-	>>> from collections_extended import bag
+    >>> from collections_extended import bag
 
 .. code-block:: python
 
-	>>> bag('ac') <= bag('ab')
-	False
-	>>> bag('ac') >= bag('ab')
-	False
-	>>> bag('a') <= bag('a') < bag('aa')
-	True
-	>>> bag('aa') <= bag('a')
-	False
+    >>> bag('ac') <= bag('ab')
+    False
+    >>> bag('ac') >= bag('ab')
+    False
+    >>> bag('a') <= bag('a') < bag('aa')
+    True
+    >>> bag('aa') <= bag('a')
+    False
 
 Compared to existing similar implementations
 --------------------------------------------
@@ -66,65 +66,65 @@ Counters don't really behave like Collections - Sized, Iterable, Containers
 
 .. testsetup::
 
-	>>> from collections import Counter
-	>>> from collections_extended import bag
+    >>> from collections import Counter
+    >>> from collections_extended import bag
 
 Adding and Removing
 """""""""""""""""""
 
 .. code-block:: python
 
-	>>> c = Counter()
-	>>> c['a'] += 1
-	>>> c['a'] -= 1
-	>>> 'a' in c
-	True
-	>>> b = bag()
-	>>> b.add('a')
-	>>> 'a' in b
-	True
-	>>> b.remove('a')
-	>>> 'a' in b
-	False
+    >>> c = Counter()
+    >>> c['a'] += 1
+    >>> c['a'] -= 1
+    >>> 'a' in c
+    True
+    >>> b = bag()
+    >>> b.add('a')
+    >>> 'a' in b
+    True
+    >>> b.remove('a')
+    >>> 'a' in b
+    False
 
 ``len``
 """""""
 
 .. code-block:: python
 
-	>>> c = Counter()
-	>>> c['a'] += 1
-	>>> len(c)
-	1
-	>>> c['a'] -= 1
-	>>> len(c)
-	1
-	>>> c['a'] += 2
-	>>> len(c)
-	1
-	>>> len(Counter('aaabbc'))
-	3
-	>>> b = bag()
-	>>> b.add('a')
-	>>> len(b)
-	1
-	>>> b.remove('a')
-	>>> len(b)
-	0
-	>>> len(bag('aaabbc'))
-	6
+    >>> c = Counter()
+    >>> c['a'] += 1
+    >>> len(c)
+    1
+    >>> c['a'] -= 1
+    >>> len(c)
+    1
+    >>> c['a'] += 2
+    >>> len(c)
+    1
+    >>> len(Counter('aaabbc'))
+    3
+    >>> b = bag()
+    >>> b.add('a')
+    >>> len(b)
+    1
+    >>> b.remove('a')
+    >>> len(b)
+    0
+    >>> len(bag('aaabbc'))
+    6
 
 Iterating
 """""""""
 
 .. code-block:: python
 
-	>>> for item in Counter('aaa'): print(item)
-	a
-	>>> for item in bag('aaa'): print(item)
-	a
-	a
-	a
+    >>> for item in Counter('aaa'): print(item)
+    a
+    >>> for item in bag('aaa'): print(item)
+    a
+    a
+    a
 
 Compared to Standard Types
 --------------------------
@@ -149,22 +149,22 @@ These are `bag` methods that are not implementing an abstract method from a
 standard Python ABC.
 
 ``num_unique_elements``
-	Returns the number of unique elements in the bag. O(1)
+    Returns the number of unique elements in the bag. O(1)
 ``unique_elements()``
-	Returns a set of all the unique elements in the bag. O(1)
+    Returns a set of all the unique elements in the bag. O(1)
 ``nlargest(n=None)``
-	Returns the n most common elements and their counts from most common to
-	least.  If n is None then all elements are returned. O(n log n)
+    Returns the n most common elements and their counts from most common to
+    least.  If n is None then all elements are returned. O(n log n)
 ``copy()``
-	Returns a shallow copy of self.  O(self.num_unique_elements())
+    Returns a shallow copy of self.  O(self.num_unique_elements())
 ``isdisjoint(other: Iterable)``
-	Tests if self is disjoint with any other Iterable.  O(len(other))
+    Tests if self is disjoint with any other Iterable.  O(len(other))
 ``issubset(other: Iterable)``
-	Tests if self is a subset of another Iterable.
+    Tests if self is a subset of another Iterable.
 ``issuperset(other: Iterable)``
-	Tests if self is a superset of another Iterable.
+    Tests if self is a superset of another Iterable.
 ``from_mapping(map: Mapping)``
-	Classmethod to create a bag from a Mapping that maps elements to counts.
+    Classmethod to create a bag from a Mapping that maps elements to counts.
 
 The following are only for mutable bags (not frozenbags).
 

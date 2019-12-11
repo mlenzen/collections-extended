@@ -16,14 +16,14 @@ New Methods
 ^^^^^^^^^^^
 
 ``fast_pop``
-	Remove an item with given key and value from the IndexedDict by first
-	swapping the item to the last position and then removing it.
-	Returns tuple of ``(popped_value, new_moved_index, moved_key, moved_value)``.
-	Time complexity of this operation is O(1).
+    Remove an item with given key and value from the IndexedDict by first
+    swapping the item to the last position and then removing it.
+    Returns tuple of ``(popped_value, new_moved_index, moved_key, moved_value)``.
+    Time complexity of this operation is O(1).
 ``index``
-	Return index of a record with given key.
+    Return index of a record with given key.
 ``key``
-	Return key of a record at given index.
+    Return key of a record at given index.
 
 Time Complexity
 ---------------
