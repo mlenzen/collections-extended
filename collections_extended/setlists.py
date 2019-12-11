@@ -177,8 +177,9 @@ class SetList(Sequence, Set, Generic[T]):
 				raise ValueError
 
 	@classmethod
-	def _check_type(cls, other, operand_name):
-		if not isinstance(other, SetList):
+	def _check_type(cls, other: Any, operand_name: str):
+		"""Check that other is an Iterable."""
+		if not isinstance(other, Iterable):
 			message = (
 				"unsupported operand type(s) for {operand_name}: "
 				"'{self_type}' and '{other_type}'").format(
@@ -188,7 +189,7 @@ class SetList(Sequence, Set, Generic[T]):
 					)
 			raise TypeError(message)
 
-	def __add__(self, other: 'SetList') -> 'SetList'[T]:
+	def __add__(self, other: Iterable[T]) -> 'SetList'[T]:
 		self._check_type(other, '+')
 		out = self.copy()
 		out._extend(other)
@@ -218,19 +219,19 @@ class SetList(Sequence, Set, Generic[T]):
 	def symmetric_difference(self, other: Iterable[T]) -> 'SetList'[T]:
 		return self.union(other) - self.intersection(other)
 
-	def __sub__(self, other: 'SetList'[T]) -> 'SetList'[T]:
+	def __sub__(self, other: Iterable[T]) -> 'SetList'[T]:
 		self._check_type(other, '-')
 		return self.difference(other)
 
-	def __and__(self, other: 'SetList'[T]) -> 'SetList'[T]:
+	def __and__(self, other: Iterable[T]) -> 'SetList'[T]:
 		self._check_type(other, '&')
 		return self.intersection(other)
 
-	def __or__(self, other: 'SetList'[T]) -> 'SetList'[T]:
+	def __or__(self, other: Iterable[T]) -> 'SetList'[T]:
 		self._check_type(other, '|')
 		return self.union(other)
 
-	def __xor__(self, other: 'SetList'[T]) -> 'SetList'[T]:
+	def __xor__(self, other: Iterable[T]) -> 'SetList'[T]:
 		self._check_type(other, '^')
 		return self.symmetric_difference(other)
 
@@ -550,22 +551,22 @@ class setlist(SetList, MutableSequence, MutableSet):
 			self.add(item)
 		self._delete_values_by_index(indices_to_delete)
 
-	def __isub__(self, other: SetList[T]) -> 'setlist':
+	def __isub__(self, other: Iterable[T]) -> 'setlist':
 		self._check_type(other, '-=')
 		self.difference_update(other)
 		return self
 
-	def __iand__(self, other: SetList[T]) -> 'setlist':
+	def __iand__(self, other: Iterable[T]) -> 'setlist':
 		self._check_type(other, '&=')
 		self.intersection_update(other)
 		return self
 
-	def __ior__(self, other: SetList[T]) -> 'setlist':
+	def __ior__(self, other: Iterable[T]) -> 'setlist':
 		self._check_type(other, '|=')
 		self.update(other)
 		return self
 
-	def __ixor__(self, other: SetList[T]) -> 'setlist':
+	def __ixor__(self, other: Iterable[T]) -> 'setlist':
 		self._check_type(other, '^=')
 		self.symmetric_difference_update(other)
 		return self
