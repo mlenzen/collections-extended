@@ -17,6 +17,9 @@ __all__ = (
     "SetList",
     "frozensetlist",
     "setlist",
+    "UniqueElementsView",
+    "CountsView",
+    "MappedRange",
 )
 
 

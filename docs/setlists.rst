@@ -99,7 +99,7 @@ Remove a single value      ``discard``      ``remove``
 Remove multiple values     ``discard_all``  ``remove_all``
 ========================   ===============  =================
 
-The setlist constructor by defualt does not raise :exc:`ValueError` on duplicate values
+`SetList` constructors by defualt do not raise :exc:`ValueError` on duplicate values
 because we have to choose one or the other and this matches the behavior of Set.
 There is a flag ``raise_on_duplicate`` that can be passed to ``__init__`` to
 raise a :exc:`ValueError` if duplicate values are passed.
@@ -107,9 +107,9 @@ raise a :exc:`ValueError` if duplicate values are passed.
 Quirks
 ------
 * Swapping elements, eg. ``sl[0], sl[1] = sl[1], sl[0]``, doesn't work because
-    it is implemented by first setting one element then the other. But since
-    the first element it tries to set is still in the setlist, nothing happens.
-    This causes random.shuffle not to work on a setlist.
+  it is implemented by first setting one element then the other. But since
+  the first element it tries to set is still in the setlist, nothing happens.
+  This causes random.shuffle not to work on a setlist.
 
 API
 ---

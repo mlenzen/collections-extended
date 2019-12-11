@@ -14,14 +14,14 @@ __all__ = ("SetList", "setlist", "frozensetlist")
 
 
 class SetList(Sequence, Set):
-    """A setlist is an ordered `Collection` of unique elements.
+    """A SetList is an ordered :class:`Collection` of unique elements.
 
-    `SetList` is the superclass of `setlist` and `frozensetlist`. It is
-    immutable and unhashable.
+    :class:`SetList` is the base class of :class:`setlist` and
+    :class:`frozensetlist`. It is immutable and unhashable.
     """
 
     def __init__(self, iterable=None, raise_on_duplicate=False):
-        """Create a setlist, initializing from iterable if present.
+        """Create a ``SetList``, initializing from iterable if present.
 
         Args:
             iterable (Iterable): Values to initialize the setlist with.
@@ -48,6 +48,7 @@ class SetList(Sequence, Set):
     # Convenience methods
 
     def _fix_neg_index(self, index):
+        """Translate a negative index into the correct bounds."""
         if index < 0:
             index += len(self)
         if index < 0:
@@ -55,12 +56,14 @@ class SetList(Sequence, Set):
         return index
 
     def _fix_end_index(self, index):
+        """Fix a negative or None index for an end bound."""
         if index is None:
             return len(self)
         else:
             return self._fix_neg_index(index)
 
     def _append(self, value):
+        """Append a value to the end."""
         # Checking value in self will check that value is Hashable
         if value in self:
             raise ValueError('Value "%s" already present' % str(value))
@@ -174,25 +177,31 @@ class SetList(Sequence, Set):
     # Implement Set
 
     def issubset(self, other):
+        """Return if another set is a subset of this SetList."""
         return self <= other
 
     def issuperset(self, other):
+        """Return if another set is a superset of this SetList."""
         return self >= other
 
     def union(self, other):
+        """Return the union of this SetList and another Set."""
         out = self.copy()
         out._update(other)
         return out
 
     def intersection(self, other):
+        """Return the intersection of this SetList and another Set."""
         other = set(other)
         return self._from_iterable(item for item in self if item in other)
 
     def difference(self, other):
+        """Return the difference of this SetList and another Set."""
         other = set(other)
         return self._from_iterable(item for item in self if item not in other)
 
     def symmetric_difference(self, other):
+        """Return the symmetric difference of this SetList and another Set."""
         return self.union(other) - self.intersection(other)
 
     def __sub__(self, other):
@@ -254,6 +263,7 @@ class SetList(Sequence, Set):
         return start_index
 
     def copy(self):
+        """Return a shallow copy of this SetList."""
         return self.__class__(self)
 
 
@@ -339,7 +349,7 @@ class setlist(SetList, MutableSequence, MutableSet):
             index = self._fix_neg_index(index)
             value = self._list[index]
             del self._dict[value]
-            for elem in self._list[index + 1 :]:
+            for elem in self._list[index + 1:]:
                 self._dict[elem] -= 1
             del self._list[index]
 

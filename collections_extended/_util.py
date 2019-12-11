@@ -38,7 +38,6 @@ def deprecated(msg, dep_version):
         https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-deprecated
 
     """
-
     def wrapper(func):
         docstring = func.__doc__ or ""
         docstring_msg = ".. deprecated:: {version} {msg}".format(
@@ -50,7 +49,7 @@ def deprecated(msg, dep_version):
             string_list = docstring.splitlines()
             first_line = string_list[0]
             remaining = textwrap.dedent("".join(string_list[1:]))
-            docstring = "\n".join([first_line, remaining, "", docstring_msg,])
+            docstring = "\n".join([first_line, remaining, "", docstring_msg])
         else:
             docstring = docstring_msg
         func.__doc__ = docstring
