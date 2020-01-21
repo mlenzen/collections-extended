@@ -10,11 +10,18 @@ README
 	:target: https://coveralls.io/github/mlenzen/collections-extended?branch=master
 	:alt: Coverage
 
-Documentation: http://collections-extended.lenzm.net/
 
-GitHub: https://github.com/mlenzen/collections-extended
+.. image:: https://pepy.tech/badge/collections-extended/month
+    :target: https://pepy.tech/project/collections-extended/month
+    :alt: Downloads
 
-PyPI: https://pypi.python.org/pypi/collections-extended
+
+Documentation:
+    http://collections-extended.lenzm.net/
+GitHub:
+    https://github.com/mlenzen/collections-extended
+PyPI:
+    https://pypi.python.org/pypi/collections-extended
 
 Overview
 ========
