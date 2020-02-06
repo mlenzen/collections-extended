@@ -2,13 +2,14 @@
 import heapq
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
-from collections.abc import Hashable, MutableSet, Set
+from collections.abc import Hashable, Set
 from operator import itemgetter
 
 from ._compat import Collection
 from ._util import deprecated
 
 __all__ = (
+	'Bag',
 	'BagView',
 	'CountsView',
 	'UniqueElementsView',
@@ -75,7 +76,7 @@ class CountsView(BagView):
 		return self.bag.count(elem) == count
 
 
-class _basebag(Set):
+class Bag(Collection):
 	"""Base class for bag classes.
 
 	bags have performance like dicts for Hashable elements and list-like
@@ -100,7 +101,7 @@ class _basebag(Set):
 		self._list = []
 		self._size = 0
 		if iterable:
-			if isinstance(iterable, _basebag):
+			if isinstance(iterable, Bag):
 				self._dict = iterable._dict.copy()
 				self._list = iterable._list.copy()
 				self._size = iterable._size
@@ -269,66 +270,55 @@ class _basebag(Set):
 	# Comparison methods
 
 	def issubset(self, other):
-		"""Check that every element in self has a count <= in other."""
-		if isinstance(other, _basebag):
-			for elem, count in self.counts():
-				if not count <= other.count(elem):
-					return False
-		else:
-			raise NotImplementedError
-			for elem in self:
-				if self.count(elem) > 1 or elem not in other:
-					return False
-		return True
+	"""Check that every element in self has a count <= in other.
 
-	is_subset = deprecated('Renamed to issubset', '2.0')(issubset)
-
-	def issuperset(self, other):
-		"""Check that every element in self has a count >= in other."""
-		if isinstance(other, _basebag):
-			for elem, count in other.counts():
-				if not self.count(elem) >= count:
-					return False
-		else:
-			raise NotImplementedError
-			for elem in other:
-				if elem not in self:
-					return False
-		return True
-
-	is_superset = deprecated('Renamed to issupserset', '2.0')(issuperset)
-
-	def __le__(self, other):
-		if not isinstance(other, Set):
-			return NotImplemented
-		return len(self) <= len(other) and self.is_subset(other)
-
-	def __lt__(self, other):
-		if not isinstance(other, Set):
-			return NotImplemented
-		return len(self) < len(other) and self.is_subset(other)
-
-	def __gt__(self, other):
-		if not isinstance(other, Set):
-			return NotImplemented
-		return len(self) > len(other) and self.is_superset(other)
-
-	def __ge__(self, other):
-		if not isinstance(other, Set):
-			return NotImplemented
-		return len(self) >= len(other) and self.is_superset(other)
-
-	def __eq__(self, other):
-		if not isinstance(other, Set):
-			return False
-		if isinstance(other, _basebag):
-			return self._dict == other._dict
-		if not len(self) == len(other):
-			return False
-		for elem in other:
-			if self.count(elem) != 1:
+	Args:
+		other (Iterable)
+	"""
+		if not isinstance(other, Bag):
+			return self.issubset(frozenbag(other))
+		for elem, count in self.counts():
+			if not count <= other.count(elem):
 				return False
 		return True
+
+	def issuperset(self, other):
+		"""Check that every element in self has a count >= in other.
+
+		Args:
+			other (Iterable)
+		"""
+		if not isinstance(other, Bag):
+			return self.issuperset(bag(other))
+		for elem, count in other.counts():
+			if not self.count(elem) >= count:
+				return False
+		return True
+
+	def __le__(self, other):
+		if not isinstance(other, Bag):
+			return NotImplemented
+		return len(self) <= len(other) and self.issubset(other)
+
+	def __lt__(self, other):
+		if not isinstance(other, Bag):
+			return NotImplemented
+		return len(self) < len(other) and self.issubset(other)
+
+	def __gt__(self, other):
+		if not isinstance(other, Bag):
+			return NotImplemented
+		return len(self) > len(other) and self.issuperset(other)
+
+	def __ge__(self, other):
+		if not isinstance(other, Bag):
+			return NotImplemented
+		return len(self) >= len(other) and self.issuperset(other)
+
+	def __eq__(self, other):
+		if not isinstance(other, Bag):
+			return False
+		return self._dict == other._dict
 
 	def __ne__(self, other):
 		return not (self == other)
@@ -338,12 +328,12 @@ class _basebag(Set):
 	def _iadd(self, other):
 		"""Add all of the elements of other to self.
 
-		if isinstance(it, _basebag):
+		if isinstance(it, Bag):
 				This runs in O(it.num_unique_elements())
 		else:
 				This runs in O(len(it))
 		"""
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			for elem, count in other.counts():
 				self._increment_count(elem, count)
 		else:
@@ -354,13 +344,13 @@ class _basebag(Set):
 	def _iand(self, other):
 		"""Set multiplicity of each element to the minimum of the two collections.
 
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			This runs in O(other.num_unique_elements())
 		else:
 			This runs in O(len(other))
 		"""
 		# TODO do we have to create a bag from the other first?
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			other = self._from_iterable(other)
 		for elem, old_count in set(self.counts()):
 			other_count = other.count(elem)
@@ -371,13 +361,13 @@ class _basebag(Set):
 	def _ior(self, other):
 		"""Set multiplicity of each element to the maximum of the two collections.
 
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			This runs in O(other.num_unique_elements())
 		else:
 			This runs in O(len(other))
 		"""
 		# TODO do we have to create a bag from the other first?
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			other = self._from_iterable(other)
 		for elem, other_count in other.counts():
 			old_count = self.count(elem)
@@ -388,12 +378,12 @@ class _basebag(Set):
 	def _ixor(self, other):
 		"""Set self to the symmetric difference between the sets.
 
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			This runs in O(other.num_unique_elements())
 		else:
 			This runs in O(len(other))
 		"""
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			for elem, other_count in other.counts():
 				count = abs(self.count(elem) - other_count)
 				self._set_count(elem, count)
@@ -412,12 +402,12 @@ class _basebag(Set):
 	def _isub(self, other):
 		"""Discard the elements of other from self.
 
-		if isinstance(it, _basebag):
+		if isinstance(it, Bag):
 			This runs in O(it.num_unique_elements())
 		else:
 			This runs in O(len(it))
 		"""
-		if isinstance(other, _basebag):
+		if isinstance(other, Bag):
 			for elem, other_count in other.counts():
 				try:
 					self._increment_count(elem, -other_count)
@@ -435,11 +425,9 @@ class _basebag(Set):
 		"""Intersection is the minimum of corresponding counts.
 
 		This runs in O(l + n) where:
-			n is self.num_unique_elements()
-			if other is a bag:
-				l = 1
-			else:
-				l = len(other)
+			* n is self.num_unique_elements()
+			* `l = 1` if other is a bag else `l = len(other)`
+
 		"""
 		return self.copy()._iand(other)
 
@@ -457,11 +445,8 @@ class _basebag(Set):
 		"""Union is the maximum of all elements.
 
 		This runs in O(m + n) where:
-			n is self.num_unique_elements()
-			if other is a bag:
-				m = other.num_unique_elements()
-			else:
-				m = len(other)
+			* `n = self.num_unique_elements()`
+			* m = other.num_unique_elements() if other is a bag else m = len(other)
 		"""
 		return self.copy()._ior(other)
 
@@ -471,10 +456,12 @@ class _basebag(Set):
 		self + other = self & other + self | other
 
 		This runs in O(m + n) where:
-			n is self.num_unique_elements()
-			m is len(other)
+			* n is self.num_unique_elements()
+			* m is len(other)
+
 		Args:
 			other (Iterable): elements to add to self
+
 		"""
 		return self.copy()._iadd(other)
 
@@ -485,10 +472,12 @@ class _basebag(Set):
 		For bags this is count(x) = max(0, self.count(x)-other.count(x))
 
 		This runs in O(m + n) where:
-			n is self.num_unique_elements()
-			m is len(other)
+			* n is self.num_unique_elements()
+			* m is len(other)
+
 		Args:
 			other (Iterable): elements to remove
+
 		"""
 		return self.copy()._isub(other)
 
@@ -503,12 +492,9 @@ class _basebag(Set):
 		tuple.
 
 		This should run in O(m*n+l) where:
-			m is the number of unique elements in self
-			n is the number of unique elements in other
-			if other is a bag:
-				l is 0
-			else:
-				l is the len(other)
+			* `m` is the number of unique elements in `self`
+			* `n` is the number of unique elements in `other`
+			* `l` is 0 if `other` is a bag, else `l` is the `len(other)`
 
 		Args:
 			other (Iterable): The iterable to take the product with.
@@ -516,7 +502,7 @@ class _basebag(Set):
 				and other and returns a combined value to include in the return
 				value.
 		"""
-		if not isinstance(other, _basebag):
+		if not isinstance(other, Bag):
 			other = self._from_iterable(other)
 		values = defaultdict(int)
 		for elem, count in self.counts():
@@ -541,7 +527,7 @@ class _basebag(Set):
 		return self.copy()._ixor(other)
 
 
-class bag(_basebag, MutableSet):
+class bag(Bag):
 	"""bag is a mutable unhashable bag.
 
 	.. automethod:: __init__
@@ -589,7 +575,7 @@ class bag(_basebag, MutableSet):
 		Raises a ValueError if the multiplicity of any elem in other is greater
 		than in self.
 		"""
-		if not self.is_superset(other):
+		if not self.issuperset(other):
 			raise ValueError('Passed collection is not a subset of this bag')
 		self.discard_all(other)
 
@@ -600,26 +586,21 @@ class bag(_basebag, MutableSet):
 
 	# In-place operations
 
-	__ior__ = _basebag._ior
-	__iand__ = _basebag._iand
-	__ixor__ = _basebag._ixor
-	__isub__ = _basebag._isub
-	__iadd__ = _basebag._iadd
+	__ior__ = Bag._ior
+	__iand__ = Bag._iand
+	__ixor__ = Bag._ixor
+	__isub__ = Bag._isub
+	__iadd__ = Bag._iadd
 
 
-class frozenbag(_basebag, Hashable):
+class frozenbag(Bag, Hashable):
 	"""frozenbag is an immutable, hashable bag.
 
 	.. automethod:: __init__
 	"""
 
 	def __hash__(self):
-		"""Compute the hash value of a frozenbag.
-
-		This was copied directly from _collections_abc.Set._hash in Python3 which
-		is identical to _abcoll.Set._hash
-		We can't call it directly because Python2 raises a TypeError.
-		"""
+		"""Compute the hash value of a frozenbag."""
 		if not hasattr(self, '_hash_value'):
-			self._hash_value = self._hash()
+			self._hash_value = Set._hash(self)
 		return self._hash_value

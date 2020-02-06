@@ -10,11 +10,18 @@ README
 	:target: https://coveralls.io/github/mlenzen/collections-extended?branch=master
 	:alt: Coverage
 
-Documentation: http://collections-extended.lenzm.net/
 
-GitHub: https://github.com/mlenzen/collections-extended
+.. image:: https://pepy.tech/badge/collections-extended/month
+	:target: https://pepy.tech/project/collections-extended/month
+	:alt: Downloads
 
-PyPI: https://pypi.python.org/pypi/collections-extended
+
+Documentation:
+	http://collections-extended.lenzm.net/
+GitHub:
+	https://github.com/mlenzen/collections-extended
+PyPI:
+	https://pypi.python.org/pypi/collections-extended
 
 Overview
 ========
@@ -147,6 +154,6 @@ The package no longer supports Python 2. The last version to support
 Python 2 was 1.0
 
 :Author: Michael Lenzen
-:Copyright: 2019 Michael Lenzen
+:Copyright: 2020 Michael Lenzen
 :License: Apache License, Version 2.0
 :Project Homepage: https://github.com/mlenzen/collections-extended

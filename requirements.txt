@@ -19,6 +19,7 @@ coverage
 codecov
 
 # Docs
-sphinx>=1.8
+sphinx>=2.1
 sphinxcontrib-napoleon
 git+https://github.com/mlenzen/alabaster.git
+

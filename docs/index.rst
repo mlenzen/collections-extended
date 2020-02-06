@@ -20,7 +20,6 @@ not be developed for Python 2 but serious bugs may be fixed.
 Contents:
 
 .. toctree::
-
 	:maxdepth: 3
 
 	getting_started
@@ -42,7 +41,7 @@ Other Packages of Interest
 - https://bidict.readthedocs.org/en/master/ - bijections
 
 :Author: Michael Lenzen
-:Copyright: 2019 Michael Lenzen
+:Copyright: 2020 Michael Lenzen
 :License: Apache License, Version 2.0
 
 .. _`tested against`: https://travis-ci.org/mlenzen/collections-extended

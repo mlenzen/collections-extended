@@ -1,15 +1,14 @@
 """Test for bag classes."""
 from operator import concat, mul
-import warnings
 
 import pytest
 
-from collections_extended.bags import _basebag, bag, frozenbag
+from collections_extended.bags import Bag, bag, frozenbag
 
 
 def test_init():
 	"""Test __init__."""
-	b = _basebag('abracadabra')
+	b = Bag('abracadabra')
 	assert b.count('a') == 5
 	assert b.count('b') == 2
 	assert b.count('r') == 2
@@ -21,9 +20,9 @@ def test_init():
 
 def test_repr():
 	"""Test __repr__."""
-	ms = _basebag()
+	ms = Bag()
 	assert ms == eval(ms.__repr__())
-	ms = _basebag('abracadabra')
+	ms = Bag('abracadabra')
 	assert ms == eval(ms.__repr__())
 	assert repr(bag('a')) == "bag(('a',))"
 
@@ -35,29 +34,29 @@ def test_str():
 		assert s.startswith('{')
 		assert s.endswith('}')
 		return set(s[1:-1].split(', '))
-	assert str(_basebag()) == '_basebag()'
-	assert "'a'^5" in str(_basebag('abracadabra'))
-	assert "'b'^2" in str(_basebag('abracadabra'))
-	assert "'c'" in str(_basebag('abracadabra'))
+	assert str(Bag()) == 'Bag()'
+	assert "'a'^5" in str(Bag('abracadabra'))
+	assert "'b'^2" in str(Bag('abracadabra'))
+	assert "'c'" in str(Bag('abracadabra'))
 	abra_elems = set(("'a'^5", "'b'^2", "'r'^2", "'c'", "'d'"))
 	assert compare_bag_string(bag('abracadabra')) == abra_elems
 
 
 def test_count():
 	"""Test count."""
-	ms = _basebag('abracadabra')
+	ms = Bag('abracadabra')
 	assert ms.count('a') == 5
 	assert ms.count('x') == 0
 
 
 def test_nlargest():
 	"""Test nlargest."""
-	abra = _basebag('abracadabra')
+	abra = Bag('abracadabra')
 	sort_key = lambda e: (-e[1], e[0])
 	abra_counts = [('a', 5), ('b', 2), ('r', 2), ('c', 1), ('d', 1)]
 	assert sorted(abra.nlargest(), key=sort_key) == abra_counts
 	assert sorted(abra.nlargest(3), key=sort_key) == abra_counts[:3]
-	assert _basebag('abcaba').nlargest(3) == [('a', 3), ('b', 2), ('c', 1)]
+	assert Bag('abcaba').nlargest(3) == [('a', 3), ('b', 2), ('c', 1)]
 
 
 def test_nlargest_deprecated():
@@ -69,32 +68,32 @@ def test_nlargest_deprecated():
 
 def test_from_map():
 	"""Test from_mapping."""
-	assert _basebag.from_mapping({'a': 1, 'b': 2}) == _basebag('abb')
-	assert _basebag.from_mapping({'a': 1, 'b': 2, 'c': 0}) == _basebag('abb')
+	assert Bag.from_mapping({'a': 1, 'b': 2}) == Bag('abb')
+	assert Bag.from_mapping({'a': 1, 'b': 2, 'c': 0}) == Bag('abb')
 
 
 def test_copy():
 	"""Test copy."""
-	b = _basebag()
+	b = Bag()
 	assert b.copy() == b
 	assert b.copy() is not b
-	b = _basebag('abc')
+	b = Bag('abc')
 	assert b.copy() == b
 	assert b.copy() is not b
 
 
 def test_len():
 	"""Test __len__."""
-	assert len(_basebag()) == 0
-	assert len(_basebag('abc')) == 3
-	assert len(_basebag('aaba')) == 4
+	assert len(Bag()) == 0
+	assert len(Bag('abc')) == 3
+	assert len(Bag('aaba')) == 4
 
 
 def test_contains():
 	"""Test __contains__."""
-	assert 'a' in _basebag('bbac')
-	assert 'a' not in _basebag()
-	assert 'a' not in _basebag('missing letter')
+	assert 'a' in Bag('bbac')
+	assert 'a' not in Bag()
+	assert 'a' not in Bag('missing letter')
 
 
 @pytest.mark.parametrize("bag_data, set_data", [
@@ -103,8 +102,8 @@ def test_contains():
 	('ab', 'ab'),
 	])
 def test_compare_eq_set(bag_data, set_data):
-	"""Test comparisons to Sets that should be equal."""
-	assert _basebag(bag_data) == set(set_data)
+	"""Test comparisons to Sets that should be not equal."""
+	assert Bag(bag_data) != set(set_data)
 
 
 @pytest.mark.parametrize("bag_data, set_data", [
@@ -115,22 +114,22 @@ def test_compare_eq_set(bag_data, set_data):
 	('ac', 'ab'),
 	])
 def test_compare_ne_set(bag_data, set_data):
-	assert not _basebag(bag_data) == set(set_data)
+	assert not Bag(bag_data) == set(set_data)
 
 
 def test_compare_unorderable():
-	assert not _basebag('ac') <= set('ab')
-	assert not _basebag('ac') >= set('ab')
+	assert not Bag('ac') <= Bag('ab')
+	assert not Bag('ac') >= Bag('ab')
 
 
 def test_rich_comp_equal():
 	"""Test rich comparisons for equal bags."""
-	assert _basebag() <= _basebag()
-	assert not _basebag() < _basebag()
-	assert _basebag() >= _basebag()
-	assert not _basebag() > _basebag()
-	b1 = _basebag('aabc')
-	b2 = _basebag('aabc')
+	assert Bag() <= Bag()
+	assert not Bag() < Bag()
+	assert Bag() >= Bag()
+	assert not Bag() > Bag()
+	b1 = Bag('aabc')
+	b2 = Bag('aabc')
 	assert not b2 > b1
 	assert b2 >= b1
 	assert not b2 < b1
@@ -139,8 +138,8 @@ def test_rich_comp_equal():
 
 def test_rich_comp_superset():
 	"""Test rich comparisons for bags that are supersets of other bags."""
-	b1 = _basebag('aabc')
-	b2 = _basebag('abc')
+	b1 = Bag('aabc')
+	b2 = Bag('abc')
 	assert b1 > b2
 	assert b1 >= b2
 	assert not b1 < b2
@@ -149,8 +148,8 @@ def test_rich_comp_superset():
 
 def test_rich_comp_subset():
 	"""Test rich comparisons for bags that are subsets of other bags."""
-	b1 = _basebag('abc')
-	b2 = _basebag('aabc')
+	b1 = Bag('abc')
+	b2 = Bag('aabc')
 	assert not b1 > b2
 	assert not b1 >= b2
 	assert b1 < b2
@@ -159,8 +158,8 @@ def test_rich_comp_subset():
 
 def test_rich_comp_unorderable_eq_len():
 	"""Test rich comparisons for bags of equal length but unorderable."""
-	b1 = _basebag('abb')
-	b2 = _basebag('abc')
+	b1 = Bag('abb')
+	b2 = Bag('abc')
 	assert not b1 < b2
 	assert not b1 <= b2
 	assert not b1 > b2
@@ -171,8 +170,8 @@ def test_rich_comp_unorderable_eq_len():
 
 def test_rich_comp_unorderable_diff_len():
 	"""Test rich comparisons for bags of unequal length and unorderable."""
-	b1 = _basebag('abd')
-	b2 = _basebag('aabc')
+	b1 = Bag('abd')
+	b2 = Bag('aabc')
 	assert not b1 > b2
 	assert not b1 >= b2
 	assert not b1 < b2
@@ -390,7 +389,7 @@ def test_hash():
 
 
 def test_num_unique_elems():
-	"""Test _basebag.num_unique_elements."""
+	"""Test Bag.num_unique_elements."""
 	assert bag('abracadabra').num_unique_elements() == 5
 
 
@@ -432,12 +431,3 @@ def test_hashability():
 		bag([a, 1])
 	# test commutativity of bag instantiation.
 	assert bag([4, 4, 5, 5, c]) == bag([4, 5, d, 4, 5])
-
-
-def test_deprecations():
-	b1 = bag()
-	b2 = bag()
-	with pytest.deprecated_call():
-		b1.is_subset(b2)
-	with pytest.deprecated_call():
-		b1.is_superset(b2)

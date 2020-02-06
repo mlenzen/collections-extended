@@ -9,8 +9,10 @@ hashable elements due to the implementation.
 
 .. _multiset: http://en.wikipedia.org/wiki/Multiset
 
-There are two classes provided:
+There are three classes provided:
 
+:class:`Bag`
+  An abstract base class for bags.
 :class:`bag`
   A mutable (unhashable) bag.
 :class:`frozenbag`
@@ -19,7 +21,7 @@ There are two classes provided:
 Both classes implement :class:`collections.abc.Sized`,
 :class:`collections.abc.Iterable` and :class:`collections.abc.Container`.
 Both classes implement :class:`collections.abc.Collection` starting in Python
-3.6.
+3.6 and the polyfilled :class:`Collection` for Python < 3.6.
 
 Set Operations
 --------------
@@ -36,9 +38,8 @@ operations:
 
 Comparison Methods
 ------------------
-Bags are comparable to Sets (including other bags). When comparing a bag to a
-Set, the Set is treated as a bag with all multiplicities equal to 1.
-The ordering comparison operators are implemented using multiset comparison.
+Bags are comparable only to other bags.
+Ordering comparisons are done setwise.
 
 .. testsetup::
 
@@ -46,23 +47,9 @@ The ordering comparison operators are implemented using multiset comparison.
 
 .. code-block:: python
 
-	>>> bag() == set()
-	True
-	>>> bag('a') == set('a')
-	True
-	>>> bag('ab') == set('a')
+	>>> bag('ac') <= bag('ab')
 	False
-	>>> bag('a') == set('ab')
-	False
-	>>> bag('aa') == set('a')
-	False
-	>>> bag('aa') == set('ab')
-	False
-	>>> bag('ac') == set('ab')
-	False
-	>>> bag('ac') <= set('ab')
-	False
-	>>> bag('ac') >= set('ab')
+	>>> bag('ac') >= bag('ab')
 	False
 	>>> bag('a') <= bag('a') < bag('aa')
 	True
@@ -158,6 +145,9 @@ bag vs. set
 New Methods
 -----------
 
+These are `bag` methods that are not implementing an abstract method from a
+standard Python ABC.
+
 ``num_unique_elements``
 	Returns the number of unique elements in the bag. O(1)
 ``unique_elements()``
@@ -169,10 +159,10 @@ New Methods
 	Returns a shallow copy of self.  O(self.num_unique_elements())
 ``isdisjoint(other: Iterable)``
 	Tests if self is disjoint with any other Iterable.  O(len(other))
-``is_subset(other: Set)``
-	Tests if self is a subset of another Set.
-``is_superset(other: Set)``
-	Tests if self is a superset of another Set.
+``issubset(other: Iterable)``
+	Tests if self is a subset of another Iterable.
+``issuperset(other: Iterable)``
+	Tests if self is a superset of another Iterable.
 ``from_mapping(map: Mapping)``
 	Classmethod to create a bag from a Mapping that maps elements to counts.
 
@@ -186,6 +176,11 @@ The following are only for mutable bags (not frozenbags).
 
 API
 ---
+
+Bag
+^^^
+
+.. autoclass:: Bag
 
 bag
 ^^^
@@ -201,7 +196,7 @@ Views
 ^^^^^
 
 .. autoclass:: CountsView
-	:no-undoc-members:
+   :no-undoc-members:
 
 .. autoclass:: UniqueElementsView
-	:no-undoc-members:
+   :no-undoc-members:
