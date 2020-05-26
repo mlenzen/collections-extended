@@ -36,9 +36,11 @@ Contents:
 Other Packages of Interest
 ==========================
 
-- http://stutzbachenterprises.com/blist/ - b+ trees,
+- http://stutzbachenterprises.com/blist/ - b+ trees
 - https://bitbucket.org/mozman/bintrees - Binary search trees
 - https://bidict.readthedocs.org/en/master/ - bijections
+- http://www.grantjenks.com/docs/sortedcollections/ - sortedcollections
+- http://www.grantjenks.com/docs/sortedcontainers/ - sortedcontainers
 
 :Author: Michael Lenzen
 :Copyright: 2020 Michael Lenzen
