@@ -432,6 +432,12 @@ class setlist(SetList, MutableSequence, MutableSet):
 		"""
 		self._delete_all(elems_to_delete, raise_errors=True)
 
+	def reverse(self):
+		"""Reverse the setlist in-place."""
+		self._list.reverse()
+		for index, item in enumerate(self._list):
+			self._dict[item] = index
+
 	# Implement MutableSet
 
 	def add(self, item):
