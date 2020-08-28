@@ -4,6 +4,11 @@ from typing import Any, Callable, Iterable, Mapping, Tuple, Union
 
 from .indexed_dict import IndexedDict
 
+# TODO:
+#  * store positional arg names and provide them as a dict property, e.g. dict(zip(names, self.args))
+#  * Arg specs class that contains the arg specifications for a function - a list of argument names, default values.
+#      annotations, ... http://docs.python.org/library/inspect.html#inspect.getargspec
+
 
 class Args(Collection):
 	"""Store the arguments of a function."""
@@ -100,6 +105,16 @@ class TestArgs:
 		assert len(args) == 5
 		assert args.args == tuple('abc')
 		assert args.kwargs == {'kwarg3': 'd', 'kwarg4': 'e'}
+
+	def test_unpack(self):
+		args = Args('abc')
+		a, b, c = args
+		assert (a, b, c) == ('a', 'b', 'c')
+
+	def test_unpack_with_kwargs(self):
+		args = Args('abc', {'a': 1})
+		a, b, c = args
+		assert (a, b, c) == ('a', 'b', 'c')
 
 
 def test_save_args_no_parens():
