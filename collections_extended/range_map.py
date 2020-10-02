@@ -1,9 +1,8 @@
 """RangeMap class definition."""
 from abc import ABCMeta, abstractmethod
 from bisect import bisect_left, bisect_right
-from collections.abc import Mapping, Set
+from collections.abc import Collection, Mapping, Set
 
-from ._compat import Collection
 from .sentinel import NOT_SET
 
 
@@ -392,8 +391,8 @@ class RangeMap(Mapping):
 	def __eq__(self, other):
 		if isinstance(other, RangeMap):
 			return (
-				self._keys == other._keys and
-				self._values == other._values
+				self._keys == other._keys
+				and self._values == other._values
 				)
 		else:
 			return False
