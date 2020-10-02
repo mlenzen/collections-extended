@@ -9,7 +9,7 @@ Change Log
 Breaking Changes
 """"""""""""""""
 
-* Drop support for Python 2.7 & 3.4
+* Drop support for Python 2.7, 3.4 & 3.5
 * When multiplying bags, the cartesian product creates a tuple instead of adding
   the elements.
 * bags no longer inherit from Set
