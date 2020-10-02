@@ -2,7 +2,7 @@
 
 .. versionadded:: 1.1
 """
-import collections
+from collections.abc import MutableMapping
 
 from ._util import deprecation_warning
 from .sentinel import NOT_SET
@@ -16,7 +16,7 @@ KEY_EQ_INDEX_ERROR = TypeError(
 	"Exactly one of `key` and `index` must be specified")
 
 
-class IndexedDict(collections.MutableMapping):
+class IndexedDict(MutableMapping):
 	"""A Mapping that preserves insertion order and allows access by item index.
 
 	The API is an extension of OrderedDict.
