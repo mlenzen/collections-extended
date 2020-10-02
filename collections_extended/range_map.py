@@ -392,8 +392,8 @@ class RangeMap(Mapping):
 	def __eq__(self, other):
 		if isinstance(other, RangeMap):
 			return (
-				self._keys == other._keys and
-				self._values == other._values
+				self._keys == other._keys
+				and self._values == other._values
 				)
 		else:
 			return False
