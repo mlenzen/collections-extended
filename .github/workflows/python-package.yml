@@ -4,6 +4,24 @@ on: [push, pull_request]
 
 jobs:
 
+  cocs:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip setuptools coveralls
+        pip install -r requirements.txt
+
+    - name: Build Docs
+      run: make lint
+
   lint:
 
     runs-on: ubuntu-latest
