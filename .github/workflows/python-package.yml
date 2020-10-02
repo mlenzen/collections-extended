@@ -42,7 +42,5 @@ jobs:
 
     - name: Test with pytest
       run: coverage run --source collections_extended setup.py test
-    after_success:
-    - coveralls
-
-workflows:
+#    after_success:
+#    - coveralls
