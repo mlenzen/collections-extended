@@ -11,8 +11,8 @@ README
 	:alt: Coverage
 
 
-.. image:: https://pepy.tech/badge/collections-extended/month
-	:target: https://pepy.tech/project/collections-extended/month
+.. image:: https://pepy.tech/badge/collections-extended/week
+	:target: https://pepy.tech/project/collections-extended/
 	:alt: Downloads
 
 
