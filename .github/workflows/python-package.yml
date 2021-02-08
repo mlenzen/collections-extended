@@ -4,6 +4,21 @@ on: [push, pull_request]
 
 jobs:
 
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: poetry install
+    - name: Build package
+      run: poetry build
+
   docs:
 
     runs-on: ubuntu-latest
