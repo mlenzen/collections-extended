@@ -6,7 +6,7 @@ authors = ["Michael Lenzen <m.lenzen@gmail.com>"]
 license = "Apache License, Version 2.0"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
