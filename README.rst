@@ -1,11 +1,6 @@
 README
 ######
 
-.. image:: https://travis-ci.org/mlenzen/collections-extended.svg?branch=master
-	:target: https://travis-ci.org/mlenzen/collections-extended
-	:alt: Build Status
-
-
 .. image:: https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master
 	:target: https://coveralls.io/github/mlenzen/collections-extended?branch=master
 	:alt: Coverage
