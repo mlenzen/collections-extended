@@ -150,6 +150,6 @@ Python 2.7, 3.4 & 3.5 was 1.0. No new feature releases will be done for 1.x but
 any significant bugs that come up may be fixed.
 
 :Author: Michael Lenzen
-:Copyright: 2020 Michael Lenzen
+:Copyright: 2021 Michael Lenzen
 :License: Apache License, Version 2.0
 :Project Homepage: https://github.com/mlenzen/collections-extended
