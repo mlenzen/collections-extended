@@ -17,10 +17,8 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install sphinx>=2.1
-                    sphinxcontrib-napoleon
-                    git+https://github.com/mlenzen/alabaster.git
-
+        pip install sphinx>=2.1 sphinxcontrib-napoleon \
+          git+https://github.com/mlenzen/alabaster.git
 
     - name: Build Docs
       run: make docs
@@ -58,11 +56,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install --upgrade pip
+        pip install --upgrade pip coverage
         pip install pytest
 
     - name: Test with pytest
-      run: pytest
+      run: coverage run --source collections_extended -m pytest
 
 #  coverage:
 #
