@@ -10,6 +10,14 @@ python = "3.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
+bumpversion = "^0.6.0"
+tox = "^3.21.4"
+flake8 = "^3.8.4"
+flake8-docstrings = "^1.5.0"
+coverage = "^5.4"
+Sphinx = {version = "^3.4.3", optional = true}
+sphinxcontrib-napoleon = {version = "^0.7", optional = true}
+alabaster = {git = "https://github.com/mlenzen/alabaster.git", optional = true}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
