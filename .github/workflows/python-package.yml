@@ -16,8 +16,11 @@ jobs:
         python-version: 3.9
     - name: Install dependencies
       run: |
-        pip install --upgrade pip setuptools coveralls
-        pip install -r requirements.txt
+        pip install --upgrade pip
+        pip install sphinx>=2.1
+                    sphinxcontrib-napoleon
+                    git+https://github.com/mlenzen/alabaster.git
+
 
     - name: Build Docs
       run: make docs
@@ -33,12 +36,12 @@ jobs:
       with:
         python-version: 3.9
     - name: Install dependencies
-      run: |
-        pip install --upgrade pip setuptools coveralls
-        pip install -r requirements.txt
+      run:
+        pip install --upgrade pip
+        pip install flake8 flake8-docstrings
 
     - name: Lint with flake8
-      run: make lint
+      run: flake8 --statistics --count
 
   tests:
 
@@ -55,11 +58,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install --upgrade pip setuptools coveralls
-        pip install -r requirements.txt
+        pip install --upgrade pip
+        pip install pytest
 
     - name: Test with pytest
-      run: coverage run --source collections_extended setup.py test
+      run: pytest
 
 #  coverage:
 #
