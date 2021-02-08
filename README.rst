@@ -29,7 +29,7 @@ a ``IndexedDict`` class, which is an ordered mapping whose elements can be acces
 in addition to key.
 There are also frozen (hashable) varieties of bags and setlists.
 
-Compatible with and tested against Python 3.6, 3.7, 3.8 & PyPy3.
+Compatible with and tested against Python 3.6, 3.7, 3.8, 3.9 & PyPy3.
 
 Getting Started
 ===============
@@ -150,6 +150,6 @@ Python 2.7, 3.4 & 3.5 was 1.0. No new feature releases will be done for 1.x but
 any significant bugs that come up may be fixed.
 
 :Author: Michael Lenzen
-:Copyright: 2020 Michael Lenzen
+:Copyright: 2021 Michael Lenzen
 :License: Apache License, Version 2.0
 :Project Homepage: https://github.com/mlenzen/collections-extended
