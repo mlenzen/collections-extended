@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "collections-extended"
+version = "1.0.3"
+description = ""
+authors = ["Michael Lenzen <m.lenzen@gmail.com>"]
+license = "Apache License, Version 2.0"
+
+[tool.poetry.dependencies]
+python = "3.6"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -43,8 +43,8 @@ publish: testall lint coverage publish-force
 
 .PHONY: publish-force
 publish-force:
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	poetry build
+	poetry publish
 	git push
 	git push --tags
 
