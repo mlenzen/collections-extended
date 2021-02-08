@@ -34,7 +34,7 @@ lint:
 
 .PHONY: coverage
 coverage:
-	coverage run --source collections_extended setup.py test
+	coverage run --source collections_extended -m pytest
 	coverage report -m
 	coverage html
 

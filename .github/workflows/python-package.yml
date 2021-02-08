@@ -59,7 +59,7 @@ jobs:
         pip install -r requirements.txt
 
     - name: Test with pytest
-      run: coverage run --source collections_extended setup.py test
+      run: coverage run --source collections_extended -m pytest
 
 #  coverage:
 #
