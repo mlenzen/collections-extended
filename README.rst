@@ -1,18 +1,13 @@
 README
 ######
 
-.. image:: https://travis-ci.org/mlenzen/collections-extended.svg?branch=master
-	:target: https://travis-ci.org/mlenzen/collections-extended
-	:alt: Build Status
-
-
 .. image:: https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master
 	:target: https://coveralls.io/github/mlenzen/collections-extended?branch=master
 	:alt: Coverage
 
 
-.. image:: https://pepy.tech/badge/collections-extended/month
-	:target: https://pepy.tech/project/collections-extended/month
+.. image:: https://pepy.tech/badge/collections-extended/week
+	:target: https://pepy.tech/project/collections-extended/
 	:alt: Downloads
 
 
@@ -34,7 +29,7 @@ a ``IndexedDict`` class, which is an ordered mapping whose elements can be acces
 in addition to key.
 There are also frozen (hashable) varieties of bags and setlists.
 
-Tested against Python 3.5, 3.6, 3.7, 3.8 & PyPy3.
+Compatible with and tested against Python 3.6, 3.7, 3.8 & PyPy3.
 
 Getting Started
 ===============
@@ -151,7 +146,8 @@ Python 2
 --------
 
 The package no longer supports Python 2. The last version to support
-Python 2 was 1.0
+Python 2.7, 3.4 & 3.5 was 1.0. No new feature releases will be done for 1.x but
+any significant bugs that come up may be fixed.
 
 :Author: Michael Lenzen
 :Copyright: 2020 Michael Lenzen

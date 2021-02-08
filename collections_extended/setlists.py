@@ -178,25 +178,43 @@ class SetList(Sequence, Set):
 	# Implement Set
 
 	def issubset(self, other):
+		"""Report whether another set contains this set."""
 		return self <= other
 
 	def issuperset(self, other):
+		"""Report whether this set contains another set."""
 		return self >= other
 
 	def union(self, other):
+		"""Return the union of sets as a new set.
+
+		(i.e. all elements that are in either set.)
+		"""
 		out = self.copy()
 		out._update(other)
 		return out
 
 	def intersection(self, other):
+		"""Return the intersection of two sets as a new set.
+
+		(i.e. all elements that are in both sets.)
+		"""
 		other = set(other)
 		return self._from_iterable(item for item in self if item in other)
 
 	def difference(self, other):
+		"""Return the difference of two or more sets as a new set.
+
+		(i.e. all elements that are in this set but not the others.)
+		"""
 		other = set(other)
 		return self._from_iterable(item for item in self if item not in other)
 
 	def symmetric_difference(self, other):
+		"""Return the symmetric difference (disjuntive union) of two sets.
+
+		(i.e. all elements that are in one set but not both.)
+		"""
 		return self.union(other) - self.intersection(other)
 
 	def __sub__(self, other):
@@ -258,6 +276,7 @@ class SetList(Sequence, Set):
 		return start_index
 
 	def copy(self):
+		"""Return a shallow copy of the setlist."""
 		return self.__class__(self)
 
 
