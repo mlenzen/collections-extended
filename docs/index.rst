@@ -43,7 +43,7 @@ Other Packages of Interest
 - http://www.grantjenks.com/docs/sortedcontainers/ - sortedcontainers
 
 :Author: Michael Lenzen
-:Copyright: 2020 Michael Lenzen
+:Copyright: 2021 Michael Lenzen
 :License: Apache License, Version 2.0
 
 .. _`tested against`: https://travis-ci.org/mlenzen/collections-extended
