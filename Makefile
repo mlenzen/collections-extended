@@ -31,6 +31,7 @@ clean:
 .PHONY: lint
 lint:
 	flake8 --statistics --count
+	poetry check
 
 .PHONY: coverage
 coverage:
