@@ -41,12 +41,13 @@ tox = "^3.21.4"
 flake8 = "^3.8.4"
 flake8-docstrings = "^1.5.0"
 coverage = "^5.4"
-Sphinx = {version = "^3.4.3", optional = true}
-sphinxcontrib-napoleon = {version = "^0.7", optional = true}
-alabaster = {git = "https://github.com/mlenzen/alabaster.git", optional = true}
+Sphinx = {version = "^3.4.3"}
+sphinxcontrib-napoleon = {version = "^0.7"}
+alabaster = {git = "https://github.com/mlenzen/alabaster.git"}
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-napoleon", "alabaster"]
+testing = ["pytest", "tox"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
