@@ -30,7 +30,6 @@ classifiers = [
 	"Topic :: Software Development :: Libraries",
 	"Topic :: Software Development :: Libraries :: Python Modules",
 ]
-packages=["collections_extended"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
