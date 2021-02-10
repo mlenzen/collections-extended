@@ -5,7 +5,7 @@ from collections import defaultdict
 from collections.abc import Collection, Hashable, Set
 from operator import itemgetter
 
-from ._util import deprecated
+from ._util import deprecated, list_remove_value
 
 __all__ = (
 	'Bag',
@@ -50,6 +50,8 @@ class UniqueElementsView(BagView):
 	def __iter__(self):
 		for elem in self.bag._dict:
 			yield elem
+		for elem in self.bag._list:
+			yield elem
 
 	def __contains__(self, elem):
 		return elem in self.bag
@@ -93,24 +95,33 @@ class Bag(Collection):
 
 		This runs in O(len(iterable))
 		"""
+		self._list = list()
 		self._dict = dict()
-		self._size = 0
+		self._dict_size = 0
 		if iterable:
 			if isinstance(iterable, Bag):
+				self._list = iterable._list.copy()
 				self._dict = iterable._dict.copy()
-				self._size = iterable._size
+				self._dict_size = iterable._dict_size
 			else:
 				for value in iterable:
 					self._increment_count(value)
 
-	def _set_count(self, elem, count):
+	def _set_count(self, elem, count) -> int:
 		if count < 0:
 			raise ValueError
-		self._size += count - self.count(elem)
-		if count == 0:
-			self._dict.pop(elem, None)
+		try:
+			curr_count = self.count(elem)
+		except TypeError:
+			delta = list_remove_value(self._list, elem, count)
 		else:
-			self._dict[elem] = count
+			delta = curr_count - count
+			if count:
+				self._dict[elem] = count
+			else:
+				del self._dict[elem]
+			self._dict_size -= delta
+		return delta
 
 	def _increment_count(self, elem, count=1):
 		self._set_count(elem, self.count(elem) + count)
@@ -126,11 +137,12 @@ class Bag(Collection):
 		"""
 		out = self._from_iterable(None)
 		out._dict = self._dict.copy()
-		out._size = self._size
+		out._list = self._list.copy()
+		out._dict_size = self._dict_size
 		return out
 
 	def __repr__(self):
-		if self._size == 0:
+		if len(self) == 0:
 			return '{0}()'.format(self.__class__.__name__)
 		else:
 			repr_format = '{class_name}({values!r})'
@@ -140,7 +152,7 @@ class Bag(Collection):
 				)
 
 	def __str__(self):
-		if self._size == 0:
+		if len(self) == 0:
 			return '{class_name}()'.format(class_name=self.__class__.__name__)
 		else:
 			format_single = '{elem!r}'
@@ -160,7 +172,7 @@ class Bag(Collection):
 
 		This runs in O(1) time
 		"""
-		return len(self._dict)
+		return len(self._dict) + len(self._list)
 
 	def unique_elements(self):
 		"""Return a view of unique elements in this bag."""
@@ -178,7 +190,10 @@ class Bag(Collection):
 		Returns:
 			int: The count of value in self
 		"""
-		return self._dict.get(value, 0)
+		try:
+			return self._dict.get(value, 0)
+		except TypeError:
+			return self._list.count(value)
 
 	@deprecated(
 		"Use `heapq.nlargest(n, self.counts(), key=itemgetter(1))` instead or "
@@ -228,7 +243,7 @@ class Bag(Collection):
 
 		This runs in O(1)
 		"""
-		return self._size
+		return self._dict_size + len(self._list)
 
 	# implementing Container methods
 
