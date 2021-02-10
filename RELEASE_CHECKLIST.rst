@@ -27,7 +27,7 @@ To add support for a new version of python, aside from any new functionality
 required, add version number to:
 
 #. tox.ini envlist
-#. .travis.yml
+#. .github/workflows/python-package.yml
 #. setup.py classifiers
 #. README.rst description
 #. docs/index.rst list of versions
