@@ -3,7 +3,7 @@ from functools import wraps
 import textwrap
 import warnings
 
-__all__ = ('hash_iterable', 'deprecated')
+__all__ = ('hash_iterable', 'deprecated', 'deprecation_warning')
 
 
 def hash_iterable(it):
