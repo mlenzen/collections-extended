@@ -26,7 +26,7 @@ Added
 * Add :meth:`setlist.swap`
 * Add :meth:`bag.count`, :class:`CountsView` & :class:`UniqueElementsView`
 * Add :meth:`bag.issubset` and :meth:`issuperset`
-* Add support for Python 3.8
+* Add support for Python 3.8 & 3.9
 * Add :class:`Sentinel`
 * Make :class:`MappedRange` a class instead of a namedtuple
 * Add change log

@@ -17,6 +17,7 @@ jobs:
       run: pip install poetry
     - name: Install dependencies
       run: poetry install
+
     - name: Build package
       run: poetry build
 
@@ -52,14 +53,14 @@ jobs:
       run: poetry install
 
     - name: Lint with flake8
-      run: flake8 --statistics --count
+      run: poetry run flake8 --statistics --count
 
   tests:
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9, pypy-3.6]
+        python-version: [3.6, 3.7, 3.8, 3.9, pypy-3.6, pypy-3.7]
 
     steps:
     - uses: actions/checkout@v2
@@ -73,7 +74,7 @@ jobs:
       run: poetry install
 
     - name: Test with pytest
-      run: coverage run --source collections_extended -m pytest
+      run: poetry run coverage run --source collections_extended -m pytest
 
 #  coverage:
 #
