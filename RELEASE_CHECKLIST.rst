@@ -5,6 +5,7 @@ Release Checklist
 
 #. ``bumpversion [patch|minor|major]``
 
+# FIXME following here
 #. Install the package again for local development, but with the new version number: ``python setup.py develop``
 
 #. ``make publish``
