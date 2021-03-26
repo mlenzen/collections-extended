@@ -21,9 +21,8 @@ testall:
 clean:
 	rm -rf build
 	rm -rf dist
-	rm -rf data_structures.egg-info
-	find . -name *.pyc -delete
-	find . -name *.pyo -delete
+	rm -rf *.egg-info
+	find . -name *.py[co] -delete
 	find . -name *~ -delete
 	find . -name __pycache__ -delete
 	find . -name *,cover -delete
