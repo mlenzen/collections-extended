@@ -1,5 +1,3 @@
-POETRY = poetry
-
 .PHONY: default
 default: clean deps tests
 
@@ -48,7 +46,7 @@ coverage:
 	poetry run coverage html
 
 .PHONY: publish
-publish: testall lint coverage publish-force
+publish: fixme-check lint testall publish-force
 
 .PHONY: publish-force
 publish-force:
