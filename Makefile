@@ -1,13 +1,15 @@
-.PHONY: help
-help:
-	@echo "  clean         remove unwanted files like .pyc's"
-	@echo "  lint          check style with flake8"
-	@echo "  tests         run tests (using py.test)"
-	@echo "  testall       run tests for all Python versions (using tox)"
-	@echo "  coverage      run coverage report"
-	@echo "  publish       publish to PyPI"
-	@echo "  publish-force publish to PyPI ignoring tests and linting"
-	@echo "  docs          create HMTL docs (using Sphinx)"
+VENV = .venv
+
+.PHONY: default
+default: clean deps tests
+
+.PHONY: deps
+deps: $(VENV) requirements.txt
+	pip install -r requirements.txt
+
+$(VENV):
+	python -m venv $@
+	$@/bin/pip install --upgrade pip wheel setuptools
 
 .PHONY: tests
 tests:
@@ -26,6 +28,13 @@ clean:
 	find . -name *~ -delete
 	find . -name __pycache__ -delete
 	find . -name *,cover -delete
+
+.PHONY: deep-clean
+deep-clean: clean
+	rm --recursive --force $(VENV)
+	rm --recursive --force .egs
+	rm --recursive --force .pytest_cache
+	rm --recursive --force .tox
 
 .PHONY: lint
 lint:
