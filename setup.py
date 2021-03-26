@@ -1,25 +1,7 @@
 """setup.py for collections_extended."""
 from os.path import dirname, join
-import sys
 
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
-
-
-class PyTest(TestCommand):
-	"""TestCommand to run py.test."""
-
-	def finalize_options(self):
-		"""Finalize option before test is run."""
-		TestCommand.finalize_options(self)
-		self.test_args = ['tests']
-		self.test_suite = True
-
-	def run_tests(self):
-		"""Run tests."""
-		import pytest
-		errcode = pytest.main(self.test_args)
-		sys.exit(errcode)
 
 
 def long_description():
@@ -59,6 +41,7 @@ setup(
 		'Programming Language :: Python :: 3.6',
 		'Programming Language :: Python :: 3.7',
 		'Programming Language :: Python :: 3.8',
+		'Programming Language :: Python :: 3.9',
 		'Programming Language :: Python :: Implementation :: PyPy',
 		'Topic :: Software Development',
 		'Topic :: Software Development :: Libraries',
@@ -70,5 +53,4 @@ setup(
 	tests_require=['pytest'],
 	package_data={'': ['README.rst', 'LICENSE', 'CONTRIBUTING.rst']},
 	python_requires='>=3.5',
-	cmdclass={'test': PyTest},
 	)

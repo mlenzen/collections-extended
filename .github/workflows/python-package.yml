@@ -13,11 +13,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: 3.9
     - name: Install dependencies
       run: |
-        pip install --upgrade pip setuptools coveralls
-        pip install -r requirements.txt
+        pip install --upgrade pip
+        pip install sphinx>=2.1 sphinxcontrib-napoleon
+        pip install git+https://github.com/mlenzen/alabaster.git
 
     - name: Build Docs
       run: make docs
@@ -31,21 +32,21 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: 3.9
     - name: Install dependencies
-      run: |
-        pip install --upgrade pip setuptools coveralls
-        pip install -r requirements.txt
+      run:
+        pip install --upgrade pip
+        pip install flake8 flake8-docstrings
 
     - name: Lint with flake8
-      run: make lint
+      run: flake8 --statistics --count
 
   tests:
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -55,11 +56,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install --upgrade pip setuptools coveralls
-        pip install -r requirements.txt
+        pip install --upgrade pip coverage
+        pip install pytest
 
     - name: Test with pytest
-      run: coverage run --source collections_extended setup.py test
+      run: coverage run --source collections_extended -m pytest
 
 #  coverage:
 #
@@ -74,7 +75,7 @@ jobs:
 #    - name: Set up Python
 #      uses: actions/setup-python@v2
 #      with:
-#        python-version: 3.8
+#        python-version: 3.9
 #    - name: Install dependencies
 #      run: |
 #        pip install --upgrade pip setuptools coveralls
