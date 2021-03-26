@@ -1,23 +1,19 @@
-VENV = .venv
+POETRY = poetry
 
 .PHONY: default
 default: clean deps tests
 
 .PHONY: deps
-deps: $(VENV) requirements.txt
-	pip install -r requirements.txt
-
-$(VENV):
-	python -m venv $@
-	$@/bin/pip install --upgrade pip wheel setuptools
+deps:
+	poetry install --remove-untracked
 
 .PHONY: tests
 tests: clean
-	py.test
+	poetry run py.test
 
 .PHONY: testall
 testall: clean
-	tox
+	poetry run tox
 
 .PHONY: clean
 clean:
@@ -32,20 +28,20 @@ clean:
 .PHONY: deep-clean
 deep-clean: clean
 	rm --recursive --force $(VENV)
-	rm --recursive --force .egs
+	rm --recursive --force .eggs
 	rm --recursive --force .pytest_cache
 	rm --recursive --force .tox
 
 .PHONY: lint
 lint:
-	flake8 --statistics --count
+	poetry run flake8 --statistics --count
 	poetry check
 
 .PHONY: coverage
 coverage:
-	coverage run --source collections_extended --module pytest
-	coverage report --show-missing
-	coverage html
+	poetry run coverage run --source collections_extended --module pytest
+	poetry run coverage report --show-missing
+	poetry run coverage html
 
 .PHONY: publish
 publish: testall lint coverage publish-force
