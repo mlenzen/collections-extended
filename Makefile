@@ -32,6 +32,10 @@ clean:
 lint:
 	flake8 --statistics --count
 
+.PHONY: fixme-check
+fixme-check:
+	! git grep FIXME | grep "^Makefile" --invert-match
+
 .PHONY: coverage
 coverage:
 	coverage run --source collections_extended -m pytest
