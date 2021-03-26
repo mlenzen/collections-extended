@@ -32,7 +32,7 @@ clean:
 .PHONY: deep-clean
 deep-clean: clean
 	rm --recursive --force $(VENV)
-	rm --recursive --force .egs
+	rm --recursive --force .eggs
 	rm --recursive --force .pytest_cache
 	rm --recursive --force .tox
 
