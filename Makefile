@@ -37,6 +37,10 @@ lint:
 	poetry run flake8 --statistics --count
 	poetry check
 
+.PHONY: fixme-check
+fixme-check:
+	! git grep FIXME | grep "^Makefile" --invert-match
+
 .PHONY: coverage
 coverage:
 	poetry run coverage run --source collections_extended --module pytest
