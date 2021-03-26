@@ -40,6 +40,8 @@ jobs:
 
     - name: Lint with flake8
       run: flake8 --statistics --count
+    - name: Check for unfinished code
+      run: make fixme-check
 
   tests:
 
