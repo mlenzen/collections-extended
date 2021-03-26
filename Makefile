@@ -12,11 +12,11 @@ $(VENV):
 	$@/bin/pip install --upgrade pip wheel setuptools
 
 .PHONY: tests
-tests:
+tests: clean
 	py.test
 
 .PHONY: testall
-testall:
+testall: clean
 	tox
 
 .PHONY: clean
