@@ -36,7 +36,7 @@ jobs:
       run: poetry install
 
     - name: Build Docs
-      run: make docs
+      run: poetry run make docs
 
   lint:
 
@@ -54,6 +54,8 @@ jobs:
 
     - name: Lint with flake8
       run: poetry run flake8 --statistics --count
+    - name: Check for unfinished code
+      run: make fixme-check
 
   tests:
 

@@ -1,25 +1,21 @@
 Release Checklist
 -----------------
 
-#. Run tests and linter ``make testall`` and ``make lint``
-
 #. ``bumpversion [patch|minor|major]``
-
-# FIXME following here
-#. Install the package again for local development, but with the new version number: ``python setup.py develop``
 
 #. ``make publish``
 
-#. Test that it pip installs::
+#.	Test that it pip installs
 
-	mktmpenv
-	pip install collections-extended
-	<try it out>
-	deactivate
+	#. Make a test virtual environment
+	#. ``pip install collections-extended``
+	#. Confirm the new version number was installed
+	#. Try it out
 
 #. Check the PyPI listing page to make sure that the README displays properly.
-	If not, copy and paste the RestructuredText into http://rst.ninjs.org/ to
-	find out what broke the formatting.
+
+   If not, copy and paste the RestructuredText into http://rst.ninjs.org/ to
+   find out what broke the formatting.
 
 New Python Versions
 -------------------
