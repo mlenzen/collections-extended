@@ -8,13 +8,15 @@ from typing import (
 	TypeVar,
 )
 
-from .mulset import MulSet, MulSetView
+from .core import MulSet, MulSetView
 
 KeyType = TypeVar('KeyType')
 ValType = TypeVar('ValType')
 
 
 class Pair(Tuple[KeyType, ValType]):
+
+	__slots__ = ('key', 'val')
 
 	def __init__(self, key: KeyType, val: ValType):
 		self.key = key
