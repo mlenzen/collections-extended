@@ -9,6 +9,8 @@ from typing import (
 	TypeVar,
 )
 
+from .store import Store
+
 T = TypeVar('T')
 
 
@@ -36,54 +38,32 @@ class MulSetView:
 		raise NotImplementedError
 
 
+def mulset_factory(
+		mutable: bool = True,
+		orderable: bool = False,
+		unique: bool = False,
+):
+	raise NotImplementedError
+
+
+def mulset(iterable: Iterable[T] = None, **kwargs):
+	cls = mulset_factory(**kwargs)
+	return cls(iterable)
+
+
 # class MulSet(Generic[T], Collection):
 class MulSet(Collection[T]):
 	"""
 
 	"""
 
-	class __metaclass__:
-
-		def __call__(
-				self,
-				iterable: Iterable[T] = None,
-				mutable: bool = True,
-				orderable: bool = False,
-				unique: bool = False,
-		) -> 'MulSet[T]':
-			subclass = MulSet.factory(
-				mutable=mutable,
-				orderable=orderable,
-				unique=unique,
-			)
-			return subclass(iterable)
-
-	@classmethod
-	def factory(
-			cls,
-			mutable: bool = True,
-			orderable: bool = False,
-			unique: bool = False,
-	) -> 'MulSet[T]':
-		# TODO implement if/then branching and/or subclasses
-		pass
-
-	@abstractmethod
 	def __init__(self, iterable: Iterable[T]):
-		pass
+		self.store = Store(iterable)
 
 	@abstractmethod
 	def copy(self) -> 'MulSet[T]':
 		raise NotImplementedError
 
 
-class TestMulSet:
-	...
-
-
 class MutableMulSet(MulSet):
 	pass
-
-
-class TestMutableMulSet:
-	...

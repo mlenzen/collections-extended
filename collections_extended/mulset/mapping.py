@@ -1,3 +1,10 @@
+__all__ = [
+	'KeyedMulSet',
+	'Pair',
+	'KeysView',
+	'ValuesView',
+]
+
 from typing import (
 	Any,
 	Callable,
@@ -16,7 +23,7 @@ ValType = TypeVar('ValType')
 
 class Pair(Tuple[KeyType, ValType]):
 
-	__slots__ = ('key', 'val')
+	# No __slots__ since we inherit from Tuple
 
 	def __init__(self, key: KeyType, val: ValType):
 		self.key = key
