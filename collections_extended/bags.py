@@ -262,11 +262,11 @@ class Bag(Collection):
 	# Comparison methods
 
 	def issubset(self, other):
-	"""Check that every element in self has a count <= in other.
+		"""Check that every element in self has a count <= in other.
 
-	Args:
-		other (Iterable)
-	"""
+		Args:
+			other (Iterable)
+		"""
 		if not isinstance(other, Bag):
 			return self.issubset(frozenbag(other))
 		for elem, count in self.counts():
