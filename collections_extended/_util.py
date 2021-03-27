@@ -1,9 +1,38 @@
 """util functions for collections_extended."""
 from functools import wraps
 import textwrap
+from typing import Any, List
 import warnings
 
-__all__ = ('hash_iterable', 'deprecated', 'deprecation_warning')
+__all__ = (
+	'deprecated',
+	'deprecation_warning',
+	'hash_iterable',
+	'list_remove_value',
+)
+
+
+def list_remove_value(lst: List, val: Any, max_count: int = None) -> int:
+	"""Remove copies of a value from a list in-place.
+
+	Args:
+		lst: The list to remove values from
+		val: The value to remove from the list
+		max_count: The maximum number of values to remove from the list, None
+			to indicate no maximum
+	Returns:
+		The number of values removed from the list
+	"""
+	max_count = len(lst) if max_count is None else max_count
+	out = []
+	count = 0
+	for item in lst:
+		if item == val and count < max_count:
+			count += 1
+		else:
+			out += item
+	lst[:] = out
+	return count
 
 
 def hash_iterable(it):
