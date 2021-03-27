@@ -50,11 +50,8 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Useful Reading
-~~~~~~~~~~~~~~
-
-https://docs.python.org/3/reference/datamodel.html#emulating-container-types
-https://docs.python.org/3/library/collections.abc.html
+After checking out the project, ``make`` will set up a clean local dev environment.
+Read the ``Makefile`` for more common tasks/recipes.
 
 Ready to contribute? Here's how to set up `collections-extended` for local development.
 
@@ -69,12 +66,10 @@ Ready to contribute? Here's how to set up `collections-extended` for local devel
 	editor's files, so set up your global gitignore.
 	See: https://help.github.com/articles/ignoring-files/
 
-#. Install your local copy into a virtualenv::
+#. Set up your local dev environment::
 
 	$ cd collections-extended
-	$ python -m venv .venv
-	$ . .venv/bin/activate
-	$ pip install -r requirements.txt
+	$ make
 
 #. Create a branch for local development::
 
@@ -82,11 +77,12 @@ Ready to contribute? Here's how to set up `collections-extended` for local devel
 
 #. Make your changes locally.
 
-#. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
+#. You may run checks locally without having to create a PR:
 
-	$ flake8
-	$ py.test
-	$ tox
+	$ make lint
+	$ make tests
+	$ make testall
+	$ make coverage
 
 #. Commit your changes and push your branch to GitHub::
 
@@ -95,6 +91,8 @@ Ready to contribute? Here's how to set up `collections-extended` for local devel
 	$ git push origin name-of-your-bugfix-or-feature
 
 #. Submit a pull request through the GitHub website.
+
+	This will
 
 Pull Request Guidelines
 -----------------------
@@ -116,3 +114,9 @@ To run a subset of tests::
 
 	$ py.test tests/test_example.py
 	$ py.test tests/test_example.py::test_func
+
+Useful Reading
+~~~~~~~~~~~~~~
+
+https://docs.python.org/3/reference/datamodel.html#emulating-container-types
+https://docs.python.org/3/library/collections.abc.html
