@@ -2,6 +2,9 @@
 
 ## Why?
 
+* I've been frustrated with Python collections for a long time [1_] [2_]
+	- Too much cognitive overhead
+	- Incomplete functionality
 * Too many combinations of collection attributes to comprehend, code or maintain distinctly
 	- unique
 	- ordered
@@ -9,6 +12,16 @@
 	- mutable
 	- value restrictions (hashable -> fast contains check)
 	- default values / generators / functions
+	- multi-value mappings
+* Consistent APIs
+	- `add` or `remove` to all collections
+* Inheriting from and extending list, dict, set ... is non-idiomatic
+
+_1: https://mail.python.org/archives/list/python-ideas@python.org/thread/DOGT3OG57ZAQYJECUR27GUV5QM5HVWZL/
+_2: https://github.com/mlenzen/collections-extended/blob/master/HISTORY.rst
+
+### How
+
 * Collection functionality must be composed and the mechanics hidden behind the scenes ("collections for humans")
 
 ## What's Different
