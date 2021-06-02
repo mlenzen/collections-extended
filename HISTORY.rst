@@ -154,11 +154,17 @@ Deprecated data-structures
 0.1.3 - 2014-05-24
 ------------------
 
+Moved to Git & GitHub
+
 0.1.2 - 2009-10-03
 ------------------
 
 0.1.1 - 2009-10-03
 ------------------
+
+???
+---
+Moved to Google Code
 
 0.1.0 - 2009-10-01
 ------------------
@@ -168,4 +174,6 @@ Initial release published to PyPi
 0.0.0 - 2009-07-14
 ------------------
 
-Repository created, modules organized in one package.
+* Repository created
+* Modules organized in one package.
+* Hosted on SourceForge

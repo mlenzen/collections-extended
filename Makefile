@@ -1,3 +1,5 @@
+PACKAGE = collections_extended
+
 .PHONY: default
 default: clean deps tests
 
@@ -41,7 +43,7 @@ fixme-check:
 
 .PHONY: coverage
 coverage:
-	poetry run coverage run --source collections_extended --module pytest
+	poetry run coverage run --source $(PACKAGE) --module pytest
 	poetry run coverage report --show-missing
 	poetry run coverage html
 
@@ -57,9 +59,9 @@ publish-force:
 
 .PHONY: docs
 docs:
-	rm --force docs/collections_extended.rst
+	rm --force docs/$(PACKAGE).rst
 	rm --force docs/modules.rst
-	#sphinx-apidoc --output-dir docs/ collections_extended
+	#sphinx-apidoc --output-dir docs/ $(PACKAGE)
 	make --directory docs clean
 	make --directory docs html
 	#xdg-open docs/_build/html/index.html
