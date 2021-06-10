@@ -34,6 +34,11 @@ def test_init_from_pairs():
 	assert bijection({'a': 1, 'b': 2}) == bijection((('a', 1), ('b', 2)))
 
 
+def test_init_from_triples_fails():
+	with pytest.raises(ValueError):
+		bijection((('a', 1), ('b', 2), ))
+
+
 def test_repr():
 	"""Test __repr__."""
 	b = bijection()
