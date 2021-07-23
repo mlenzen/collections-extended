@@ -34,6 +34,8 @@ Added
 Fixed
 """""
 
+* tuples passed to the bijection constructor must have len == 2, not >= 2
+
 Deprecated
 """"""""""
 
