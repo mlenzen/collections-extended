@@ -33,7 +33,8 @@ class bijection(MutableMapping):
 					self[key] = value
 			else:
 				for pair in iterable:
-					self[pair[0]] = pair[1]
+					key, value = pair
+					self[key] = value
 		for key, value in kwarg.items():
 			self[key] = value
 

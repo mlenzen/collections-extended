@@ -204,19 +204,36 @@ class SetList(Sequence, Set, Generic[T]):
 		return self >= other
 
 	def union(self, other: Iterable[T]) -> 'SetList'[T]:
+		"""Return the union of sets as a new set.
+
+		(i.e. all elements that are in either set.)
+		"""
 		out = self.copy()
 		out._update(other)
 		return out
 
+<<<<<<< HEAD
 	def intersection(self, other: Iterable[T]) -> 'SetList'[T]:
+		"""Return the intersection of two sets as a new set.
+
+		(i.e. all elements that are in both sets.)
+		"""
 		other = set(other)
 		return self._from_iterable(item for item in self if item in other)
 
 	def difference(self, other: Iterable[T]) -> 'SetList'[T]:
+		"""Return the difference of two or more sets as a new set.
+
+		(i.e. all elements that are in this set but not the others.)
+		"""
 		other = set(other)
 		return self._from_iterable(item for item in self if item not in other)
 
 	def symmetric_difference(self, other: Iterable[T]) -> 'SetList'[T]:
+		"""Return the symmetric difference (disjuntive union) of two sets.
+
+		(i.e. all elements that are in one set but not both.)
+		"""
 		return self.union(other) - self.intersection(other)
 
 	def __sub__(self, other: Iterable[T]) -> 'SetList'[T]:
@@ -283,7 +300,8 @@ class SetList(Sequence, Set, Generic[T]):
 		return start_index
 
 	def copy(self) -> 'SetList':
-		return self._from_iterable(self)
+		"""Return a shallow copy of the setlist."""
+		return self.__class__(self)
 
 
 class setlist(SetList, MutableSequence, MutableSet):
@@ -460,6 +478,12 @@ class setlist(SetList, MutableSequence, MutableSet):
 			TypeError: If any of the values aren't hashable.
 		"""
 		self._delete_all(elems_to_delete, raise_errors=True)
+
+	def reverse(self):
+		"""Reverse the setlist in-place."""
+		self._list.reverse()
+		for index, item in enumerate(self._list):
+			self._dict[item] = index
 
 	# Implement MutableSet
 

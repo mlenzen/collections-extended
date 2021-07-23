@@ -1,39 +1,45 @@
-.PHONY: help
-help:
-	@echo "  clean         remove unwanted files like .pyc's"
-	@echo "  lint          check style with flake8"
-	@echo "  tests         run tests (using py.test)"
-	@echo "  testall       run tests for all Python versions (using tox)"
-	@echo "  coverage      run coverage report"
-	@echo "  publish       publish to PyPI"
-	@echo "  publish-force publish to PyPI ignoring tests and linting"
-	@echo "  docs          create HMTL docs (using Sphinx)"
+PACKAGE = collections_extended
+
+.PHONY: default
+default: clean deps tests
+
+.PHONY: deps
+deps:
+	poetry install --remove-untracked
 
 .PHONY: tests
-tests:
-	py.test
+tests: clean
+	poetry run py.test
 
 .PHONY: testall
-testall:
-	tox
+testall: clean
+	poetry run tox
 
 .PHONY: clean
 clean:
-	rm -rf build
-	rm -rf dist
-	rm -rf data_structures.egg-info
-	find . -name *.pyc -delete
-	find . -name *.pyo -delete
+	rm --recursive --force build
+	rm --recursive --force dist
+	rm --recursive --force *.egg-info
+	find . -name *.py[co] -delete
 	find . -name *~ -delete
 	find . -name __pycache__ -delete
 	find . -name *,cover -delete
 
-.PHONY: lint
-lint: flake8 mypy
+.PHONY: deep-clean
+deep-clean: clean
+	rm --recursive --force $(VENV)
+	rm --recursive --force .eggs
+	rm --recursive --force .pytest_cache
+	rm --recursive --force .tox
 
-.PHONY: flake8
-flake8:
-	flake8 --statistics --count
+.PHONY: lint
+lint: mypy fixme-check
+	poetry run flake8 --statistics --count
+	poetry check
+
+.PHONY: fixme-check
+fixme-check:
+	! git grep FIXME | grep "^Makefile" --invert-match
 
 .PHONY: mypy
 mypy:
@@ -41,25 +47,25 @@ mypy:
 
 .PHONY: coverage
 coverage:
-	coverage run --source collections_extended setup.py test
-	coverage report -m
-	coverage html
+	poetry run coverage run --source $(PACKAGE) --module pytest
+	poetry run coverage report --show-missing
+	poetry run coverage html
 
 .PHONY: publish
-publish: testall lint coverage publish-force
+publish: fixme-check lint testall publish-force
 
 .PHONY: publish-force
 publish-force:
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	poetry build
+	poetry publish
 	git push
 	git push --tags
 
 .PHONY: docs
 docs:
-	rm -f docs/collections_extended.rst
-	rm -f docs/modules.rst
-	#sphinx-apidoc -o docs/ collections_extended
-	make -C docs clean
-	make -C docs html
+	rm --force docs/$(PACKAGE).rst
+	rm --force docs/modules.rst
+	#sphinx-apidoc --output-dir docs/ $(PACKAGE)
+	make --directory docs clean
+	make --directory docs html
 	#xdg-open docs/_build/html/index.html

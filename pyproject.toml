@@ -1,0 +1,54 @@
+[tool.poetry]
+name = "collections-extended"
+version = "1.0.3"
+description = "Extra Python Collections - bags (multisets) and setlists (ordered sets)"
+authors = ["Michael Lenzen <m.lenzen@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.rst"
+documentation = "https://collections-extended.lenzm.net"
+repository = "https://github.com/mlenzen/collections-extended"
+keywords = [
+	"collections",
+	"bag",
+	"multiset",
+	"ordered set",
+	"unique list",
+]
+classifiers = [
+	"Development Status :: 5 - Production/Stable",
+	"Intended Audience :: Developers",
+	"License :: OSI Approved :: Apache Software License",
+	"Operating System :: OS Independent",
+	"Programming Language :: Python",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.6",
+	"Programming Language :: Python :: 3.7",
+	"Programming Language :: Python :: 3.8",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: Implementation :: PyPy",
+	"Topic :: Software Development",
+	"Topic :: Software Development :: Libraries",
+	"Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+bumpversion = "^0.6.0"
+tox = "^3.21.4"
+flake8 = "^3.8.4"
+flake8-docstrings = "^1.5.0"
+coverage = "^5.4"
+Sphinx = {version = "^3.4.3"}
+sphinxcontrib-napoleon = {version = "^0.7"}
+alabaster = {git = "https://github.com/mlenzen/alabaster.git"}
+
+[tool.poetry.extras]
+docs = ["Sphinx", "sphinxcontrib-napoleon", "alabaster"]
+testing = ["pytest", "tox"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

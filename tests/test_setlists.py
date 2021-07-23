@@ -596,3 +596,9 @@ def test_swap():
 	sl.swap(-1, 1)
 	assert_internal_structure(sl)
 	assert sl == setlist('afbdec')
+
+
+def test_reverse():
+	sl = setlist('abcdef')
+	sl.reverse()
+	assert sl == setlist('fedcba')

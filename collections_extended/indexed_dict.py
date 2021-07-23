@@ -2,7 +2,7 @@
 
 .. versionadded:: 1.1
 """
-from collections import MutableMapping
+from collections.abc import MutableMapping
 from typing import Any, Hashable, Iterable, Mapping, Tuple, Union
 
 from ._util import deprecation_warning

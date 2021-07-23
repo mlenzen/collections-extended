@@ -2,11 +2,10 @@
 import heapq
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
-from collections.abc import Hashable, Set
+from collections.abc import Collection, Hashable, Set
 from operator import itemgetter
 from typing import Any, Callable, Iterable, Mapping, Tuple
 
-from ._compat import Collection
 from ._util import deprecated
 
 __all__ = (

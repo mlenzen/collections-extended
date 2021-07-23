@@ -1,12 +1,11 @@
 """collections_extended contains a few extra basic data structures."""
-from collections.abc import Iterable
+from collections.abc import Collection
 
-from ._compat import Collection
-from .bags import Bag, CountsView, UniqueElementsView, bag, frozenbag
+from .bags import bag, frozenbag, UniqueElementsView, CountsView, Bag  # noqa
 from .bijection import bijection
 from .indexed_dict import IndexedDict
-from .range_map import MappedRange, RangeMap
-from .setlists import SetList, frozensetlist, setlist
+from .range_map import RangeMap, MappedRange  # noqa
+from .setlists import frozensetlist, setlist, SetList
 
 __all__ = (
 	'Collection',
