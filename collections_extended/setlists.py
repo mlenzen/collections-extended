@@ -189,7 +189,7 @@ class SetList(Sequence, Set, Generic[T]):
 					)
 			raise TypeError(message)
 
-	def __add__(self, other: Iterable[T]) -> 'SetList'[T]:
+	def __add__(self, other: Iterable[T]) -> 'SetList[T]':
 		self._check_type(other, '+')
 		out = self.copy()
 		out._extend(other)
@@ -197,13 +197,13 @@ class SetList(Sequence, Set, Generic[T]):
 
 	# Implement Set
 
-	def issubset(self, other: 'SetList'[T]) -> bool:
+	def issubset(self, other: 'SetList[T]') -> bool:
 		return self <= other
 
-	def issuperset(self, other: 'SetList'[T]) -> bool:
+	def issuperset(self, other: 'SetList[T]') -> bool:
 		return self >= other
 
-	def union(self, other: Iterable[T]) -> 'SetList'[T]:
+	def union(self, other: Iterable[T]) -> 'SetList[T]':
 		"""Return the union of sets as a new set.
 
 		(i.e. all elements that are in either set.)
@@ -212,7 +212,7 @@ class SetList(Sequence, Set, Generic[T]):
 		out._update(other)
 		return out
 
-	def intersection(self, other: Iterable[T]) -> 'SetList'[T]:
+	def intersection(self, other: Iterable[T]) -> 'SetList[T]':
 		"""Return the intersection of two sets as a new set.
 
 		(i.e. all elements that are in both sets.)
@@ -220,7 +220,7 @@ class SetList(Sequence, Set, Generic[T]):
 		other = set(other)
 		return self._from_iterable(item for item in self if item in other)
 
-	def difference(self, other: Iterable[T]) -> 'SetList'[T]:
+	def difference(self, other: Iterable[T]) -> 'SetList[T]':
 		"""Return the difference of two or more sets as a new set.
 
 		(i.e. all elements that are in this set but not the others.)
@@ -228,26 +228,26 @@ class SetList(Sequence, Set, Generic[T]):
 		other = set(other)
 		return self._from_iterable(item for item in self if item not in other)
 
-	def symmetric_difference(self, other: Iterable[T]) -> 'SetList'[T]:
+	def symmetric_difference(self, other: Iterable[T]) -> 'SetList[T]':
 		"""Return the symmetric difference (disjuntive union) of two sets.
 
 		(i.e. all elements that are in one set but not both.)
 		"""
 		return self.union(other) - self.intersection(other)
 
-	def __sub__(self, other: Iterable[T]) -> 'SetList'[T]:
+	def __sub__(self, other: Iterable[T]) -> 'SetList[T]':
 		self._check_type(other, '-')
 		return self.difference(other)
 
-	def __and__(self, other: Iterable[T]) -> 'SetList'[T]:
+	def __and__(self, other: Iterable[T]) -> 'SetList[T]':
 		self._check_type(other, '&')
 		return self.intersection(other)
 
-	def __or__(self, other: Iterable[T]) -> 'SetList'[T]:
+	def __or__(self, other: Iterable[T]) -> 'SetList[T]':
 		self._check_type(other, '|')
 		return self.union(other)
 
-	def __xor__(self, other: Iterable[T]) -> 'SetList'[T]:
+	def __xor__(self, other: Iterable[T]) -> 'SetList[T]':
 		self._check_type(other, '^')
 		return self.symmetric_difference(other)
 

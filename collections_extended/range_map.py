@@ -1,7 +1,7 @@
 """RangeMap class definition."""
 from abc import ABCMeta, abstractmethod
 from bisect import bisect_left, bisect_right
-from collections.abc import Collection, Mapping, Set
+from typing import Collection, Mapping, Set
 from typing import Any, Hashable, Iterator, Iterable, Union, Tuple, Generator, Optional, overload
 
 from .sentinel import NOT_SET
@@ -208,7 +208,7 @@ class RangeMap(Mapping):
 	@classmethod
 	def from_iterable(
 			cls,
-			iterable: Iterable[Hashable, Hashable, Any],
+			iterable: Iterable[Tuple[Hashable, Hashable, Any]],
 			) -> 'RangeMap':
 		"""Create a RangeMap from an iterable of tuples defining each range.
 
@@ -218,7 +218,7 @@ class RangeMap(Mapping):
 		obj._init_from_iterable(iterable)
 		return obj
 
-	def _init_from_iterable(self, iterable: Iterable[Hashable, Hashable, Any]):
+	def _init_from_iterable(self, iterable: Iterable[Tuple[Hashable, Hashable, Any]]):
 		for start, stop, value in iterable:
 			self.set(value, start=start, stop=stop)
 
@@ -246,7 +246,7 @@ class RangeMap(Mapping):
 		else:
 			return bisect_right(self._keys, key, lo=1)
 
-	def ranges(self, start: Hashable = None, stop: Hashable = None) -> Generator[MappedRange]:
+	def ranges(self, start: Hashable = None, stop: Hashable = None) -> Generator[MappedRange, None, None]:
 		"""Generate MappedRanges for all mapped ranges.
 
 		Yields:

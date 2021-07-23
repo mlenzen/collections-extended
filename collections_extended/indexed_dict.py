@@ -3,7 +3,7 @@
 .. versionadded:: 1.1
 """
 from collections.abc import MutableMapping
-from typing import Any, Hashable, Iterable, Mapping, Tuple, Union
+from typing import Any, Dict, Generic, Hashable, Iterable, List, Mapping, Tuple, TypeVar, Union
 
 from ._util import deprecation_warning
 from .sentinel import NOT_SET
@@ -16,8 +16,11 @@ KEY_AND_INDEX_ERROR = TypeError(
 KEY_EQ_INDEX_ERROR = TypeError(
 	"Exactly one of `key` and `index` must be specified")
 
+K = TypeVar('K', bound=Hashable)
+V = TypeVar('V')
 
-class IndexedDict(MutableMapping):
+
+class IndexedDict(Generic[K, V], MutableMapping):
 	"""A Mapping that preserves insertion order and allows access by item index.
 
 	The API is an extension of OrderedDict.
@@ -28,14 +31,14 @@ class IndexedDict(MutableMapping):
 	def __init__(
 			self,
 			iterable: Union[
-				Mapping[Hashable, Any],
-				Iterable[Tuple[Hashable, Any]],
+				Mapping[K, V],
+				Iterable[Tuple[K, V]],
 				] = None,
-			**kwargs,
+			**kwargs: V,
 			):
 		"""Create an IndexedDict and initialize it like a dict."""
-		self._dict = {}  # key -> (index, value)
-		self._list = []  # index -> (key, value)
+		self._dict: Dict[K, Tuple[int, V]] = {}  # key -> (index, value)
+		self._list: List[Tuple[K, V]] = []  # index -> (key, value)
 		self.update(iterable or [], **kwargs)
 
 	def clear(self):
@@ -45,11 +48,11 @@ class IndexedDict(MutableMapping):
 
 	def get(
 			self,
-			key: Hashable = NOT_SET,
+			key: K = NOT_SET,
 			index: int = NOT_SET,
-			default: Any = NOT_SET,
-			d: Any = NOT_SET,
-			) -> Any:
+			default: V = NOT_SET,
+			d: V = NOT_SET,
+			) -> V:
 		"""Return value with given `key` or `index`.
 
 		If no value is found, return `default` (`None` by default).
@@ -96,11 +99,11 @@ class IndexedDict(MutableMapping):
 
 	def pop(
 			self,
-			key: Hashable = NOT_SET,
+			key: K = NOT_SET,
 			index: int = NOT_SET,
-			default: Any = NOT_SET,
-			d: Any = NOT_SET,
-			) -> Any:
+			default: V = NOT_SET,
+			d: V = NOT_SET,
+			) -> V:
 		"""Remove and return value.
 
 		Optionally, specify the `key` or `index` of the value to pop.
@@ -150,9 +153,9 @@ class IndexedDict(MutableMapping):
 
 	def _pop_key(
 			self,
-			key: Hashable,
+			key: K,
 			has_default: bool,
-			) -> Union[Tuple[int, Any], Tuple[None, None]]:
+			) -> Union[Tuple[int, V], Tuple[None, None]]:
 		"""Remove an element by key."""
 		try:
 			index, value = self._dict.pop(key)
@@ -171,7 +174,7 @@ class IndexedDict(MutableMapping):
 			self,
 			index: int,
 			has_default: bool,
-			) -> Union[Tuple[None, None, None], Tuple[Hashable, int, Any]]:
+			) -> Union[Tuple[None, None, None], Tuple[K, int, V]]:
 		"""Remove an element by index, or last element."""
 		try:
 			if index is NOT_SET:
@@ -194,9 +197,9 @@ class IndexedDict(MutableMapping):
 
 	def fast_pop(
 			self,
-			key: Hashable = NOT_SET,
+			key: K = NOT_SET,
 			index: int = NOT_SET,
-			) -> Tuple[Any, int, Hashable, Any]:
+			) -> Tuple[V, int, K, V]:
 		"""Pop a specific item quickly by swapping it to the end.
 
 		Remove value with given key or index (last item by default) fast
@@ -242,9 +245,9 @@ class IndexedDict(MutableMapping):
 			self,
 			last: bool = NOT_SET,
 			*,
-			key: Hashable = NOT_SET,
+			key: K = NOT_SET,
 			index: int = NOT_SET,
-			) -> Tuple[Hashable, Any]:
+			) -> Tuple[K, V]:
 		"""Remove and return a (key, value) tuple.
 
 		By default, the last item is popped.
@@ -289,7 +292,7 @@ class IndexedDict(MutableMapping):
 
 	def move_to_end(
 			self,
-			key: Hashable = NOT_SET,
+			key: K = NOT_SET,
 			index: int = NOT_SET,
 			last: bool = True,
 			):
@@ -327,14 +330,14 @@ class IndexedDict(MutableMapping):
 		ret._list = list(self._list)
 		return ret
 
-	def index(self, key: Hashable) -> int:
+	def index(self, key: K) -> int:
 		"""Return index of a record with given key.
 
 		Runs in O(1).
 		"""
 		return self._dict[key][0]
 
-	def key(self, index: int) -> Hashable:
+	def key(self, index: int) -> K:
 		"""Return key of a record at given index.
 
 		Runs in O(1).
@@ -367,7 +370,7 @@ class IndexedDict(MutableMapping):
 			data=data,
 			)
 
-	def __getitem__(self, key: Hashable) -> Any:
+	def __getitem__(self, key: K) -> V:
 		"""Return value corresponding to given key.
 
 		Raises KeyError when the key is not present in the mapping.
@@ -376,7 +379,7 @@ class IndexedDict(MutableMapping):
 		"""
 		return self._dict[key][1]
 
-	def __setitem__(self, key: Hashable, value: Any):
+	def __setitem__(self, key: K, value: V):
 		"""Set item with given key to given value.
 
 		If the key is already present in the mapping its order is unchanged,
@@ -392,7 +395,7 @@ class IndexedDict(MutableMapping):
 			self._list.append((key, value))
 		self._dict[key] = index, value
 
-	def __delitem__(self, key: Hashable):
+	def __delitem__(self, key: K):
 		"""Remove item with given key from the mapping.
 
 		Runs in O(n), unless removing last item, then in O(1).
@@ -404,7 +407,7 @@ class IndexedDict(MutableMapping):
 
 		self._fix_indices_after_delete(index)
 
-	def __contains__(self, key: Hashable) -> bool:
+	def __contains__(self, key: K) -> bool:
 		"""Check if a key is present in the mapping.
 
 		Runs in O(1).
