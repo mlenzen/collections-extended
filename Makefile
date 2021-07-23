@@ -43,7 +43,7 @@ fixme-check:
 
 .PHONY: mypy
 mypy:
-	mypy collections_extended
+	poetry run mypy collections_extended
 
 .PHONY: coverage
 coverage:

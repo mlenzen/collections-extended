@@ -212,7 +212,6 @@ class SetList(Sequence, Set, Generic[T]):
 		out._update(other)
 		return out
 
-<<<<<<< HEAD
 	def intersection(self, other: Iterable[T]) -> 'SetList'[T]:
 		"""Return the intersection of two sets as a new set.
 

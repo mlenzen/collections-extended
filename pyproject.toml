@@ -33,6 +33,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
+mypy = "^0.910"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
