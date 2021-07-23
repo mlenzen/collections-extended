@@ -38,6 +38,10 @@ jobs:
     - name: Build Docs
       run: poetry run make docs
 
+    - uses: actions/upload-artifact@v2
+      with:
+        name: docs-${GITHUB_REF##*/}
+        path: docs/_build/html # or path/to/artifact
   lint:
 
     runs-on: ubuntu-latest
