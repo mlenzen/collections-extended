@@ -10,6 +10,11 @@ README
     :target: https://coveralls.io/github/mlenzen/collections-extended?branch=master
     :alt: Coverage
 
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+
+
 Documentation: http://collections-extended.lenzm.net/
 
 GitHub: https://github.com/mlenzen/collections-extended
