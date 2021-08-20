@@ -13,10 +13,8 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-    - name: Install poetry
-      run: pip install poetry
     - name: Install dependencies
-      run: poetry install
+      run: make deps
 
     - name: Build package
       run: poetry build
@@ -30,10 +28,8 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-    - name: Install poetry
-      run: pip install poetry
     - name: Install dependencies
-      run: poetry install
+      run: make deps
 
     - name: Build Docs
       run: poetry run make docs
@@ -47,13 +43,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-    - name: Install poetry
-      run: pip install poetry
     - name: Install dependencies
-      run: poetry install
+      run: make deps
 
     - name: Lint with flake8
-      run: poetry run flake8 --statistics --count
+      run: make lint
     - name: Check for unfinished code
       run: make fixme-check
 
@@ -70,10 +64,8 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install poetry
-      run: pip install poetry
     - name: Install dependencies
-      run: poetry install
+      run: make deps
 
     - name: Test with pytest
       run: poetry run coverage run --source collections_extended -m pytest
