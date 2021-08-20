@@ -146,7 +146,7 @@ def _check_start_stop(start: Hashable, stop: Hashable):
 		raise ValueError('stop must be > start')
 
 
-def _check_key_slice(key: slice):
+def _check_key_slice(key: Hashable):
 	if not isinstance(key, slice):
 		raise TypeError('Can only set and delete slices')
 	if key.step is not None:
