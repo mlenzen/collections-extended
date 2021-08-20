@@ -50,7 +50,8 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-After checking out the project, ``make`` will set up a clean local dev environment.
+After checking out the project, running ``make`` at any time will clean up and
+set up a fresh dev environment.
 Read the ``Makefile`` for more common tasks/recipes.
 
 Ready to contribute? Here's how to set up `collections-extended` for local development.
@@ -102,7 +103,7 @@ Before you submit a pull request, check that it meets these guidelines:
 1. The pull request should include tests.
 2. If the pull request adds functionality, the docs should be updated.
 3. The pull request should work for all supported versions. Check
-   https://travis-ci.org/mlenzen/collections-extended/pull_requests
+   https://github.com/mlenzen/collections-extended/actions
    and make sure that the tests pass for all supported Python versions.
 4. Add the feature/bug to the appropriate section in HISTORY.rst
 5. Review and update the relevant docs.
