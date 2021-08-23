@@ -5,10 +5,9 @@ README
 	:target: https://coveralls.io/github/mlenzen/collections-extended?branch=master
 	:alt: Coverage
 
-
-.. image:: https://pepy.tech/badge/collections-extended/week
+.. image:: https://pepy.tech/badge/collections-extended/month
 	:target: https://pepy.tech/project/collections-extended/
-	:alt: Downloads
+	:alt: Downloads per month
 
 
 Documentation:
