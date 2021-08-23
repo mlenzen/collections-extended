@@ -25,7 +25,7 @@ required, add version number to:
 
 #. tox.ini envlist
 #. .github/workflows/python-package.yml
-#. setup.py classifiers
+#. pyproject.toml classifiers
 #. README.rst description
 #. docs/index.rst list of versions
 
