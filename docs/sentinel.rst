@@ -11,7 +11,7 @@ vs. a plain object are:
   ``'<object object at 0x7ffb4d50e830>'`` you get ``'<not_set>'``
 * Sentinels are picklable
 
-See: https://www.wikiwand.com/en/Sentinel_value
+See: https://en.wikipedia.org/wiki/Sentinel_value
 Inspired by: https://pypi.org/project/sentinels/
 
 .. autoclass:: collections_extended.sentinel
