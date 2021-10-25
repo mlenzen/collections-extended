@@ -20,8 +20,6 @@ class IndexedDict(MutableMapping):
 	"""A Mapping that preserves insertion order and allows access by item index.
 
 	The API is an extension of OrderedDict.
-
-	.. automethod:: __init__
 	"""
 
 	def __init__(self, iterable=None, **kwargs):

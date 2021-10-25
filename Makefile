@@ -63,14 +63,16 @@ publish-force:
 	git push
 	git push --tags
 
+# Docs
+
+DOCS_BUILD = docs/_build
+
 .PHONY: clean-docs
 clean-docs:
-	rm --force docs/$(PACKAGE).rst
-	rm --force docs/modules.rst
+	rm --force --recursive $(DOCS_BUILD)
+#	rm --force docs/$(PACKAGE).rst
+#	rm --force docs/modules.rst
 
 .PHONY: docs
 docs: clean-docs
-	#sphinx-apidoc --output-dir docs/ $(PACKAGE)
-	make --directory docs clean
-	make --directory docs html
-	#xdg-open docs/_build/html/index.html
+	poetry run sphinx-build -b dirhtml docs $(DOCS_BUILD)/html

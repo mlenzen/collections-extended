@@ -10,8 +10,6 @@ class MappedRange:
 	"""Represents a subrange of a RangeMap.
 
 	This is a glorified namedtuple.
-
-	.. automethod:: __init__
 	"""
 
 	__slots__ = ('start', 'stop', 'value')
@@ -153,10 +151,7 @@ def _check_key_slice(key):
 
 
 class RangeMap(Mapping):
-	"""Map ranges of orderable elements to values.
-
-	.. automethod:: __init__
-	"""
+	"""Map ranges of orderable elements to values."""
 
 	def __init__(self, iterable=None, default_value=NOT_SET):
 		"""Create a RangeMap.
