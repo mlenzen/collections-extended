@@ -5,8 +5,7 @@ __all__ = ('bijection', )
 
 
 class bijection(MutableMapping):
-	"""A one-to-one onto mapping, a dict with unique values.
-	"""
+	"""A one-to-one onto mapping, a dict with unique values."""
 
 	def __init__(self, iterable=None, **kwarg):
 		"""Create a bijection from an iterable.

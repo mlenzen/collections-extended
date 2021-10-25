@@ -151,8 +151,7 @@ def _check_key_slice(key):
 
 
 class RangeMap(Mapping):
-	"""Map ranges of orderable elements to values.
-	"""
+	"""Map ranges of orderable elements to values."""
 
 	def __init__(self, iterable=None, default_value=NOT_SET):
 		"""Create a RangeMap.
