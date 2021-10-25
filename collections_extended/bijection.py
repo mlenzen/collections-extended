@@ -6,8 +6,6 @@ __all__ = ('bijection', )
 
 class bijection(MutableMapping):
 	"""A one-to-one onto mapping, a dict with unique values.
-
-	.. automethod:: __init__
 	"""
 
 	def __init__(self, iterable=None, **kwarg):
