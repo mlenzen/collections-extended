@@ -559,4 +559,4 @@ class TestMappedRange:
 	def test_equality(self):
 		assert MappedRange(0, 1, 'a') == MappedRange(0, 1, 'a')
 		assert not MappedRange(0, 1, 'a') is MappedRange(0, 1, 'a')
-		assert not MappedRange(0, 1, 'a') == MappedRange(None, 1, 'a')
+		assert MappedRange(0, 1, 'a') != MappedRange(None, 1, 'a')
