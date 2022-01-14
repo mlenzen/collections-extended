@@ -49,7 +49,8 @@ class MappedRange:
 
 	def __eq__(self, other):
 		if isinstance(other, MappedRange):
-			return (self.start, self.stop, self.value) == (other.start, other.stop, other.value)
+			return (self.start, self.stop, self.value) ==\
+				(other.start, other.stop, other.value)
 		return False
 
 
