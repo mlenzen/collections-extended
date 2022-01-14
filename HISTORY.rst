@@ -3,64 +3,29 @@
 Change Log
 ==========
 
+Next
+----
+
+* Added Python 3.10 to tests & classifiers
+* Added equality testing support to MappedRange
+
 2.0.0 - 2021-08-23
 ------------------
 
-Breaking Changes
-""""""""""""""""
-
 * Drop support for Python 2.7, 3.4 & 3.5
-* When multiplying bags, the cartesian product creates a tuple instead of adding
-  the elements.
 * bags no longer inherit from Set
   * can no longer compare as equal to Sets
 * Rename and expose bag and set base classes
   * `_basebag` -> :class:`Bag`
   * `_basesetlist` -> :class:`SetList`
-
-Added
-"""""
-
-* Added :class:`IndexedDict`
-* Improve efficiency for large bag operations
-* Add :meth:`setlist.swap`
-* Add :meth:`bag.count`, :class:`CountsView` & :class:`UniqueElementsView`
-* Add :meth:`bag.issubset` and :meth:`issuperset`
-* Add support for Python 3.8 & 3.9
-* Add :class:`Sentinel`
-* Make :class:`MappedRange` a class instead of a namedtuple
-* Add change log
-
-Fixed
-"""""
-
 * tuples passed to the bijection constructor must have len == 2, not >= 2
-
-Deprecated
-""""""""""
-
-Removed
-"""""""
 
 1.0.3 - 2019-11-23
 ------------------
 
-Breaking Changes
-""""""""""""""""
-
 * Drop support for Python 2.6 & 3.3
-
 * When multiplying bags, the cartesian product creates a tuple instead of adding
   the elements.
-* bags no longer inherit from Set
-  * can no longer compare as equal to Sets
-* Rename and expose bag and set base classes
-  * `_basebag` -> :class:`Bag`
-  * `_basesetlist` -> :class:`SetList`
-
-Added
-"""""
-
 * Added :class:`IndexedDict`
 * Improve efficiency for large bag operations
 * Add :meth:`setlist.swap`
@@ -70,15 +35,6 @@ Added
 * Add :class:`Sentinel`
 * Make :class:`MappedRange` a class instead of a namedtuple
 * Add change log
-
-Fixed
-"""""
-
-Deprecated
-""""""""""
-
-Removed
-"""""""
 
 1.0.2 - 2018-06-30
 ------------------
