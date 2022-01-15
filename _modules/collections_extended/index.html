@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>collections_extended &#8212; collections_extended 2.0.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <!-- Google Analytics -->
+	<script async src='//www.google-analytics.com/analytics.js'></script>
+	<script>
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-4495487-4', 'auto');
+	ga('require', 'linkid', 'linkid.js');
+	ga('send', 'pageview');
+	</script>
+	<!-- End Google Analytics -->
+  
+
+	<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for collections_extended</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;collections_extended contains a few extra basic data structures.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Collection</span>
+
+<span class="kn">from</span> <span class="nn">.bags</span> <span class="kn">import</span> <span class="n">bag</span><span class="p">,</span> <span class="n">frozenbag</span><span class="p">,</span> <span class="n">UniqueElementsView</span><span class="p">,</span> <span class="n">CountsView</span><span class="p">,</span> <span class="n">Bag</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">.bijection</span> <span class="kn">import</span> <span class="n">bijection</span>
+<span class="kn">from</span> <span class="nn">.indexed_dict</span> <span class="kn">import</span> <span class="n">IndexedDict</span>
+<span class="kn">from</span> <span class="nn">.range_map</span> <span class="kn">import</span> <span class="n">RangeMap</span><span class="p">,</span> <span class="n">MappedRange</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">.setlists</span> <span class="kn">import</span> <span class="n">frozensetlist</span><span class="p">,</span> <span class="n">setlist</span><span class="p">,</span> <span class="n">SetList</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+	<span class="s1">&#39;Collection&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;Bag&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;bag&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;frozenbag&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;bijection&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;IndexedDict&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;RangeMap&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;SetList&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;frozensetlist&#39;</span><span class="p">,</span>
+	<span class="s1">&#39;setlist&#39;</span><span class="p">,</span>
+	<span class="p">)</span>
+
+
+<div class="viewcode-block" id="collection"><a class="viewcode-back" href="../../factory/#collections_extended.collection">[docs]</a><span class="k">def</span> <span class="nf">collection</span><span class="p">(</span><span class="n">iterable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;Return a :class:`Collection` with the specified properties.</span>
+
+<span class="sd">	Args:</span>
+<span class="sd">		iterable (Iterable): collection to instantiate new collection from.</span>
+<span class="sd">		mutable (bool): Whether or not the new collection is mutable.</span>
+<span class="sd">		ordered (bool): Whether or not the new collection is ordered.</span>
+<span class="sd">		unique (bool): Whether or not the new collection contains only unique values.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="n">iterable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">iterable</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+	<span class="k">if</span> <span class="n">unique</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">ordered</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">mutable</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">setlist</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">frozensetlist</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">mutable</span><span class="p">:</span>
+				<span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">ordered</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">mutable</span><span class="p">:</span>
+				<span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">mutable</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">bag</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">frozenbag</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../">
+    <img class="logo" src="../../_static/logo.svg" alt="collections_extended"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Extra Python Collections - bags (multisets), setlists (ordered sets) and RangeMap</p>
+
+
+
+<p>
+  <a href="https://pypi.python.org/pypi/collections-extended">View on PyPI</a>
+</p>
+
+
+
+
+<p>
+  <a
+    class="github-button"
+    href="https://github.com/mlenzen/collections-extended"
+    data-icon="octicon-star"
+    data-count-href="/mlenzen/collections-extended/stargazers"
+    data-count-api="/repos/mlenzen/collections-extended#stargazers_count"
+    data-count-aria-label="# stargazers on GitHub"
+    aria-label="Star mlenzen/collections-extended on GitHub">
+    Star
+  </a>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/mlenzen/collections-extended">
+    <img
+        alt="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+        src="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+
+
+    
+
+<p>
+<a href="https://coveralls.io/github/mlenzen/collections-extended">
+    <img
+    alt="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    src="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setlists/">setlists</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bags/">bags (Multisets)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../range_map/">range_map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bijection/">bijection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../indexed_dict/">IndexedDicts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sentinel/">Sentinel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../factory/">Collection Factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing/">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog/">Change Log</a></li>
+</ul>
+
+<ul>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../../genindex/">General Index</a>
+  </li>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../../modindex/">Module Index</a>
+  </li>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../">Documentation overview</a><ul>
+  <li><a href="../">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Michael Lenzen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/mlenzen/alabaster">Alabaster 0.7.17</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/mlenzen/collections-extended" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+  </body>
+</html>

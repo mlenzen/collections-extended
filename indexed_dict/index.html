@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IndexedDicts &#8212; collections_extended 2.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Sentinel" href="../sentinel/" />
+    <link rel="prev" title="bijection" href="../bijection/" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <!-- Google Analytics -->
+	<script async src='//www.google-analytics.com/analytics.js'></script>
+	<script>
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-4495487-4', 'auto');
+	ga('require', 'linkid', 'linkid.js');
+	ga('send', 'pageview');
+	</script>
+	<!-- End Google Analytics -->
+  
+
+	<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="indexeddicts">
+<h1>IndexedDicts<a class="headerlink" href="#indexeddicts" title="Permalink to this headline">¶</a></h1>
+<p>IndexedDict is an ordered mapping whose elements can be accessed using index,
+in addition to key. The interface is mostly a generalization of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code>.</p>
+<div class="section" id="differences-from-ordereddict">
+<h2>Differences from OrderedDict<a class="headerlink" href="#differences-from-ordereddict" title="Permalink to this headline">¶</a></h2>
+<p>Methods <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">pop</span></code> and <code class="docutils literal notranslate"><span class="pre">move_to_end</span></code> have a different signature from
+OrderedDict, allowing exactly one of <code class="docutils literal notranslate"><span class="pre">index</span></code> or <code class="docutils literal notranslate"><span class="pre">key</span></code> argument to be used.
+This causes the IndexedDict to not be a drop in replacement to OrderedDict.</p>
+<div class="section" id="new-methods">
+<h3>New Methods<a class="headerlink" href="#new-methods" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">fast_pop</span></code></dt><dd><p>Remove an item with given key and value from the IndexedDict by first
+swapping the item to the last position and then removing it.
+Returns tuple of <code class="docutils literal notranslate"><span class="pre">(popped_value,</span> <span class="pre">new_moved_index,</span> <span class="pre">moved_key,</span> <span class="pre">moved_value)</span></code>.
+Time complexity of this operation is O(1).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">index</span></code></dt><dd><p>Return index of a record with given key.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">key</span></code></dt><dd><p>Return key of a record at given index.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="time-complexity">
+<h2>Time Complexity<a class="headerlink" href="#time-complexity" title="Permalink to this headline">¶</a></h2>
+<p>IndexedDict generally combines time complexity of dict and list.
+Indexed lookups cost list’s O(1), keyed lookups cost average case O(1) and worst
+case O(n) of dict.
+Deleting an element has a time complexity of O(1) if it is the last added one,
+or O(n) in general, in addition to the lookup cost.</p>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="collections_extended.IndexedDict">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">collections_extended.</span></code><code class="sig-name descname"><span class="pre">IndexedDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableMapping</span></code></p>
+<p>A Mapping that preserves insertion order and allows access by item index.</p>
+<p>The API is an extension of OrderedDict.</p>
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an IndexedDict and initialize it like a dict.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.clear">
+<code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all items.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.get">
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">index=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">default=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">d=&lt;not_set&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return value with given <cite>key</cite> or <cite>index</cite>.</p>
+<p>If no value is found, return <cite>default</cite> (<cite>None</cite> by default).</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.3.</span></p>
+</div>
+<p>The <cite>d</cite> parameter has been renamed <cite>default</cite>. <cite>d</cite> will be removed in
+some future version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The key of the value to get</p></li>
+<li><p><strong>index</strong> – The index of the value to get</p></li>
+<li><p><strong>default</strong> – The value to return if <cite>key</cite> is not found or <cite>index</cite> is
+out of bounds. If it is NOT_SET, None is returned.</p></li>
+<li><p><strong>d</strong> – DEPRECATED: Old parameter name for <cite>default</cite></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.pop">
+<code class="sig-name descname"><span class="pre">pop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">index=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">default=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">d=&lt;not_set&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove and return value.</p>
+<p>Optionally, specify the <cite>key</cite> or <cite>index</cite> of the value to pop.
+If <cite>key</cite> is specified and is not found a <cite>KeyError</cite> is raised unless
+<cite>default</cite> is specified. Likewise, if <cite>index</cite> is specified that is out of
+bounds, an <cite>IndexError</cite> is raised unless <cite>default</cite> is specified.</p>
+<p>Both <cite>index</cite> and <cite>key</cite> cannot be specified. If neither is specified,
+then the last value is popped.</p>
+<p>This is generally O(N) unless removing last item, then O(1).</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.0.3.</span></p>
+</div>
+<p>The <cite>d</cite> parameter has been renamed <cite>default</cite>. <cite>d</cite> will be removed in
+some future version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The key of the value to pop</p></li>
+<li><p><strong>index</strong> – The index of the value to pop</p></li>
+<li><p><strong>default</strong> – The value to return if the key is not found or the index is
+out of bounds</p></li>
+<li><p><strong>d</strong> – DEPRECATED: Old parameter name for <cite>default</cite></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.fast_pop">
+<code class="sig-name descname"><span class="pre">fast_pop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">index=&lt;not_set&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.fast_pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.fast_pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pop a specific item quickly by swapping it to the end.</p>
+<p>Remove value with given key or index (last item by default) fast
+by swapping it to the last place first.</p>
+<p>Changes order of the remaining items (item that used to be last goes to
+the popped location).
+Returns tuple of (poped_value, new_moved_index, moved_key, moved_value).
+If key is not found raises KeyError or IndexError.</p>
+<p>Runs in O(1).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.popitem">
+<code class="sig-name descname"><span class="pre">popitem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">last=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">key=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">index=&lt;not_set&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.popitem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.popitem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove and return a (key, value) tuple.</p>
+<p>By default, the last item is popped.
+Optionally, specify the <cite>key</cite> or <cite>index</cite> of the value to pop.
+The <cite>last</cite> parameter is included to match the OrderedDict API. If <cite>last</cite>
+is passed then the first or last item is returned based on its
+truthiness.</p>
+<p>At most one of <cite>index</cite>, <cite>last</cite> and <cite>key</cite> can be specified.</p>
+<p>This is generally O(N) unless removing last item, then O(1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The key of the value to pop</p></li>
+<li><p><strong>index</strong> – The index of the value to pop</p></li>
+<li><p><strong>last</strong> – Whether or not to pip the last item</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>KeyError</strong> – If the dictionary is empty or a key is specified that is
+    not present</p></li>
+<li><p><strong>IndexError</strong> – If <cite>index</cite> is specified and is out of bounds</p></li>
+<li><p><strong>ValueError</strong> – If more than one of <cite>last</cite>, <cite>index</cite> and <cite>key</cite> are
+    specified</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.move_to_end">
+<code class="sig-name descname"><span class="pre">move_to_end</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">index=&lt;not_set&gt;</span></em>, <em class="sig-param"><span class="pre">last=True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.move_to_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.move_to_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move an existing element to the end (or beginning if last==False).</p>
+<p>Runs in O(N).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.copy">
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a shallow copy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.index">
+<code class="sig-name descname"><span class="pre">index</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return index of a record with given key.</p>
+<p>Runs in O(1).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.key">
+<code class="sig-name descname"><span class="pre">key</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return key of a record at given index.</p>
+<p>Runs in O(1).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.__len__">
+<code class="sig-name descname"><span class="pre">__len__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.__len__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return number of elements stored.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.__getitem__">
+<code class="sig-name descname"><span class="pre">__getitem__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return value corresponding to given key.</p>
+<p>Raises KeyError when the key is not present in the mapping.</p>
+<p>Runs in O(1).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.__setitem__">
+<code class="sig-name descname"><span class="pre">__setitem__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.__setitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set item with given key to given value.</p>
+<p>If the key is already present in the mapping its order is unchanged,
+if it is not then it’s added to the last place.</p>
+<p>Runs in O(1).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.__delitem__">
+<code class="sig-name descname"><span class="pre">__delitem__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.__delitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove item with given key from the mapping.</p>
+<p>Runs in O(n), unless removing last item, then in O(1).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.__contains__">
+<code class="sig-name descname"><span class="pre">__contains__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.__contains__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.__contains__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a key is present in the mapping.</p>
+<p>Runs in O(1).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.IndexedDict.__iter__">
+<code class="sig-name descname"><span class="pre">__iter__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/indexed_dict/#IndexedDict.__iter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.IndexedDict.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return iterator over the keys of the mapping in order.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../">
+    <img class="logo" src="../_static/logo.svg" alt="collections_extended"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Extra Python Collections - bags (multisets), setlists (ordered sets) and RangeMap</p>
+
+
+
+<p>
+  <a href="https://pypi.python.org/pypi/collections-extended">View on PyPI</a>
+</p>
+
+
+
+
+<p>
+  <a
+    class="github-button"
+    href="https://github.com/mlenzen/collections-extended"
+    data-icon="octicon-star"
+    data-count-href="/mlenzen/collections-extended/stargazers"
+    data-count-api="/repos/mlenzen/collections-extended#stargazers_count"
+    data-count-aria-label="# stargazers on GitHub"
+    aria-label="Star mlenzen/collections-extended on GitHub">
+    Star
+  </a>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/mlenzen/collections-extended">
+    <img
+        alt="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+        src="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+
+
+    
+
+<p>
+<a href="https://coveralls.io/github/mlenzen/collections-extended">
+    <img
+    alt="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    src="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setlists/">setlists</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bags/">bags (Multisets)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../range_map/">range_map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bijection/">bijection</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">IndexedDicts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#differences-from-ordereddict">Differences from OrderedDict</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#new-methods">New Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#time-complexity">Time Complexity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api">API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../sentinel/">Sentinel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../factory/">Collection Factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/">Change Log</a></li>
+</ul>
+
+<ul>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../genindex/">General Index</a>
+  </li>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../modindex/">Module Index</a>
+  </li>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../">Documentation overview</a><ul>
+      <li>Previous: <a href="../bijection/" title="previous chapter">bijection</a></li>
+      <li>Next: <a href="../sentinel/" title="next chapter">Sentinel</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Michael Lenzen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/mlenzen/alabaster">Alabaster 0.7.17</a>
+      
+      |
+      <a href="../_sources/indexed_dict.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/mlenzen/collections-extended" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+  </body>
+</html>

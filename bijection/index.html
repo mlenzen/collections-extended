@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bijection &#8212; collections_extended 2.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="IndexedDicts" href="../indexed_dict/" />
+    <link rel="prev" title="range_map" href="../range_map/" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <!-- Google Analytics -->
+	<script async src='//www.google-analytics.com/analytics.js'></script>
+	<script>
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-4495487-4', 'auto');
+	ga('require', 'linkid', 'linkid.js');
+	ga('send', 'pageview');
+	</script>
+	<!-- End Google Analytics -->
+  
+
+	<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bijection">
+<h1>bijection<a class="headerlink" href="#bijection" title="Permalink to this headline">¶</a></h1>
+<p>Bijections are functions that map keys to unique values, ie.
+one-to-one, onto functions. See: <a class="reference external" href="https://en.wikipedia.org/wiki/Bijection">https://en.wikipedia.org/wiki/Bijection</a></p>
+<p><cite>bijection</cite> maintains the inverse mapping on <cite>bijection.inverse</cite> which
+is itself an instance of <cite>bijection</cite>.</p>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">collections_extended</span> <span class="kn">import</span> <span class="n">bijection</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bij</span> <span class="o">=</span> <span class="n">bijection</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bij</span><span class="o">.</span><span class="n">inverse</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">&#39;b&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bij</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bij</span> <span class="o">==</span> <span class="n">bijection</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bij</span><span class="o">.</span><span class="n">inverse</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bij</span> <span class="o">==</span> <span class="n">bijection</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bij</span><span class="o">.</span><span class="n">inverse</span><span class="o">.</span><span class="n">inverse</span> <span class="ow">is</span> <span class="n">bij</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="collections_extended.bijection">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">collections_extended.</span></code><code class="sig-name descname"><span class="pre">bijection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/bijection/#bijection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.bijection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableMapping</span></code></p>
+<p>A one-to-one onto mapping, a dict with unique values.</p>
+<dl class="py method">
+<dt id="collections_extended.bijection.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/bijection/#bijection.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.bijection.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a bijection from an iterable.</p>
+<p>Matches dict.__init__.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.bijection.inverse">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">inverse</span></code><a class="headerlink" href="#collections_extended.bijection.inverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the inverse of this bijection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.bijection.clear">
+<code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/bijection/#bijection.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.bijection.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove everything from this bijection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.bijection.copy">
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/bijection/#bijection.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.bijection.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of this bijection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.bijection.items">
+<code class="sig-name descname"><span class="pre">items</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/bijection/#bijection.items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.bijection.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>See Mapping.items.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.bijection.keys">
+<code class="sig-name descname"><span class="pre">keys</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/bijection/#bijection.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.bijection.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>See Mapping.keys.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="collections_extended.bijection.values">
+<code class="sig-name descname"><span class="pre">values</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections_extended/bijection/#bijection.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#collections_extended.bijection.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>See Mapping.values.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../">
+    <img class="logo" src="../_static/logo.svg" alt="collections_extended"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Extra Python Collections - bags (multisets), setlists (ordered sets) and RangeMap</p>
+
+
+
+<p>
+  <a href="https://pypi.python.org/pypi/collections-extended">View on PyPI</a>
+</p>
+
+
+
+
+<p>
+  <a
+    class="github-button"
+    href="https://github.com/mlenzen/collections-extended"
+    data-icon="octicon-star"
+    data-count-href="/mlenzen/collections-extended/stargazers"
+    data-count-api="/repos/mlenzen/collections-extended#stargazers_count"
+    data-count-aria-label="# stargazers on GitHub"
+    aria-label="Star mlenzen/collections-extended on GitHub">
+    Star
+  </a>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/mlenzen/collections-extended">
+    <img
+        alt="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+        src="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+
+
+    
+
+<p>
+<a href="https://coveralls.io/github/mlenzen/collections-extended">
+    <img
+    alt="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    src="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setlists/">setlists</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bags/">bags (Multisets)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../range_map/">range_map</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">bijection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api">API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../indexed_dict/">IndexedDicts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sentinel/">Sentinel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../factory/">Collection Factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/">Change Log</a></li>
+</ul>
+
+<ul>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../genindex/">General Index</a>
+  </li>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../modindex/">Module Index</a>
+  </li>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../">Documentation overview</a><ul>
+      <li>Previous: <a href="../range_map/" title="previous chapter">range_map</a></li>
+      <li>Next: <a href="../indexed_dict/" title="next chapter">IndexedDicts</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Michael Lenzen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/mlenzen/alabaster">Alabaster 0.7.17</a>
+      
+      |
+      <a href="../_sources/bijection.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/mlenzen/collections-extended" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+  </body>
+</html>
