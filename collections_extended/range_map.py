@@ -47,6 +47,12 @@ class MappedRange:
 			value=self.value,
 			)
 
+	def __eq__(self, other):
+		if isinstance(other, MappedRange):
+			return (self.start, self.stop, self.value) ==\
+				(other.start, other.stop, other.value)
+		return False
+
 
 class RangeMapView(Collection):
 	"""Base class for views of RangeMaps."""
