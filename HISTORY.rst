@@ -3,11 +3,11 @@
 Change Log
 ==========
 
-2.0.1 - 2022-??-??
+2.0.1 - 2022-01-19
 ------------------
 
 * Added Python 3.10 to tests & classifiers
-* Added equality testing support to MappedRange
+* Added equality testing to MappedRange
 
 2.0.0 - 2021-08-23
 ------------------
