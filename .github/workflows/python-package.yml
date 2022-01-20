@@ -58,8 +58,7 @@ jobs:
           git rm -r .
           git reset HEAD .nojekyll CNAME .gitignore
           git checkout -- .nojekyll CNAME .gitignore
-          mv docs/_build/html/* .
-          mv docs/_build/html/.* .
+          cp -r docs/_build/html/* .
           git add .
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
