@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Change Log &#8212; collections_extended 2.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="prev" title="Contributing" href="../contributing/" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <!-- Google Analytics -->
+	<script async src='//www.google-analytics.com/analytics.js'></script>
+	<script>
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-4495487-4', 'auto');
+	ga('require', 'linkid', 'linkid.js');
+	ga('send', 'pageview');
+	</script>
+	<!-- End Google Analytics -->
+  
+
+	<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="change-log">
+<h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>2.0.1 - 2022-??-??<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Added Python 3.10 to tests &amp; classifiers</p></li>
+<li><p>Added equality testing support to MappedRange</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>2.0.0 - 2021-08-23<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Drop support for Python 2.7, 3.4 &amp; 3.5</p></li>
+<li><p>bags no longer inherit from Set
+* can no longer compare as equal to Sets</p></li>
+<li><p>Rename and expose bag and set base classes
+* <cite>_basebag</cite> -&gt; <a class="reference internal" href="../bags/#collections_extended.Bag" title="collections_extended.Bag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bag</span></code></a>
+* <cite>_basesetlist</cite> -&gt; <a class="reference internal" href="../setlists/#collections_extended.SetList" title="collections_extended.SetList"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetList</span></code></a></p></li>
+<li><p>tuples passed to the bijection constructor must have len == 2, not &gt;= 2</p></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h2>1.0.3 - 2019-11-23<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Drop support for Python 2.6 &amp; 3.3</p></li>
+<li><p>When multiplying bags, the cartesian product creates a tuple instead of adding
+the elements.</p></li>
+<li><p>Added <a class="reference internal" href="../indexed_dict/#collections_extended.IndexedDict" title="collections_extended.IndexedDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">IndexedDict</span></code></a></p></li>
+<li><p>Improve efficiency for large bag operations</p></li>
+<li><p>Add <a class="reference internal" href="../setlists/#collections_extended.setlist.swap" title="collections_extended.setlist.swap"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setlist.swap()</span></code></a></p></li>
+<li><p>Add <code class="xref py py-meth docutils literal notranslate"><span class="pre">bag.count()</span></code>, <a class="reference internal" href="../bags/#collections_extended.CountsView" title="collections_extended.CountsView"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountsView</span></code></a> &amp; <a class="reference internal" href="../bags/#collections_extended.UniqueElementsView" title="collections_extended.UniqueElementsView"><code class="xref py py-class docutils literal notranslate"><span class="pre">UniqueElementsView</span></code></a></p></li>
+<li><p>Add <code class="xref py py-meth docutils literal notranslate"><span class="pre">bag.issubset()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">issuperset()</span></code></p></li>
+<li><p>Add support for Python 3.8</p></li>
+<li><p>Add <code class="xref py py-class docutils literal notranslate"><span class="pre">Sentinel</span></code></p></li>
+<li><p>Make <a class="reference internal" href="../range_map/#collections_extended.MappedRange" title="collections_extended.MappedRange"><code class="xref py py-class docutils literal notranslate"><span class="pre">MappedRange</span></code></a> a class instead of a namedtuple</p></li>
+<li><p>Add change log</p></li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h2>1.0.2 - 2018-06-30<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id5">
+<h2>1.0.1 - 2018-04-14<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id6">
+<h2>1.0.0 - 2017-10-17<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id7">
+<h2>0.10.1 - 2017-10-20<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id8">
+<h2>0.10.0 - 2017-10-20<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id9">
+<h2>0.9.0 - 2017-01-28<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id10">
+<h2>0.8.2 - 2016-10-24<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id11">
+<h2>0.8.1 - 2016-10-24<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id12">
+<h2>0.8.0 - 2016-08-21<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id13">
+<h2>0.7.2 - 2016-08-07<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id14">
+<h2>0.7.1 - 2016-08-07<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id15">
+<h2>0.7.0 - 2016-01-13<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id16">
+<h2>0.6.0 - 2015-10-18<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id17">
+<h2>0.5.2 - 2015-07-09<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id18">
+<h2>0.5.1 - 2015-07-08<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id19">
+<h2>0.5.0 - 2015-07-08<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id20">
+<h2>0.4.0 - 2015-03-29<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id21">
+<h2>0.3.1 - 2015-01-31<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id22">
+<h2>0.3.0 - 2015-01-31<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id23">
+<h2>0.2.0 - 2015-01-20<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h2>
+<p>Changed name from data-structures to collections-extended</p>
+</div>
+<div class="section" id="id24">
+<h2>0.1.6 - 2015-01-20<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h2>
+<p>Deprecated data-structures</p>
+</div>
+<div class="section" id="id25">
+<h2>0.1.5 - 2015-01-20<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id26">
+<h2>0.1.4 - 2014-05-24<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id27">
+<h2>0.1.3 - 2014-05-24<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h2>
+<p>Moved to Git &amp; GitHub</p>
+</div>
+<div class="section" id="id28">
+<h2>0.1.2 - 2009-10-03<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id29">
+<h2>0.1.1 - 2009-10-03<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id30">
+<h2>???<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h2>
+<p>Moved to Google Code</p>
+</div>
+<div class="section" id="id31">
+<h2>0.1.0 - 2009-10-01<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h2>
+<p>Initial release published to PyPi</p>
+</div>
+<div class="section" id="id32">
+<h2>0.0.0 - 2009-07-14<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Repository created</p></li>
+<li><p>Modules organized in one package.</p></li>
+<li><p>Hosted on SourceForge</p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../">
+    <img class="logo" src="../_static/logo.svg" alt="collections_extended"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Extra Python Collections - bags (multisets), setlists (ordered sets) and RangeMap</p>
+
+
+
+<p>
+  <a href="https://pypi.python.org/pypi/collections-extended">View on PyPI</a>
+</p>
+
+
+
+
+<p>
+  <a
+    class="github-button"
+    href="https://github.com/mlenzen/collections-extended"
+    data-icon="octicon-star"
+    data-count-href="/mlenzen/collections-extended/stargazers"
+    data-count-api="/repos/mlenzen/collections-extended#stargazers_count"
+    data-count-aria-label="# stargazers on GitHub"
+    aria-label="Star mlenzen/collections-extended on GitHub">
+    Star
+  </a>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/mlenzen/collections-extended">
+    <img
+        alt="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+        src="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+
+
+    
+
+<p>
+<a href="https://coveralls.io/github/mlenzen/collections-extended">
+    <img
+    alt="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    src="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setlists/">setlists</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bags/">bags (Multisets)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../range_map/">range_map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bijection/">bijection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexed_dict/">IndexedDicts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sentinel/">Sentinel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../factory/">Collection Factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">2.0.1 - 2022-??-??</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">2.0.0 - 2021-08-23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">1.0.3 - 2019-11-23</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">1.0.2 - 2018-06-30</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">1.0.1 - 2018-04-14</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">1.0.0 - 2017-10-17</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">0.10.1 - 2017-10-20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">0.10.0 - 2017-10-20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">0.9.0 - 2017-01-28</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">0.8.2 - 2016-10-24</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id11">0.8.1 - 2016-10-24</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">0.8.0 - 2016-08-21</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id13">0.7.2 - 2016-08-07</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id14">0.7.1 - 2016-08-07</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id15">0.7.0 - 2016-01-13</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id16">0.6.0 - 2015-10-18</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id17">0.5.2 - 2015-07-09</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id18">0.5.1 - 2015-07-08</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id19">0.5.0 - 2015-07-08</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id20">0.4.0 - 2015-03-29</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id21">0.3.1 - 2015-01-31</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id22">0.3.0 - 2015-01-31</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id23">0.2.0 - 2015-01-20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id24">0.1.6 - 2015-01-20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id25">0.1.5 - 2015-01-20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id26">0.1.4 - 2014-05-24</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id27">0.1.3 - 2014-05-24</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id28">0.1.2 - 2009-10-03</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id29">0.1.1 - 2009-10-03</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id30">???</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id31">0.1.0 - 2009-10-01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id32">0.0.0 - 2009-07-14</a></li>
+</ul>
+</li>
+</ul>
+
+<ul>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../genindex/">General Index</a>
+  </li>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../modindex/">Module Index</a>
+  </li>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../">Documentation overview</a><ul>
+      <li>Previous: <a href="../contributing/" title="previous chapter">Contributing</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Michael Lenzen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/mlenzen/alabaster">Alabaster 0.7.17</a>
+      
+      |
+      <a href="../_sources/changelog.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/mlenzen/collections-extended" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+  </body>
+</html>

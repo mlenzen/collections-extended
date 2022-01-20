@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sentinel &#8212; collections_extended 2.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Collection Factory" href="../factory/" />
+    <link rel="prev" title="IndexedDicts" href="../indexed_dict/" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <!-- Google Analytics -->
+	<script async src='//www.google-analytics.com/analytics.js'></script>
+	<script>
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-4495487-4', 'auto');
+	ga('require', 'linkid', 'linkid.js');
+	ga('send', 'pageview');
+	</script>
+	<!-- End Google Analytics -->
+  
+
+	<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sentinel">
+<h1>Sentinel<a class="headerlink" href="#sentinel" title="Permalink to this headline">¶</a></h1>
+<p>This is a small class that improves upon using a plain object
+as a sentinel for function arguments when None is a valid
+parameter and can’t be used as the default. The improvements
+vs. a plain object are:</p>
+<ul class="simple">
+<li><p>Better <code class="docutils literal notranslate"><span class="pre">__str__</span></code> and <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> for better messages in
+logs and stacktraces. Instead of something like
+<code class="docutils literal notranslate"><span class="pre">'&lt;object</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7ffb4d50e830&gt;'</span></code> you get <code class="docutils literal notranslate"><span class="pre">'&lt;not_set&gt;'</span></code></p></li>
+<li><p>Sentinels are picklable</p></li>
+</ul>
+<p>See: <a class="reference external" href="https://en.wikipedia.org/wiki/Sentinel_value">https://en.wikipedia.org/wiki/Sentinel_value</a>
+Inspired by: <a class="reference external" href="https://pypi.org/project/sentinels/">https://pypi.org/project/sentinels/</a></p>
+<dl class="py attribute">
+<dt id="collections_extended.sentinel">
+<code class="sig-prename descclassname"><span class="pre">collections_extended.</span></code><code class="sig-name descname"><span class="pre">sentinel</span></code><a class="headerlink" href="#collections_extended.sentinel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../">
+    <img class="logo" src="../_static/logo.svg" alt="collections_extended"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Extra Python Collections - bags (multisets), setlists (ordered sets) and RangeMap</p>
+
+
+
+<p>
+  <a href="https://pypi.python.org/pypi/collections-extended">View on PyPI</a>
+</p>
+
+
+
+
+<p>
+  <a
+    class="github-button"
+    href="https://github.com/mlenzen/collections-extended"
+    data-icon="octicon-star"
+    data-count-href="/mlenzen/collections-extended/stargazers"
+    data-count-api="/repos/mlenzen/collections-extended#stargazers_count"
+    data-count-aria-label="# stargazers on GitHub"
+    aria-label="Star mlenzen/collections-extended on GitHub">
+    Star
+  </a>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/mlenzen/collections-extended">
+    <img
+        alt="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+        src="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+
+
+    
+
+<p>
+<a href="https://coveralls.io/github/mlenzen/collections-extended">
+    <img
+    alt="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    src="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setlists/">setlists</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bags/">bags (Multisets)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../range_map/">range_map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bijection/">bijection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../indexed_dict/">IndexedDicts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Sentinel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../factory/">Collection Factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/">Change Log</a></li>
+</ul>
+
+<ul>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../genindex/">General Index</a>
+  </li>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../modindex/">Module Index</a>
+  </li>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../">Documentation overview</a><ul>
+      <li>Previous: <a href="../indexed_dict/" title="previous chapter">IndexedDicts</a></li>
+      <li>Next: <a href="../factory/" title="next chapter">Collection Factory</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Michael Lenzen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/mlenzen/alabaster">Alabaster 0.7.17</a>
+      
+      |
+      <a href="../_sources/sentinel.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/mlenzen/collections-extended" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+  </body>
+</html>

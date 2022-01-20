@@ -1,0 +1,784 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>collections_extended.setlists &#8212; collections_extended 2.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  
+  <!-- Google Analytics -->
+	<script async src='//www.google-analytics.com/analytics.js'></script>
+	<script>
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-4495487-4', 'auto');
+	ga('require', 'linkid', 'linkid.js');
+	ga('send', 'pageview');
+	</script>
+	<!-- End Google Analytics -->
+  
+
+	<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for collections_extended.setlists</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Setlist class definitions.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">random_</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="p">(</span>
+	<span class="n">Hashable</span><span class="p">,</span>
+	<span class="n">MutableSequence</span><span class="p">,</span>
+	<span class="n">MutableSet</span><span class="p">,</span>
+	<span class="n">Sequence</span><span class="p">,</span>
+	<span class="n">Set</span><span class="p">,</span>
+	<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_util</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;SetList&#39;</span><span class="p">,</span> <span class="s1">&#39;setlist&#39;</span><span class="p">,</span> <span class="s1">&#39;frozensetlist&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SetList"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList">[docs]</a><span class="k">class</span> <span class="nc">SetList</span><span class="p">(</span><span class="n">Sequence</span><span class="p">,</span> <span class="n">Set</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;A setlist is an ordered `Collection` of unique elements.</span>
+
+<span class="sd">	`SetList` is the superclass of `setlist` and `frozensetlist`. It is</span>
+<span class="sd">	immutable and unhashable.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SetList.__init__"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.__init__">[docs]</a>	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raise_on_duplicate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Create a setlist, initializing from iterable if present.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			iterable (Iterable): Values to initialize the setlist with.</span>
+<span class="sd">			raise_on_duplicate: Raise a ValueError if any duplicate values</span>
+<span class="sd">				are present.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">iterable</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">raise_on_duplicate</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_extend</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span></div>
+
+	<span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="k">return</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">()&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">repr_format</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{class_name}</span><span class="s1">(</span><span class="si">{values!r}</span><span class="s1">)&#39;</span>
+			<span class="k">return</span> <span class="n">repr_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+				<span class="n">class_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+				<span class="n">values</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
+				<span class="p">)</span>
+
+	<span class="c1"># Convenience methods</span>
+
+	<span class="k">def</span> <span class="nf">_fix_neg_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="n">index</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;index is out of range&#39;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">index</span>
+
+	<span class="k">def</span> <span class="nf">_fix_end_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_neg_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+		<span class="c1"># Checking value in self will check that value is Hashable</span>
+		<span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Value &quot;</span><span class="si">%s</span><span class="s1">&quot; already present&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+		<span class="n">new_values</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+		<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">new_values</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;New values contain duplicates&#39;</span><span class="p">)</span>
+			<span class="k">elif</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;New values contain elements already present in self&#39;</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">new_values</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+		<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+	<span class="nd">@classmethod</span>
+	<span class="k">def</span> <span class="nf">_from_iterable</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">it</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+	<span class="c1"># Implement Container</span>
+	<span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span>
+
+	<span class="c1"># Iterable we get by inheriting from Sequence</span>
+
+	<span class="c1"># Implement Sized</span>
+	<span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">)</span>
+
+	<span class="c1"># Implement Sequence</span>
+	<span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_iterable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SetList.count"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.count">[docs]</a>	<span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Return the number of occurrences of value in self.</span>
+
+<span class="sd">		This runs in O(1)</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			value: The value to count</span>
+<span class="sd">		Returns:</span>
+<span class="sd">			int: 1 if the value is in the setlist, otherwise 0</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+			<span class="k">return</span> <span class="mi">1</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="SetList.index"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.index">[docs]</a>	<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Return the index of value between start and end.</span>
+
+<span class="sd">		By default, the entire setlist is searched.</span>
+
+<span class="sd">		This runs in O(1)</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			value: The value to find the index of</span>
+<span class="sd">			start (int): The index to start searching at (defaults to 0)</span>
+<span class="sd">			end (int): The index to stop searching at (defaults to the end of the list)</span>
+<span class="sd">		Returns:</span>
+<span class="sd">			int: The index of the value</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			ValueError: If the value is not in the list or outside of start - end</span>
+<span class="sd">			IndexError: If start or end are out of range</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">value</span><span class="p">]</span>
+		<span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="ne">ValueError</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_neg_index</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+			<span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_end_index</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">index</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="ne">ValueError</span></div>
+
+	<span class="nd">@classmethod</span>
+	<span class="k">def</span> <span class="nf">_check_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">operand_name</span><span class="p">):</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SetList</span><span class="p">):</span>
+			<span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+				<span class="s2">&quot;unsupported operand type(s) for </span><span class="si">{operand_name}</span><span class="s2">: &quot;</span>
+				<span class="s2">&quot;&#39;</span><span class="si">{self_type}</span><span class="s2">&#39; and &#39;</span><span class="si">{other_type}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+					<span class="n">operand_name</span><span class="o">=</span><span class="n">operand_name</span><span class="p">,</span>
+					<span class="n">self_type</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span>
+					<span class="n">other_type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">),</span>
+					<span class="p">)</span>
+			<span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;+&#39;</span><span class="p">)</span>
+		<span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+		<span class="n">out</span><span class="o">.</span><span class="n">_extend</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">out</span>
+
+	<span class="c1"># Implement Set</span>
+
+<div class="viewcode-block" id="SetList.issubset"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.issubset">[docs]</a>	<span class="k">def</span> <span class="nf">issubset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Report whether another set contains this set.&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span> <span class="o">&lt;=</span> <span class="n">other</span></div>
+
+<div class="viewcode-block" id="SetList.issuperset"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.issuperset">[docs]</a>	<span class="k">def</span> <span class="nf">issuperset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Report whether this set contains another set.&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span> <span class="o">&gt;=</span> <span class="n">other</span></div>
+
+<div class="viewcode-block" id="SetList.union"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.union">[docs]</a>	<span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Return the union of sets as a new set.</span>
+
+<span class="sd">		(i.e. all elements that are in either set.)</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+		<span class="n">out</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="SetList.intersection"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.intersection">[docs]</a>	<span class="k">def</span> <span class="nf">intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Return the intersection of two sets as a new set.</span>
+
+<span class="sd">		(i.e. all elements that are in both sets.)</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">other</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_iterable</span><span class="p">(</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SetList.difference"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.difference">[docs]</a>	<span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Return the difference of two or more sets as a new set.</span>
+
+<span class="sd">		(i.e. all elements that are in this set but not the others.)</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">other</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_iterable</span><span class="p">(</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SetList.symmetric_difference"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.symmetric_difference">[docs]</a>	<span class="k">def</span> <span class="nf">symmetric_difference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Return the symmetric difference (disjuntive union) of two sets.</span>
+
+<span class="sd">		(i.e. all elements that are in one set but not both.)</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+	<span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="fm">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;&amp;&#39;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="fm">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;|&#39;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="fm">__xor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;^&#39;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+	<span class="c1"># Comparison</span>
+
+	<span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SetList</span><span class="p">):</span>
+			<span class="k">return</span> <span class="kc">False</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+			<span class="k">return</span> <span class="kc">False</span>
+		<span class="k">for</span> <span class="n">self_elem</span><span class="p">,</span> <span class="n">other_elem</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+			<span class="k">if</span> <span class="n">self_elem</span> <span class="o">!=</span> <span class="n">other_elem</span><span class="p">:</span>
+				<span class="k">return</span> <span class="kc">False</span>
+		<span class="k">return</span> <span class="kc">True</span>
+
+	<span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
+
+	<span class="c1"># New methods</span>
+
+<div class="viewcode-block" id="SetList.sub_index"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.sub_index">[docs]</a>	<span class="k">def</span> <span class="nf">sub_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Return the index of a subsequence.</span>
+
+<span class="sd">		This runs in O(len(sub))</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			sub (Sequence): An Iterable to search for</span>
+<span class="sd">			start (int): The index at which to start the search</span>
+<span class="sd">			end (int): The index at which to end the search</span>
+<span class="sd">		Returns:</span>
+<span class="sd">			int: The index of the first element of sub</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			ValueError: If sub isn&#39;t a subsequence</span>
+<span class="sd">			TypeError: If sub isn&#39;t iterable</span>
+<span class="sd">			IndexError: If start or end are out of range</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">start_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">sub</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+		<span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_end_index</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">start_index</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">end</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="ne">ValueError</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub</span><span class="p">)):</span>
+			<span class="k">if</span> <span class="n">sub</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">[</span><span class="n">start_index</span> <span class="o">+</span> <span class="n">i</span><span class="p">]:</span>
+				<span class="k">raise</span> <span class="ne">ValueError</span>
+		<span class="k">return</span> <span class="n">start_index</span></div>
+
+<div class="viewcode-block" id="SetList.copy"><a class="viewcode-back" href="../../../setlists/#collections_extended.SetList.copy">[docs]</a>	<span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Return a shallow copy of the setlist.&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="setlist"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist">[docs]</a><span class="k">class</span> <span class="nc">setlist</span><span class="p">(</span><span class="n">SetList</span><span class="p">,</span> <span class="n">MutableSequence</span><span class="p">,</span> <span class="n">MutableSet</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;A mutable (unhashable) setlist.</span>
+
+<span class="sd">	.. automethod:: __init__</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="s1">&#39;{[</span><span class="si">%s</span><span class="s1">}]&#39;</span> <span class="o">%</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
+
+	<span class="c1"># Helper methods</span>
+	<span class="k">def</span> <span class="nf">_delete_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elems_to_delete</span><span class="p">,</span> <span class="n">raise_errors</span><span class="p">):</span>
+		<span class="n">indices_to_delete</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+		<span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">elems_to_delete</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">elem_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span>
+			<span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">raise_errors</span><span class="p">:</span>
+					<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Passed values contain elements not in self&#39;</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">elem_index</span> <span class="ow">in</span> <span class="n">indices_to_delete</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">raise_errors</span><span class="p">:</span>
+						<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Passed vales contain duplicates&#39;</span><span class="p">)</span>
+				<span class="n">indices_to_delete</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">elem_index</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_delete_values_by_index</span><span class="p">(</span><span class="n">indices_to_delete</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_delete_values_by_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices_to_delete</span><span class="p">):</span>
+		<span class="n">deleted_count</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">):</span>
+			<span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices_to_delete</span><span class="p">:</span>
+				<span class="n">deleted_count</span> <span class="o">+=</span> <span class="mi">1</span>
+				<span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">new_index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="n">deleted_count</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">new_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">elem</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_index</span>
+		<span class="c1"># Now remove deleted_count items from the end of the list</span>
+		<span class="k">if</span> <span class="n">deleted_count</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[:</span><span class="o">-</span><span class="n">deleted_count</span><span class="p">]</span>
+
+	<span class="c1"># Set/Sequence agnostic</span>
+<div class="viewcode-block" id="setlist.pop"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.pop">[docs]</a>	<span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Remove and return the item at index.&quot;&quot;&quot;</span>
+		<span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+		<span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">value</span><span class="p">]</span>
+		<span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="setlist.clear"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.clear">[docs]</a>	<span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Remove all elements from self.&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span></div>
+
+	<span class="c1"># Implement MutableSequence</span>
+	<span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+			<span class="n">old_values</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+			<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">old_values</span><span class="p">:</span>
+					<span class="k">raise</span> <span class="ne">ValueError</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span> <span class="o">=</span> <span class="p">{}</span>
+			<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">):</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_neg_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+			<span class="n">old_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+			<span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">old_value</span><span class="p">:</span>
+					<span class="k">return</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">raise</span> <span class="ne">ValueError</span>
+			<span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">old_value</span><span class="p">]</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+
+	<span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+			<span class="n">indices_to_delete</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_delete_values_by_index</span><span class="p">(</span><span class="n">indices_to_delete</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_neg_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+			<span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">value</span><span class="p">]</span>
+			<span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+			<span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+<div class="viewcode-block" id="setlist.insert"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.insert">[docs]</a>	<span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Insert value at index.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			index (int): Index to insert value at</span>
+<span class="sd">			value: Value to insert</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			ValueError: If value already in self</span>
+<span class="sd">			IndexError: If start or end are out of range</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="ne">ValueError</span>
+		<span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_neg_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+		<span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">:]:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setlist.append"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.append">[docs]</a>	<span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Append value to the end.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			value: Value to append</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			ValueError: If value alread in self</span>
+<span class="sd">			TypeError: If value isn&#39;t hashable</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setlist.extend"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.extend">[docs]</a>	<span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Append all values to the end.</span>
+
+<span class="sd">		If any of the values are present, ValueError will</span>
+<span class="sd">		be raised and none of the values will be appended.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			values (Iterable): Values to append</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			ValueError: If any values are already present or there are duplicates</span>
+<span class="sd">				in the passed values.</span>
+<span class="sd">			TypeError: If any of the values aren&#39;t hashable.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_extend</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setlist.__iadd__"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.__iadd__">[docs]</a>	<span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Add all values to the end of self.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			values (Iterable): Values to append</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			ValueError: If any values are already present</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;+=&#39;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="setlist.remove"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.remove">[docs]</a>	<span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Remove value from self.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			value: Element to remove from self</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			ValueError: if element is already present</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">value</span><span class="p">]</span>
+		<span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Value &quot;</span><span class="si">%s</span><span class="s1">&quot; is not present.&#39;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="setlist.remove_all"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.remove_all">[docs]</a>	<span class="k">def</span> <span class="nf">remove_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elems_to_delete</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Remove all elements from elems_to_delete, raises ValueErrors.</span>
+
+<span class="sd">		See Also:</span>
+<span class="sd">			discard_all</span>
+<span class="sd">		Args:</span>
+<span class="sd">			elems_to_delete (Iterable): Elements to remove.</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			ValueError: If the count of any element is greater in</span>
+<span class="sd">				elems_to_delete than self.</span>
+<span class="sd">			TypeError: If any of the values aren&#39;t hashable.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_delete_all</span><span class="p">(</span><span class="n">elems_to_delete</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setlist.reverse"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.reverse">[docs]</a>	<span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Reverse the setlist in-place.&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+		<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span></div>
+
+	<span class="c1"># Implement MutableSet</span>
+
+<div class="viewcode-block" id="setlist.add"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.add">[docs]</a>	<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Add an item.</span>
+
+<span class="sd">		Note:</span>
+<span class="sd">			This does not raise a ValueError for an already present value like</span>
+<span class="sd">			append does. This is to match the behavior of set.add</span>
+<span class="sd">		Args:</span>
+<span class="sd">			item: Item to add</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			TypeError: If item isn&#39;t hashable.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setlist.update"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.update">[docs]</a>	<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Add all values to the end.</span>
+
+<span class="sd">		If any of the values are present, silently ignore</span>
+<span class="sd">		them (as opposed to extend which raises an Error).</span>
+
+<span class="sd">		See also:</span>
+<span class="sd">			extend</span>
+<span class="sd">		Args:</span>
+<span class="sd">			values (Iterable): Values to add</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			TypeError: If any of the values are unhashable.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setlist.discard_all"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.discard_all">[docs]</a>	<span class="k">def</span> <span class="nf">discard_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elems_to_delete</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Discard all the elements from elems_to_delete.</span>
+
+<span class="sd">		This is much faster than removing them one by one.</span>
+<span class="sd">		This runs in O(len(self) + len(elems_to_delete))</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			elems_to_delete (Iterable): Elements to discard.</span>
+<span class="sd">		Raises:</span>
+<span class="sd">			TypeError: If any of the values aren&#39;t hashable.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_delete_all</span><span class="p">(</span><span class="n">elems_to_delete</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setlist.discard"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.discard">[docs]</a>	<span class="k">def</span> <span class="nf">discard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Discard an item.</span>
+
+<span class="sd">		Note:</span>
+<span class="sd">			This does not raise a ValueError for a missing value like remove does.</span>
+<span class="sd">			This matches the behavior of set.discard</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+		<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+			<span class="k">pass</span></div>
+
+<div class="viewcode-block" id="setlist.difference_update"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.difference_update">[docs]</a>	<span class="k">def</span> <span class="nf">difference_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Update self to include only the difference with other.&quot;&quot;&quot;</span>
+		<span class="n">other</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="n">indices_to_delete</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+		<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+			<span class="k">if</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
+				<span class="n">indices_to_delete</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">indices_to_delete</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_delete_values_by_index</span><span class="p">(</span><span class="n">indices_to_delete</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setlist.intersection_update"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.intersection_update">[docs]</a>	<span class="k">def</span> <span class="nf">intersection_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Update self to include only the intersection with other.&quot;&quot;&quot;</span>
+		<span class="n">other</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="n">indices_to_delete</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+		<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+			<span class="k">if</span> <span class="n">elem</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
+				<span class="n">indices_to_delete</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">indices_to_delete</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_delete_values_by_index</span><span class="p">(</span><span class="n">indices_to_delete</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="setlist.symmetric_difference_update"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.symmetric_difference_update">[docs]</a>	<span class="k">def</span> <span class="nf">symmetric_difference_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Update self to include only the symmetric difference with other.&quot;&quot;&quot;</span>
+		<span class="n">other</span> <span class="o">=</span> <span class="n">setlist</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="n">indices_to_delete</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+		<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+			<span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
+				<span class="n">indices_to_delete</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_delete_values_by_index</span><span class="p">(</span><span class="n">indices_to_delete</span><span class="p">)</span></div>
+
+	<span class="k">def</span> <span class="fm">__isub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;-=&#39;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span>
+
+	<span class="k">def</span> <span class="fm">__iand__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;&amp;=&#39;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span>
+
+	<span class="k">def</span> <span class="fm">__ior__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;|=&#39;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span>
+
+	<span class="k">def</span> <span class="fm">__ixor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_check_type</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;^=&#39;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">symmetric_difference_update</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span>
+
+	<span class="c1"># New methods</span>
+<div class="viewcode-block" id="setlist.shuffle"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.shuffle">[docs]</a>	<span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Shuffle all of the elements in self in place.</span>
+
+<span class="sd">		Args:</span>
+<span class="sd">			random: A function returning a random float in [0.0, 1.0). If none</span>
+<span class="sd">				is passed, the default from `random.shuffle` will be used.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">random_</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="n">random</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span></div>
+
+<div class="viewcode-block" id="setlist.sort"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.sort">[docs]</a>	<span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Sort this setlist in place.&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="setlist.swap"><a class="viewcode-back" href="../../../setlists/#collections_extended.setlist.swap">[docs]</a>	<span class="k">def</span> <span class="nf">swap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;Swap the values at indices i &amp; j.</span>
+
+<span class="sd">		.. versionadded:: 1.0.3</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_neg_index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_neg_index</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span> <span class="o">=</span> <span class="n">j</span></div></div>
+
+
+<div class="viewcode-block" id="frozensetlist"><a class="viewcode-back" href="../../../setlists/#collections_extended.frozensetlist">[docs]</a><span class="k">class</span> <span class="nc">frozensetlist</span><span class="p">(</span><span class="n">SetList</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;An immutable (hashable) setlist.</span>
+
+<span class="sd">	.. automethod:: __init__</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_hash_value&#39;</span><span class="p">):</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_hash_value</span> <span class="o">=</span> <span class="n">_util</span><span class="o">.</span><span class="n">hash_iterable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hash_value</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../">
+    <img class="logo" src="../../../_static/logo.svg" alt="collections_extended"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Extra Python Collections - bags (multisets), setlists (ordered sets) and RangeMap</p>
+
+
+
+<p>
+  <a href="https://pypi.python.org/pypi/collections-extended">View on PyPI</a>
+</p>
+
+
+
+
+<p>
+  <a
+    class="github-button"
+    href="https://github.com/mlenzen/collections-extended"
+    data-icon="octicon-star"
+    data-count-href="/mlenzen/collections-extended/stargazers"
+    data-count-api="/repos/mlenzen/collections-extended#stargazers_count"
+    data-count-aria-label="# stargazers on GitHub"
+    aria-label="Star mlenzen/collections-extended on GitHub">
+    Star
+  </a>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/mlenzen/collections-extended">
+    <img
+        alt="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+        src="https://secure.travis-ci.org/mlenzen/collections-extended.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+
+
+
+    
+
+<p>
+<a href="https://coveralls.io/github/mlenzen/collections-extended">
+    <img
+    alt="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    src="https://coveralls.io/repos/github/mlenzen/collections-extended/badge.svg?branch=master"
+    />
+</a>
+</p>
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setlists/">setlists</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bags/">bags (Multisets)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../range_map/">range_map</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bijection/">bijection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../indexed_dict/">IndexedDicts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sentinel/">Sentinel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../factory/">Collection Factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing/">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog/">Change Log</a></li>
+</ul>
+
+<ul>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../../../genindex/">General Index</a>
+  </li>
+  <li class="toctree-l1">
+    <a class="reference internal" href="../../../modindex/">Module Index</a>
+  </li>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../">Documentation overview</a><ul>
+  <li><a href="../../">Module code</a><ul>
+  <li><a href="../">collections_extended</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Michael Lenzen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/mlenzen/alabaster">Alabaster 0.7.17</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/mlenzen/collections-extended" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+  </body>
+</html>
