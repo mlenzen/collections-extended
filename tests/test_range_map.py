@@ -1,8 +1,7 @@
 """Tests for RangeMap class."""
 import datetime
 
-# from hypothesis import given
-# from hypothesis.strategies import integers
+from hypothesis import given, example, strategies
 import pytest
 
 from collections_extended.range_map import RangeMap, MappedRange
@@ -560,3 +559,33 @@ class TestMappedRange:
 		assert MappedRange(0, 1, 'a') == MappedRange(0, 1, 'a')
 		assert not MappedRange(0, 1, 'a') is MappedRange(0, 1, 'a')
 		assert MappedRange(0, 1, 'a') != MappedRange(None, 1, 'a')
+
+
+@given(
+	offsets=strategies.lists(
+		strategies.integers(min_value=0, max_value=99), min_size=20, max_size=20
+	),
+)
+@example(offsets=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 40, 70])
+def test_merge_ranges(offsets):
+	"""
+	The RangeMap merges ranges.  This is not the best test for this, since it's
+	adapted from existing test in my code, but it demonstrates the issue.
+	"""
+	range_map = RangeMap()
+	dummy_map = [0] * 100
+	for offset in offsets:
+		length = min(30, 100 - offset)
+
+		# Add range to silly implementation
+		for i in range(offset, offset + length):
+			dummy_map[i] = 1
+
+		# Add range to real rangemap
+		range_map.set(True, offset, offset + length)
+
+		# Return whether the whole range has been unified eventually.
+		finished = [tuple(mr) for mr in range_map.ranges()] == [(0, 100, True)]
+		assert finished == (
+			sum(dummy_map) == 100
+		), f"Ranges: {list(range_map.ranges())}, dummy: {dummy_map}"
