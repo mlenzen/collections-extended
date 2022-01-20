@@ -55,8 +55,9 @@ jobs:
           path: docs/_build/html
       - name: Init new repo in dist folder and commit generated files
         run: |
-          rm *
-          git restore .nojekyll CNAME
+          git rm -r .
+          git reset HEAD .nojekyll CNAME
+          git checkout -- .nojekyll CNAME
           mv docs/_build/html/* .
           git add .
           git config --local user.email "action@github.com"
