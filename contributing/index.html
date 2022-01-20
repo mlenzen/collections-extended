@@ -54,7 +54,7 @@ little bit helps, and credit will always be given.</p>
 <h2>Types of Contributions<a class="headerlink" href="#types-of-contributions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="report-bugs">
 <h3>Report Bugs<a class="headerlink" href="#report-bugs" title="Permalink to this headline">¶</a></h3>
-<p>Report bugs at <a class="reference external" href="https://github.com/mlenzen/collections-extended/issues">https://github.com/mlenzen/collections-extended/issues</a>.</p>
+<p>Report bugs using <a class="reference external" href="https://github.com/mlenzen/collections-extended/issues">GitHub Issues</a>.</p>
 <p>If you are reporting a bug, please include:</p>
 <ul class="simple">
 <li><p>Any details about your local setup that might be helpful in troubleshooting.</p></li>
@@ -63,7 +63,7 @@ little bit helps, and credit will always be given.</p>
 </div>
 <div class="section" id="fix-bugs">
 <h3>Fix Bugs<a class="headerlink" href="#fix-bugs" title="Permalink to this headline">¶</a></h3>
-<p>Look through the GitHub issues for bugs. Anything tagged with “bug”
+<p>Look through the GitHub Issues for bugs. Anything tagged with “bug”
 is open to whoever wants to implement it.</p>
 </div>
 <div class="section" id="write-documentation">
@@ -71,11 +71,11 @@ is open to whoever wants to implement it.</p>
 <p>This could always use more documentation, whether as part of the
 official docs, in docstrings, or even on the web in blog posts,
 articles, and such.</p>
-<p>Documentation is built automatically on every push using Read the Docs.</p>
+<p>Documentation is built automatically on every push to master using GitHub Actions.</p>
 </div>
 <div class="section" id="submit-feedback">
 <h3>Submit Feedback<a class="headerlink" href="#submit-feedback" title="Permalink to this headline">¶</a></h3>
-<p>The best way to send feedback is to file an issue at <a class="reference external" href="https://github.com/mlenzen/collections-extended/issues">https://github.com/mlenzen/collections-extended/issues</a>.</p>
+<p>The best way to send feedback is to file an issue using <a class="reference external" href="https://github.com/mlenzen/collections-extended/issues">GitHub Issues</a>.</p>
 <p>If you are proposing a feature:</p>
 <ul class="simple">
 <li><p>Explain in detail how it would work.</p></li>
@@ -92,18 +92,18 @@ set up a fresh dev environment.
 Read the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> for more common tasks/recipes.</p>
 <p>Ready to contribute? Here’s how to set up <cite>collections-extended</cite> for local development.</p>
 <ol class="arabic">
-<li><p>Fork the <cite>collections-extended</cite> repo on GitHub.</p></li>
+<li><p>Fork the <code class="docutils literal notranslate"><span class="pre">collections-extended</span></code> repo on GitHub.</p></li>
 <li><p>Clone your fork locally:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone git@github.com:your_name_here/collections-extended.git
 </pre></div>
 </div>
 </li>
-<li><p>Make sure you are excluding your editor’s files from the repo</p>
-<blockquote>
-<div><p>We don’t want to use the project’s gitignore to exclude every
+<li><dl class="simple">
+<dt>Make sure you are excluding your editor’s files from the repo.</dt><dd><p>We don’t want to use the project’s gitignore to exclude every
 editor’s files, so set up your global gitignore.
 See: <a class="reference external" href="https://help.github.com/articles/ignoring-files/">https://help.github.com/articles/ignoring-files/</a></p>
-</div></blockquote>
+</dd>
+</dl>
 </li>
 <li><p>Set up your local dev environment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd collections-extended
@@ -118,25 +118,21 @@ $ make
 </li>
 <li><p>Make your changes locally.</p></li>
 <li><p>You may run checks locally without having to create a PR:</p>
-<blockquote>
-<div><p>$ make lint
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ make lint
 $ make tests
 $ make testall
-$ make coverage</p>
-</div></blockquote>
+$ make coverage
+</pre></div>
+</div>
 </li>
 <li><p>Commit your changes and push your branch to GitHub:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git add .
-$ git commit -m &quot;Your detailed description of your changes.&quot;
+$ git commit
 $ git push origin name-of-your-bugfix-or-feature
 </pre></div>
 </div>
 </li>
-<li><p>Submit a pull request through the GitHub website.</p>
-<blockquote>
-<div><p>This will</p>
-</div></blockquote>
-</li>
+<li><p>Submit a pull request through the GitHub website.</p></li>
 </ol>
 </div>
 <div class="section" id="pull-request-guidelines">
@@ -149,7 +145,6 @@ $ git push origin name-of-your-bugfix-or-feature
 <a class="reference external" href="https://github.com/mlenzen/collections-extended/actions">https://github.com/mlenzen/collections-extended/actions</a>
 and make sure that the tests pass for all supported Python versions.</p></li>
 <li><p>Add the feature/bug to the appropriate section in HISTORY.rst</p></li>
-<li><p>Review and update the relevant docs.</p></li>
 </ol>
 </div>
 <div class="section" id="tips">
@@ -161,8 +156,17 @@ $ py.test tests/test_example.py::test_func
 </div>
 <div class="section" id="useful-reading">
 <h3>Useful Reading<a class="headerlink" href="#useful-reading" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#emulating-container-types">https://docs.python.org/3/reference/datamodel.html#emulating-container-types</a>
-<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html">https://docs.python.org/3/library/collections.abc.html</a></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Python docs</dt><dd><ul>
+<li><p><a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#emulating-container-types">3.3.7. Data model — Emulating container types</a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html">collections.abc — Abstract Base Classes for Containers</a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><a class="reference external" href="https://github.com/python/cpython/blob/main/Lib/collections/__init__.py">collections module source</a></p></li>
+</ul>
 </div>
 </div>
 </div>
