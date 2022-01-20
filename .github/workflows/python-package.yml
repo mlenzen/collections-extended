@@ -62,7 +62,7 @@ jobs:
           git add .
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -m 'Triggered by ${{ env.GITHUB_SHA }}'
+          git commit -m 'Triggered by ${{ github.sha }}'
       - name: Push changes
         uses: ad-m/github-push-action@v0.5.0
         with:
