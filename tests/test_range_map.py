@@ -180,6 +180,16 @@ def test_alter_beg():
 	assert rm == RangeMap({3: 'c', 4: 'd', 5: 'e'}, default_value='y')
 
 
+def test_merge_overlapping():
+	rm = RangeMap()
+	rm[1:31] = True
+	rm[0:30] = True
+	rm2 = RangeMap()
+	rm2[0:31] = True
+	print_underlying(rm)
+	assert rm == rm2
+
+
 def test_dates():
 	"""Test using dates."""
 	rm = RangeMap()
@@ -563,7 +573,7 @@ class TestMappedRange:
 
 @given(
 	offsets=strategies.lists(
-		strategies.integers(min_value=0, max_value=99), min_size=20, max_size=20
+		strategies.integers(min_value=0, max_value=99), min_size=1, max_size=20
 	),
 )
 @example(offsets=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 40, 70])
