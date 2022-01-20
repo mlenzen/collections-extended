@@ -53,7 +53,7 @@ jobs:
         with:
           name: docs
           path: docs/_build/html
-      - name: Init new repo in dist folder and commit generated files
+      - name: Replace docs
         run: |
           git rm -r .
           git reset HEAD .nojekyll CNAME
@@ -63,7 +63,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m 'Triggered by {{ GITHUB_SHA }}'
-      - name: Force push to destination branch
+      - name: Push changes
         uses: ad-m/github-push-action@v0.5.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
