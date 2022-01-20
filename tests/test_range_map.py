@@ -569,23 +569,13 @@ class TestMappedRange:
 @example(offsets=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 40, 70])
 def test_merge_ranges(offsets):
 	"""
-	The RangeMap merges ranges.  This is not the best test for this, since it's
-	adapted from existing test in my code, but it demonstrates the issue.
+	The RangeMap merges ranges.
 	"""
 	range_map = RangeMap()
-	dummy_map = [0] * 100
 	for offset in offsets:
 		length = min(30, 100 - offset)
-
-		# Add range to silly implementation
-		for i in range(offset, offset + length):
-			dummy_map[i] = 1
-
-		# Add range to real rangemap
 		range_map.set(True, offset, offset + length)
-
-		# Return whether the whole range has been unified eventually.
-		finished = [tuple(mr) for mr in range_map.ranges()] == [(0, 100, True)]
-		assert finished == (
-			sum(dummy_map) == 100
-		), f"Ranges: {list(range_map.ranges())}, dummy: {dummy_map}"
+		ranges = list(range_map.ranges())
+		if len(ranges) > 1:
+			for first, second in zip(ranges[:-1], ranges[1:]):
+				assert (first.stop, first.value) != (second.start, second.value), ranges
