@@ -130,8 +130,8 @@ work. To work around that a couple of methods were added:</p>
 <p>Some methods will raise a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> when trying to add or remove elements
 when they respectively already or do not currently exist in the setlist.
 Each method has an analogous version that does/doesn’t raise a ValueError.
-Methods implementing the Set methods do not raise <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> while the one’s
-implementing do. All will raise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> if you use unhashable values.
+Methods implementing the <cite>Set</cite> methods do not raise <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> while the one’s
+implementing <cite>Sequence</cite> do. All will raise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> if you use unhashable values.
 The bulk operations are atomic, if any single value is unhashable or a duplicate,
 no changes will be made to the <a class="reference internal" href="#collections_extended.setlist" title="collections_extended.setlist"><code class="xref py py-class docutils literal notranslate"><span class="pre">setlist</span></code></a>.</p>
 <table class="docutils align-default">

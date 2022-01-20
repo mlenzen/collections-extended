@@ -26,7 +26,5 @@ API
 
 .. autofunction:: collections_extended.collection
 
-.. autoclass:: collections_extended.Collection(Sized, Iterable, Container)
-
 	Collection abstract base class from :mod:`collections.abc` for Python >= 3.6
 	and backported to < 3.6

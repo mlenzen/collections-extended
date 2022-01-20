@@ -84,8 +84,8 @@ Errors
 Some methods will raise a :exc:`ValueError` when trying to add or remove elements
 when they respectively already or do not currently exist in the setlist.
 Each method has an analogous version that does/doesn't raise a ValueError.
-Methods implementing the Set methods do not raise :exc:`ValueError` while the one's
-implementing do. All will raise ``TypeError`` if you use unhashable values.
+Methods implementing the `Set` methods do not raise :exc:`ValueError` while the one's
+implementing `Sequence` do. All will raise ``TypeError`` if you use unhashable values.
 The bulk operations are atomic, if any single value is unhashable or a duplicate,
 no changes will be made to the :class:`setlist`.
 
