@@ -180,12 +180,46 @@ def test_alter_beg():
 	assert rm == RangeMap({3: 'c', 4: 'd', 5: 'e'}, default_value='y')
 
 
-def test_merge_overlapping():
+def test_merge_overlapping_pre():
 	rm = RangeMap()
 	rm[1:31] = True
 	rm[0:30] = True
 	rm2 = RangeMap()
 	rm2[0:31] = True
+	print_underlying(rm)
+	assert rm == rm2
+
+
+def test_merge_overlapping_post():
+	rm = RangeMap()
+	rm[0:30] = True
+	rm[1:31] = True
+	rm2 = RangeMap()
+	rm2[0:31] = True
+	print_underlying(rm)
+	assert rm == rm2
+
+
+def test_merge_overlapping_middle_pre():
+	rm = RangeMap()
+	rm[0:31] = False
+	rm[10:20] = True
+	rm[5:15] = True
+	rm2 = RangeMap()
+	rm2[0:31] = False
+	rm2[5:20] = True
+	print_underlying(rm)
+	assert rm == rm2
+
+
+def test_merge_overlapping_middle_post():
+	rm = RangeMap()
+	rm[0:31] = False
+	rm[5:15] = True
+	rm[10:20] = True
+	rm2 = RangeMap()
+	rm2[0:31] = False
+	rm2[5:20] = True
 	print_underlying(rm)
 	assert rm == rm2
 
