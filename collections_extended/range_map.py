@@ -319,8 +319,7 @@ class RangeMap(Mapping):
 		else:
 			stop_index = self._bisect_right(stop)
 			stop_value = self._values[stop_index - 1]
-			stop_key = self._keys[stop_index - 1]
-			if (stop, value) != (stop_key, stop_value):
+			if value != stop_value:
 				new_keys.append(stop)
 				new_values.append(stop_value)
 		self._keys[start_index:stop_index] = new_keys
