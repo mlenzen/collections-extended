@@ -222,20 +222,6 @@ class RangeMap(Mapping):
 		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
 		return 'RangeMap([%s])' % values
 
-	def _bisect_left(self, key):
-		"""Return the index of the key or the last key < key."""
-		if key is None:
-			return 0
-		else:
-			return bisect_left(self._keys, key, lo=1)
-
-	def _bisect_right(self, key):
-		"""Return the index of the first key > key."""
-		if key is None:
-			return 1
-		else:
-			return bisect_right(self._keys, key, lo=1)
-
 	def ranges(self, start=None, stop=None):
 		"""Generate MappedRanges for all mapped ranges.
 
@@ -243,11 +229,14 @@ class RangeMap(Mapping):
 			MappedRange
 		"""
 		_check_start_stop(start, stop)
-		start_loc = self._bisect_right(start)
+		if start is None:
+			start_loc = 1
+		else:
+			start_loc = bisect_right(self._keys, start, lo=1)
 		if stop is None:
 			stop_loc = len(self._keys)
 		else:
-			stop_loc = self._bisect_left(stop)
+			stop_loc = bisect_left(self._keys, stop, lo=1)
 		start_val = self._values[start_loc - 1]
 		candidate_keys = [start] + self._keys[start_loc:stop_loc] + [stop]
 		candidate_values = [start_val] + self._values[start_loc:stop_loc]
@@ -271,6 +260,7 @@ class RangeMap(Mapping):
 				yield key
 
 	def __bool__(self):
+		# any(val is not NOT_SET for val in self._values)
 		if len(self._keys) > 1:
 			return True
 		else:
@@ -280,7 +270,10 @@ class RangeMap(Mapping):
 
 	def _getitem(self, key):
 		"""Get the value for a key (not a slice)."""
-		loc = self._bisect_right(key) - 1
+		if key is None:
+			loc = 0
+		else:
+			loc = bisect_right(self._keys, key, lo=1) - 1
 		value = self._values[loc]
 		if value is NOT_SET:
 			raise KeyError(key)
@@ -306,18 +299,21 @@ class RangeMap(Mapping):
 		"""Set the range from start to stop to value."""
 		_check_start_stop(start, stop)
 		# start_index, stop_index will denote the section we are replacing
-		start_index = self._bisect_left(start)
-		if start_index > 0 and self._values[start_index - 1] == value:
-			# We're setting a range where the left range has the same
-			# value, so create one big range
-			start_index -= 1
-			start = self._keys[start_index]
+		if start is None:
+			start_index = 0
+		else:
+			start_index = bisect_left(self._keys, start, lo=1)
+			if self._values[start_index - 1] == value:
+				# We're setting a range where the left range has the same
+				# value, so create one big range
+				start_index -= 1
+				start = self._keys[start_index]
 		new_keys = [start]
 		new_values = [value]
 		if stop is None:
 			stop_index = len(self._keys)
 		else:
-			stop_index = self._bisect_right(stop)
+			stop_index = bisect_right(self._keys, stop, lo=1)
 			stop_value = self._values[stop_index - 1]
 			if value != stop_value:
 				new_keys.append(stop)
@@ -332,11 +328,14 @@ class RangeMap(Mapping):
 			KeyError: If part of the passed range isn't mapped.
 		"""
 		_check_start_stop(start, stop)
-		start_loc = self._bisect_right(start) - 1
+		if start is None:
+			start_loc = 0
+		else:
+			start_loc = bisect_right(self._keys, start, lo=1) - 1
 		if stop is None:
 			stop_loc = len(self._keys)
 		else:
-			stop_loc = self._bisect_left(stop)
+			stop_loc = bisect_left(self._keys, stop, lo=1)
 		for value in self._values[start_loc:stop_loc]:
 			if value is NOT_SET:
 				raise KeyError((start, stop))
