@@ -305,29 +305,24 @@ class RangeMap(Mapping):
 	def set(self, value, start=None, stop=None):
 		"""Set the range from start to stop to value."""
 		_check_start_stop(start, stop)
-		# start_index, stop_index will denote the sections we are replacing
+		# start_index, stop_index will denote the section we are replacing
 		start_index = self._bisect_left(start)
-		if start is not None:  # start_index == 0
-			prev_value = self._values[start_index - 1]
-			if prev_value == value:
-				# We're setting a range where the left range has the same
-				# value, so create one big range
-				start_index -= 1
-				start = self._keys[start_index]
+		if start_index > 0 and self._values[start_index - 1] == value:
+			# We're setting a range where the left range has the same
+			# value, so create one big range
+			start_index -= 1
+			start = self._keys[start_index]
+		new_keys = [start]
+		new_values = [value]
 		if stop is None:
-			new_keys = [start]
-			new_values = [value]
 			stop_index = len(self._keys)
 		else:
 			stop_index = self._bisect_right(stop)
 			stop_value = self._values[stop_index - 1]
 			stop_key = self._keys[stop_index - 1]
-			if stop_key == stop and stop_value == value:
-				new_keys = [start]
-				new_values = [value]
-			else:
-				new_keys = [start, stop]
-				new_values = [value, stop_value]
+			if (stop, value) != (stop_key, stop_value):
+				new_keys.append(stop)
+				new_values.append(stop_value)
 		self._keys[start_index:stop_index] = new_keys
 		self._values[start_index:stop_index] = new_values
 
