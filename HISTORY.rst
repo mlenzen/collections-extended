@@ -3,6 +3,12 @@
 Change Log
 ==========
 
+2.?.? - 2022-??-??
+------------------
+
+* Drop support for Python 3.6
+* Fix bug when setting overlapping ranges
+
 2.0.1 - 2022-01-19
 ------------------
 
