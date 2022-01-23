@@ -268,20 +268,6 @@
 		<span class="n">values</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">range_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranges</span><span class="p">()])</span>
 		<span class="k">return</span> <span class="s1">&#39;RangeMap([</span><span class="si">%s</span><span class="s1">])&#39;</span> <span class="o">%</span> <span class="n">values</span>
 
-	<span class="k">def</span> <span class="nf">_bisect_left</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;Return the index of the key or the last key &lt; key.&quot;&quot;&quot;</span>
-		<span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-			<span class="k">return</span> <span class="mi">0</span>
-		<span class="k">else</span><span class="p">:</span>
-			<span class="k">return</span> <span class="n">bisect_left</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-	<span class="k">def</span> <span class="nf">_bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;Return the index of the first key &gt; key.&quot;&quot;&quot;</span>
-		<span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-			<span class="k">return</span> <span class="mi">1</span>
-		<span class="k">else</span><span class="p">:</span>
-			<span class="k">return</span> <span class="n">bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
 <div class="viewcode-block" id="RangeMap.ranges"><a class="viewcode-back" href="../../../range_map/#collections_extended.RangeMap.ranges">[docs]</a>	<span class="k">def</span> <span class="nf">ranges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;Generate MappedRanges for all mapped ranges.</span>
 
@@ -289,11 +275,14 @@
 <span class="sd">			MappedRange</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="n">_check_start_stop</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
-		<span class="n">start_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bisect_right</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">start_loc</span> <span class="o">=</span> <span class="mi">1</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">start_loc</span> <span class="o">=</span> <span class="n">bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 		<span class="k">if</span> <span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 			<span class="n">stop_loc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">)</span>
 		<span class="k">else</span><span class="p">:</span>
-			<span class="n">stop_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bisect_left</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
+			<span class="n">stop_loc</span> <span class="o">=</span> <span class="n">bisect_left</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 		<span class="n">start_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">start_loc</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
 		<span class="n">candidate_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">[</span><span class="n">start_loc</span><span class="p">:</span><span class="n">stop_loc</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">stop</span><span class="p">]</span>
 		<span class="n">candidate_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_val</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">start_loc</span><span class="p">:</span><span class="n">stop_loc</span><span class="p">]</span>
@@ -317,6 +306,7 @@
 				<span class="k">yield</span> <span class="n">key</span>
 
 	<span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="c1"># any(val is not NOT_SET for val in self._values)</span>
 		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
 			<span class="k">return</span> <span class="kc">True</span>
 		<span class="k">else</span><span class="p">:</span>
@@ -326,7 +316,10 @@
 
 	<span class="k">def</span> <span class="nf">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;Get the value for a key (not a slice).&quot;&quot;&quot;</span>
-		<span class="n">loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bisect_right</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+		<span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">loc</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">loc</span> <span class="o">=</span> <span class="n">bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 		<span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span>
 		<span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="n">NOT_SET</span><span class="p">:</span>
 			<span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -351,29 +344,26 @@
 <div class="viewcode-block" id="RangeMap.set"><a class="viewcode-back" href="../../../range_map/#collections_extended.RangeMap.set">[docs]</a>	<span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 		<span class="sd">&quot;&quot;&quot;Set the range from start to stop to value.&quot;&quot;&quot;</span>
 		<span class="n">_check_start_stop</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
-		<span class="c1"># start_index, stop_index will denote the sections we are replacing</span>
-		<span class="n">start_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bisect_left</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
-		<span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># start_index == 0</span>
-			<span class="n">prev_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">start_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-			<span class="k">if</span> <span class="n">prev_value</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+		<span class="c1"># start_index, stop_index will denote the section we are replacing</span>
+		<span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">start_index</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">start_index</span> <span class="o">=</span> <span class="n">bisect_left</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+			<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">start_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
 				<span class="c1"># We&#39;re setting a range where the left range has the same</span>
 				<span class="c1"># value, so create one big range</span>
 				<span class="n">start_index</span> <span class="o">-=</span> <span class="mi">1</span>
 				<span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">[</span><span class="n">start_index</span><span class="p">]</span>
+		<span class="n">new_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="p">]</span>
+		<span class="n">new_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
 		<span class="k">if</span> <span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-			<span class="n">new_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="p">]</span>
-			<span class="n">new_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
 			<span class="n">stop_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">)</span>
 		<span class="k">else</span><span class="p">:</span>
-			<span class="n">stop_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bisect_right</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
+			<span class="n">stop_index</span> <span class="o">=</span> <span class="n">bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 			<span class="n">stop_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">stop_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-			<span class="n">stop_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">[</span><span class="n">stop_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-			<span class="k">if</span> <span class="n">stop_key</span> <span class="o">==</span> <span class="n">stop</span> <span class="ow">and</span> <span class="n">stop_value</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
-				<span class="n">new_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="p">]</span>
-				<span class="n">new_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
-			<span class="k">else</span><span class="p">:</span>
-				<span class="n">new_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">]</span>
-				<span class="n">new_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">,</span> <span class="n">stop_value</span><span class="p">]</span>
+			<span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="n">stop_value</span><span class="p">:</span>
+				<span class="n">new_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
+				<span class="n">new_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stop_value</span><span class="p">)</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span><span class="n">stop_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_keys</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span><span class="n">stop_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_values</span></div>
 
@@ -384,11 +374,14 @@
 <span class="sd">			KeyError: If part of the passed range isn&#39;t mapped.</span>
 <span class="sd">		&quot;&quot;&quot;</span>
 		<span class="n">_check_start_stop</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
-		<span class="n">start_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bisect_right</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+		<span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">start_loc</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">start_loc</span> <span class="o">=</span> <span class="n">bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 		<span class="k">if</span> <span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 			<span class="n">stop_loc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">)</span>
 		<span class="k">else</span><span class="p">:</span>
-			<span class="n">stop_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bisect_left</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
+			<span class="n">stop_loc</span> <span class="o">=</span> <span class="n">bisect_left</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 		<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">start_loc</span><span class="p">:</span><span class="n">stop_loc</span><span class="p">]:</span>
 			<span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="n">NOT_SET</span><span class="p">:</span>
 				<span class="k">raise</span> <span class="ne">KeyError</span><span class="p">((</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">))</span>
