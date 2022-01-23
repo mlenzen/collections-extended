@@ -3,11 +3,20 @@
 Change Log
 ==========
 
+2.0.2 - 2022-01-23
+------------------
+
+* Fix bug when setting overlapping ranges (`GH #172`_)
+
+.. _`GH #172`: https://github.com/mlenzen/collections-extended/issues/172
+
 2.0.1 - 2022-01-19
 ------------------
 
 * Added Python 3.10 to tests & classifiers
-* Added equality testing to MappedRange
+* Added equality testing to MappedRange (`GH #171`_)
+
+.. _`GH #171`: https://github.com/mlenzen/collections-extended/issues/171
 
 2.0.0 - 2021-08-23
 ------------------
