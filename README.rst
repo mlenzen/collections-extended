@@ -21,15 +21,16 @@ PyPI:
 Overview
 ========
 
-``collections_extended`` is a Python module providing
-a ``bag`` class, AKA **multiset**,
-a ``setlist`` class, which is a **unique list** or **ordered set**,
-a ``bijection`` class, ``RangeMap`` which is a mapping from ranges to values and
-a ``IndexedDict`` class, which is an ordered mapping whose elements can be accessed using index,
-in addition to key.
+``collections_extended`` is a pure Python module with no dependencies providing:
+
+- a ``bag`` class, AKA **multiset**,
+- a ``setlist`` class, which is a **unique list** or **ordered set**,
+- a ``bijection`` class, ``RangeMap`` which is a mapping from ranges to values and
+- a ``IndexedDict`` class, which is an ordered mapping whose elements can be accessed using index, in addition to key.
+
 There are also frozen (hashable) varieties of bags and setlists.
 
-Compatible with and tested against Python 3.6, 3.7, 3.8, 3.9 & PyPy3.
+Compatible with and tested against Python 3.6, 3.7, 3.8, 3.9, 3.10 & PyPy3.
 
 Getting Started
 ===============
@@ -117,7 +118,7 @@ Usage
 
 Classes
 =======
-There are seven new classes provided:
+There are seven new collections provided:
 
 Bags
 ----

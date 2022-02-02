@@ -1,18 +1,20 @@
 PACKAGE = collections_extended
+VENV = $(shell poetry env info --path)
 
 .PHONY: default
 default: clean deps tests
 
 .PHONY: deps
 deps:
+	pip install poetry
 	poetry install --remove-untracked
 
 .PHONY: tests
-tests: clean
+tests:
 	poetry run py.test
 
 .PHONY: testall
-testall: clean
+testall:
 	poetry run tox
 
 .PHONY: clean
@@ -26,11 +28,13 @@ clean:
 	find . -name *,cover -delete
 
 .PHONY: deep-clean
-deep-clean: clean
+deep-clean: clean clean-docs
 	rm --recursive --force $(VENV)
 	rm --recursive --force .eggs
 	rm --recursive --force .pytest_cache
 	rm --recursive --force .tox
+
+# Linting
 
 .PHONY: lint
 lint: mypy fixme-check
@@ -51,6 +55,8 @@ coverage:
 	poetry run coverage report --show-missing
 	poetry run coverage html
 
+# Publishing
+
 .PHONY: publish
 publish: fixme-check lint testall publish-force
 
@@ -61,11 +67,16 @@ publish-force:
 	git push
 	git push --tags
 
+# Docs
+
+DOCS_BUILD = docs/_build
+
+.PHONY: clean-docs
+clean-docs:
+	rm --force --recursive $(DOCS_BUILD)
+#	rm --force docs/$(PACKAGE).rst
+#	rm --force docs/modules.rst
+
 .PHONY: docs
-docs:
-	rm --force docs/$(PACKAGE).rst
-	rm --force docs/modules.rst
-	#sphinx-apidoc --output-dir docs/ $(PACKAGE)
-	make --directory docs clean
-	make --directory docs html
-	#xdg-open docs/_build/html/index.html
+docs: clean-docs
+	poetry run sphinx-build -b dirhtml docs $(DOCS_BUILD)/html

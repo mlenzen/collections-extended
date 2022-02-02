@@ -204,7 +204,7 @@ class Bag(Collection):
 	def counts(self) -> CountsView:
 		"""Return a view of the unique elements in self and their counts.
 
-		.. versionadded:: 1.1
+		.. versionadded:: 1.0.3
 		"""
 		return CountsView(self)
 
