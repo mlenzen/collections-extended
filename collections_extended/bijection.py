@@ -1,7 +1,12 @@
 """Class definition for bijection."""
-from typing import Any, Hashable, Iterable, Mapping, MutableMapping, Tuple, Union
+from typing import Any, Hashable, Iterable, Mapping, MutableMapping, Tuple, Union, TypeVar
 
 __all__ = ('bijection', )
+
+K = TypeVar('K', bound=Hashable)
+V = TypeVar('V', bound=Hashable)
+
+# FIXME bijection needs to use generic types
 
 
 class bijection(MutableMapping):

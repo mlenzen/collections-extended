@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from collections.abc import Collection, Hashable, Set
 from operator import itemgetter
-from typing import Any, Callable, Iterable, Mapping, Tuple
+from typing import Any, Callable, Iterable, Mapping, Tuple, TypeVar
 
 from ._util import deprecated
 
@@ -16,6 +16,10 @@ __all__ = (
 	'bag',
 	'frozenbag',
 	)
+
+T = TypeVar('T', bound=Hashable)
+
+# FIXME bags need to use generic types
 
 
 class BagView(Collection):

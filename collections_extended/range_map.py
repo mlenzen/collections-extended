@@ -1,10 +1,28 @@
 """RangeMap class definition."""
 from abc import ABCMeta, abstractmethod
 from bisect import bisect_left, bisect_right
-from typing import Collection, Mapping, Set
-from typing import Any, Hashable, Iterator, Iterable, Union, Tuple, Generator, Optional, overload
+from typing import (
+	Any,
+	Collection,
+	Hashable,
+	Iterator,
+	Iterable,
+	Mapping,
+	Set,
+	Union,
+	Tuple,
+	TypeVar,
+	Generator,
+	Optional,
+	overload,
+)
 
 from .sentinel import NOT_SET
+
+K = TypeVar('K', bound=Hashable)
+V = TypeVar('V')
+
+# FIXME range_map classes needs to use generic types
 
 
 class MappedRange:
