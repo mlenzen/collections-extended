@@ -179,7 +179,7 @@ class SetList(Sequence, Set, Generic[T]):
 	@classmethod
 	def _check_type(cls, other: Any, operand_name: str):
 		"""Check that other is an Iterable."""
-		if not isinstance(other, Iterable):
+		if not isinstance(other, SetList):
 			message = (
 				"unsupported operand type(s) for {operand_name}: "
 				"'{self_type}' and '{other_type}'").format(
@@ -217,7 +217,9 @@ class SetList(Sequence, Set, Generic[T]):
 
 		(i.e. all elements that are in both sets.)
 		"""
-		other = set(other)
+		# TODO why does using a set for other fail
+		# other = set(other)
+		other = setlist(other)
 		return self._from_iterable(item for item in self if item in other)
 
 	def difference(self, other: Iterable[T]) -> 'SetList[T]':
@@ -225,7 +227,9 @@ class SetList(Sequence, Set, Generic[T]):
 
 		(i.e. all elements that are in this set but not the others.)
 		"""
-		other = set(other)
+		# TODO why does using a set for other fail
+		# other = set(other)
+		other = setlist(other)
 		return self._from_iterable(item for item in self if item not in other)
 
 	def symmetric_difference(self, other: Iterable[T]) -> 'SetList[T]':
@@ -545,7 +549,9 @@ class setlist(SetList, MutableSequence, MutableSet):
 
 	def difference_update(self, other: Iterable[T]):
 		"""Update self to include only the difference with other."""
-		other = set(other)
+		# TODO why does using a set for other fail
+		# other = set(other)
+		other = setlist(other)
 		indices_to_delete = set()
 		for i, elem in enumerate(self):
 			if elem in other:
@@ -555,7 +561,9 @@ class setlist(SetList, MutableSequence, MutableSet):
 
 	def intersection_update(self, other: Iterable[T]):
 		"""Update self to include only the intersection with other."""
-		other = set(other)
+		# TODO why does using a set for other fail
+		# other = set(other)
+		other = setlist(other)
 		indices_to_delete = set()
 		for i, elem in enumerate(self):
 			if elem not in other:
@@ -565,7 +573,9 @@ class setlist(SetList, MutableSequence, MutableSet):
 
 	def symmetric_difference_update(self, other: Iterable[T]):
 		"""Update self to include only the symmetric difference with other."""
-		other = set(other)
+		# TODO why does using a set for other fail
+		# other = set(other)
+		other = setlist(other)
 		indices_to_delete = set()
 		for i, item in enumerate(self):
 			if item in other:
