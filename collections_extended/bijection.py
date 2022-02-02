@@ -1,31 +1,29 @@
 """Class definition for bijection."""
-from typing import Any, Hashable, Iterable, Mapping, MutableMapping, Tuple, Union, TypeVar
+from typing import Any, Hashable, Iterable, Mapping, MutableMapping, Tuple, Union, TypeVar, Generic, Dict
 
 __all__ = ('bijection', )
 
 K = TypeVar('K', bound=Hashable)
 V = TypeVar('V', bound=Hashable)
 
-# FIXME bijection needs to use generic types
 
-
-class bijection(MutableMapping):
+class bijection(MutableMapping, Generic[K, V]):
 	"""A one-to-one onto mapping, a dict with unique values."""
 
 	def __init__(
 			self,
 			iterable: Union[
-				Mapping[Hashable, Hashable],
-				Iterable[Tuple[Hashable, Hashable]]
+				Mapping[K, V],
+				Iterable[Tuple[K, V]]
 				] = None,
-			**kwarg: Tuple[Hashable, Hashable],
+			**kwarg: V,
 			):
 		"""Create a bijection from an iterable.
 
 		Matches dict.__init__.
 		"""
-		self._data = {}
-		self.__inverse = self.__new__(bijection)
+		self._data: Dict[K, V] = {}
+		self.__inverse: bijection[V, K] = self.__new__(bijection)
 		self.__inverse._data = {}
 		self.__inverse.__inverse = self
 		if iterable is not None:
@@ -50,7 +48,7 @@ class bijection(MutableMapping):
 				)
 
 	@property
-	def inverse(self) -> 'bijection':
+	def inverse(self) -> 'bijection[V, K]':
 		"""Return the inverse of this bijection."""
 		return self.__inverse
 
@@ -59,11 +57,11 @@ class bijection(MutableMapping):
 		return len(self._data)
 
 	# Required for MutableMapping
-	def __getitem__(self, key: Hashable) -> Hashable:
+	def __getitem__(self, key: K) -> V:
 		return self._data[key]
 
 	# Required for MutableMapping
-	def __setitem__(self, key: Hashable, value: Hashable):
+	def __setitem__(self, key: K, value: V):
 		if key in self:
 			del self.inverse._data[self[key]]
 		if value in self.inverse:
@@ -72,7 +70,7 @@ class bijection(MutableMapping):
 		self.inverse._data[value] = key
 
 	# Required for MutableMapping
-	def __delitem__(self, key: Hashable):
+	def __delitem__(self, key: K):
 		value = self._data.pop(key)
 		del self.inverse._data[value]
 
@@ -80,7 +78,7 @@ class bijection(MutableMapping):
 	def __iter__(self):
 		return iter(self._data)
 
-	def __contains__(self, key: Hashable) -> bool:
+	def __contains__(self, key):
 		return key in self._data
 
 	def clear(self):
@@ -88,7 +86,7 @@ class bijection(MutableMapping):
 		self._data.clear()
 		self.inverse._data.clear()
 
-	def copy(self) -> 'bijection':
+	def copy(self) -> 'bijection[K, V]':
 		"""Return a copy of this bijection."""
 		return bijection(self)
 

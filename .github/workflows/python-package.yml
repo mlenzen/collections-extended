@@ -107,7 +107,7 @@ jobs:
       run: poetry install
 
     - name: Run mypy
-      run: mypy collections_extended
+      run: poetry run mypy collections_extended
 
   tests:
 

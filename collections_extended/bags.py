@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from collections.abc import Collection, Hashable, Set
 from operator import itemgetter
-from typing import Any, Callable, Iterable, Mapping, Tuple, TypeVar
+from typing import Any, Callable, Iterable, Mapping, Tuple, TypeVar, Dict
 
 from ._util import deprecated
 
@@ -98,7 +98,7 @@ class Bag(Collection):
 
 		This runs in O(len(iterable))
 		"""
-		self._dict = dict()
+		self._dict: Dict[Hashable, Any] = dict()
 		self._size = 0
 		if iterable:
 			if isinstance(iterable, Bag):
@@ -129,7 +129,7 @@ class Bag(Collection):
 
 		This runs in O(len(self.num_unique_elements()))
 		"""
-		out = self._from_iterable(None)
+		out = self.__class__()
 		out._dict = self._dict.copy()
 		out._size = self._size
 		return out
