@@ -34,10 +34,13 @@ deep-clean: clean clean-docs
 	rm --recursive --force .pytest_cache
 	rm --recursive --force .tox
 
-# Linting
+# Linting / Checking / Static Analysis
+
+.PHONY: checks
+checks: lint mypy fixme-check
 
 .PHONY: lint
-lint: mypy fixme-check
+lint:
 	poetry run flake8 --statistics --count
 	poetry check
 
@@ -47,7 +50,7 @@ fixme-check:
 
 .PHONY: mypy
 mypy:
-	poetry run mypy collections_extended
+	poetry run mypy $(PACKAGE)
 
 .PHONY: coverage
 coverage:

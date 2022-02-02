@@ -1,6 +1,5 @@
 """collections_extended contains a few extra basic data structures."""
-from collections import Iterable
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
 
 from .bags import bag, frozenbag, UniqueElementsView, CountsView, Bag  # noqa
 from .bijection import bijection
