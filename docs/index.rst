@@ -10,7 +10,7 @@
 
 There are also frozen (hashable) varieties of bags and setlists.
 
-It is `tested against`_ Python 3.6, 3.7, 3.8, 3.9, 3.10 & PyPy3.
+It is `tested against`_ CPython 3.6, 3.7, 3.8, 3.9, 3.10, PyPy3.6, PyPy3.7, & PyPy3.8.
 The current version no longer supports Python 2, install a
 1.x version for a Python 2.7 compatible version. New features will
 not be developed but serious bugs may be fixed.
@@ -41,7 +41,7 @@ Other Packages of Interest
 - http://www.grantjenks.com/docs/sortedcontainers/ - sortedcontainers
 
 :Author: Michael Lenzen
-:Copyright: 2021 Michael Lenzen
+:Copyright: 2022 Michael Lenzen
 :License: Apache License, Version 2.0
 
 .. _`tested against`: https://travis-ci.org/mlenzen/collections-extended
