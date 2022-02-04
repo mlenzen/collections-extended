@@ -221,7 +221,7 @@ class RangeMap(Mapping, Generic[K, V]):
 
 	def _init_from_mapping(self, mapping: Mapping[K, V]):
 		for key, value in sorted(mapping.items()):
-			self.set(value, key)
+			self._set(value, key)
 
 	@classmethod
 	def from_iterable(
@@ -241,7 +241,7 @@ class RangeMap(Mapping, Generic[K, V]):
 			iterable: Iterable[Union[Tuple[K, K, V], MappedRange[K, V]]],
 			):
 		for start, stop, value in iterable:
-			self.set(value, start=start, stop=stop)
+			self._set(value, start=start, stop=stop)
 
 	def __str__(self) -> str:
 		range_format = '({range.start}, {range.stop}): {range.value}'
@@ -319,12 +319,15 @@ class RangeMap(Mapping, Generic[K, V]):
 		except KeyError:
 			return restval
 
-	def get_range(self, start: K = None, stop: K = None) -> 'RangeMap':
+	def get_range(self, start: K = None, stop: K = None) -> 'RangeMap[K, V]':
 		"""Return a RangeMap for the range start to stop."""
 		return self.from_iterable(self.ranges(start, stop))
 
-	def set(self, value: Union[V, Sentinel], start: K = None, stop: K = None):
+	def set(self, value: V, start: K = None, stop: K = None):
 		"""Set the range from start to stop to value."""
+		self._set(value=value, start=start, stop=stop)
+
+	def _set(self, value: Union[V, Sentinel], start: K = None, stop: K = None):
 		_check_start_stop(start, stop)
 		# start_index, stop_index will denote the section we are replacing
 		if start is None:
@@ -368,14 +371,14 @@ class RangeMap(Mapping, Generic[K, V]):
 			if value is NOT_SET:
 				raise KeyError((start, stop))
 		# this is inefficient, we've already found the sub ranges
-		self.set(NOT_SET, start=start, stop=stop)
+		self._set(NOT_SET, start=start, stop=stop)
 
 	def empty(self, start: K = None, stop: K = None):
 		"""Empty the range from start to stop.
 
 		Like delete, but no Error is raised if the entire range isn't mapped.
 		"""
-		self.set(NOT_SET, start=start, stop=stop)
+		self._set(NOT_SET, start=start, stop=stop)
 
 	def clear(self):
 		"""Remove all elements."""
@@ -435,7 +438,7 @@ class RangeMap(Mapping, Generic[K, V]):
 
 	def __setitem__(self, key: slice, value: V):
 		_check_key_slice(key)
-		self.set(value, key.start, key.stop)
+		self._set(value, key.start, key.stop)
 
 	def __delitem__(self, key: slice):
 		_check_key_slice(key)
