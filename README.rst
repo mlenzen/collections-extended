@@ -30,7 +30,7 @@ Overview
 
 There are also frozen (hashable) varieties of bags and setlists.
 
-Compatible with and tested against Python 3.6, 3.7, 3.8, 3.9, 3.10 & PyPy3.
+Compatible with and tested against CPython 3.6, 3.7, 3.8, 3.9, 3.10, PyPy3.6, PyPy3.7 & PyPy3.8.
 
 Getting Started
 ===============
@@ -151,6 +151,6 @@ Python 2.7, 3.4 & 3.5 was 1.0. No new feature releases will be done for 1.x but
 any significant bugs that come up may be fixed.
 
 :Author: Michael Lenzen
-:Copyright: 2021 Michael Lenzen
+:Copyright: 2022 Michael Lenzen
 :License: Apache License, Version 2.0
 :Project Homepage: https://github.com/mlenzen/collections-extended
