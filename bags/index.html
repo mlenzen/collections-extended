@@ -47,26 +47,25 @@
             
   <div class="section" id="bags-multisets">
 <h1>bags (Multisets)<a class="headerlink" href="#bags-multisets" title="Permalink to this headline">¶</a></h1>
-<p><cite>bag</cite> is a <a class="reference external" href="http://en.wikipedia.org/wiki/Multiset">multiset</a> implementation for Python.
+<p>Bags are a <a class="reference external" href="http://en.wikipedia.org/wiki/Multiset">multiset</a> implementation for Python.
 Currently, bags have constant time inclusion testing but can only contain
 hashable elements due to the implementation.</p>
 <p>There are three classes provided:</p>
 <dl class="simple">
 <dt><a class="reference internal" href="#collections_extended.Bag" title="collections_extended.Bag"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bag</span></code></a></dt><dd><p>An abstract base class for bags.</p>
 </dd>
-<dt><a class="reference internal" href="#collections_extended.bag" title="collections_extended.bag"><code class="xref py py-class docutils literal notranslate"><span class="pre">bag</span></code></a></dt><dd><p>A mutable (unhashable) bag.</p>
+<dt><a class="reference internal" href="#collections_extended.bag" title="collections_extended.bag"><code class="xref py py-class docutils literal notranslate"><span class="pre">bag</span></code></a></dt><dd><p>A mutable (unhashable) <cite>Bag</cite>.</p>
 </dd>
-<dt><a class="reference internal" href="#collections_extended.frozenbag" title="collections_extended.frozenbag"><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenbag</span></code></a></dt><dd><p>An immutable (implements <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Hashable</span></code>) version of a bag.</p>
+<dt><a class="reference internal" href="#collections_extended.frozenbag" title="collections_extended.frozenbag"><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenbag</span></code></a></dt><dd><p>An immutable (implements <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Hashable</span></code>) <cite>Bag</cite>.</p>
 </dd>
 </dl>
-<p>Both classes implement <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Sized</span></code>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Container</span></code>.
-Both classes implement <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Collection</span></code> starting in Python
+<p>The <cite>Bag</cite> base class implements <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Sized</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Container</span></code>
+as well as <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Collection</span></code> starting in Python
 3.6 and the polyfilled <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code> for Python &lt; 3.6.</p>
 <div class="section" id="set-operations">
 <h2>Set Operations<a class="headerlink" href="#set-operations" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#collections_extended.bag" title="collections_extended.bag"><code class="xref py py-class docutils literal notranslate"><span class="pre">bag</span></code></a> and <a class="reference internal" href="#collections_extended.frozenbag" title="collections_extended.frozenbag"><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenbag</span></code></a> use python operators for multiset
-operations:</p>
+<p><cite>Bags</cite> use python operators for multiset operations:</p>
 <ul class="simple">
 <li><p><cite>__add__</cite> (<cite>a + b</cite>): The sum of two multisets</p></li>
 <li><p><cite>__sub__</cite> (<cite>a - b</cite>): The difference between a and b</p></li>
@@ -78,7 +77,7 @@ operations:</p>
 </div>
 <div class="section" id="comparison-methods">
 <h2>Comparison Methods<a class="headerlink" href="#comparison-methods" title="Permalink to this headline">¶</a></h2>
-<p>Bags are comparable only to other bags.
+<p><cite>Bags</cite> are comparable only to other <cite>Bags</cite>.
 Ordering comparisons are done setwise.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bag</span><span class="p">(</span><span class="s1">&#39;ac&#39;</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">bag</span><span class="p">(</span><span class="s1">&#39;ab&#39;</span><span class="p">)</span>
 <span class="go">False</span>
