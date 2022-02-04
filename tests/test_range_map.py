@@ -1,8 +1,7 @@
 """Tests for RangeMap class."""
 import datetime
 
-# from hypothesis import given
-# from hypothesis.strategies import integers
+from hypothesis import given, example, strategies
 import pytest
 
 from collections_extended.range_map import RangeMap, MappedRange
@@ -179,6 +178,50 @@ def test_alter_beg():
 	assert rm[5] == 'e'
 	rm.set('y', stop=3)
 	assert rm == RangeMap({3: 'c', 4: 'd', 5: 'e'}, default_value='y')
+
+
+def test_merge_overlapping_pre():
+	rm = RangeMap()
+	rm[1:31] = True
+	rm[0:30] = True
+	rm2 = RangeMap()
+	rm2[0:31] = True
+	print_underlying(rm)
+	assert rm == rm2
+
+
+def test_merge_overlapping_post():
+	rm = RangeMap()
+	rm[0:30] = True
+	rm[1:31] = True
+	rm2 = RangeMap()
+	rm2[0:31] = True
+	print_underlying(rm)
+	assert rm == rm2
+
+
+def test_merge_overlapping_middle_pre():
+	rm = RangeMap()
+	rm[0:31] = False
+	rm[10:20] = True
+	rm[5:15] = True
+	rm2 = RangeMap()
+	rm2[0:31] = False
+	rm2[5:20] = True
+	print_underlying(rm)
+	assert rm == rm2
+
+
+def test_merge_overlapping_middle_post():
+	rm = RangeMap()
+	rm[0:31] = False
+	rm[5:15] = True
+	rm[10:20] = True
+	rm2 = RangeMap()
+	rm2[0:31] = False
+	rm2[5:20] = True
+	print_underlying(rm)
+	assert rm == rm2
 
 
 def test_dates():
@@ -555,3 +598,28 @@ class TestMappedRange:
 		assert v1 == 0
 		assert v2 == 1
 		assert v3 == 'a'
+
+	def test_equality(self):
+		assert MappedRange(0, 1, 'a') == MappedRange(0, 1, 'a')
+		assert not MappedRange(0, 1, 'a') is MappedRange(0, 1, 'a')
+		assert MappedRange(0, 1, 'a') != MappedRange(None, 1, 'a')
+
+
+@given(
+	offsets=strategies.lists(
+		strategies.integers(min_value=0, max_value=99), min_size=1, max_size=20
+	),
+)
+@example(offsets=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 40, 70])
+def test_merge_ranges(offsets):
+	"""
+	The RangeMap merges ranges.
+	"""
+	range_map = RangeMap()
+	for offset in offsets:
+		length = min(30, 100 - offset)
+		range_map.set(True, offset, offset + length)
+		ranges = list(range_map.ranges())
+		if len(ranges) > 1:
+			for first, second in zip(ranges[:-1], ranges[1:]):
+				assert (first.stop, first.value) != (second.start, second.value), ranges

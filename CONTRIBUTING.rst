@@ -13,7 +13,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/mlenzen/collections-extended/issues.
+Report bugs using `GitHub Issues`_.
 
 If you are reporting a bug, please include:
 
@@ -23,7 +23,7 @@ If you are reporting a bug, please include:
 Fix Bugs
 ~~~~~~~~
 
-Look through the GitHub issues for bugs. Anything tagged with "bug"
+Look through the GitHub Issues for bugs. Anything tagged with "bug"
 is open to whoever wants to implement it.
 
 Write Documentation
@@ -33,12 +33,12 @@ This could always use more documentation, whether as part of the
 official docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
-Documentation is built automatically on every push using Read the Docs.
+Documentation is built automatically on every push to master using GitHub Actions.
 
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/mlenzen/collections-extended/issues.
+The best way to send feedback is to file an issue using `GitHub Issues`_.
 
 If you are proposing a feature:
 
@@ -56,13 +56,12 @@ Read the ``Makefile`` for more common tasks/recipes.
 
 Ready to contribute? Here's how to set up `collections-extended` for local development.
 
-#. Fork the `collections-extended` repo on GitHub.
+#. Fork the ``collections-extended`` repo on GitHub.
 #. Clone your fork locally::
 
 	$ git clone git@github.com:your_name_here/collections-extended.git
 
-#. Make sure you are excluding your editor's files from the repo
-
+#. Make sure you are excluding your editor's files from the repo.
 	We don't want to use the project's gitignore to exclude every
 	editor's files, so set up your global gitignore.
 	See: https://help.github.com/articles/ignoring-files/
@@ -78,7 +77,7 @@ Ready to contribute? Here's how to set up `collections-extended` for local devel
 
 #. Make your changes locally.
 
-#. You may run checks locally without having to create a PR:
+#. You may run checks locally without having to create a PR::
 
 	$ make lint
 	$ make tests
@@ -88,12 +87,10 @@ Ready to contribute? Here's how to set up `collections-extended` for local devel
 #. Commit your changes and push your branch to GitHub::
 
 	$ git add .
-	$ git commit -m "Your detailed description of your changes."
+	$ git commit
 	$ git push origin name-of-your-bugfix-or-feature
 
 #. Submit a pull request through the GitHub website.
-
-	This will
 
 Pull Request Guidelines
 -----------------------
@@ -106,7 +103,6 @@ Before you submit a pull request, check that it meets these guidelines:
    https://github.com/mlenzen/collections-extended/actions
    and make sure that the tests pass for all supported Python versions.
 4. Add the feature/bug to the appropriate section in HISTORY.rst
-5. Review and update the relevant docs.
 
 Tips
 ----
@@ -119,5 +115,9 @@ To run a subset of tests::
 Useful Reading
 ~~~~~~~~~~~~~~
 
-https://docs.python.org/3/reference/datamodel.html#emulating-container-types
-https://docs.python.org/3/library/collections.abc.html
+- Python docs
+	- `3.3.7. Data model — Emulating container types <https://docs.python.org/3/reference/datamodel.html#emulating-container-types>`_
+	- `collections.abc — Abstract Base Classes for Containers <https://docs.python.org/3/library/collections.abc.html>`_
+- `collections module source <https://github.com/python/cpython/blob/main/Lib/collections/__init__.py>`_
+
+.. _`GitHub Issues`: https://github.com/mlenzen/collections-extended/issues

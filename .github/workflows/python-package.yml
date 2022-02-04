@@ -37,7 +37,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: docs
-        path: docs/_build/html # or path/to/artifact
+        path: docs/_build/html
 
   docs-publish:
 
@@ -45,27 +45,29 @@ jobs:
     needs: docs
     if: ${{ github.ref == 'refs/heads/master' }}
     steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: gh-pages
       - name: Download docs artifact
         uses: actions/download-artifact@v2
         with:
           name: docs
           path: docs/_build/html
-      - name: Init new repo in dist folder and commit generated files
+      - name: Replace docs
         run: |
-          cd docs/_build/html
-          touch .nojekyll
-          git init
-          git add -A
+          git rm -r .
+          git reset HEAD .nojekyll CNAME .gitignore
+          git checkout -- .nojekyll CNAME .gitignore
+          cp -r docs/_build/html/* .
+          git add .
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -m 'deploy'
-      - name: Force push to destination branch
+          git commit -m 'Triggered by ${{ github.sha }}'
+      - name: Push changes
         uses: ad-m/github-push-action@v0.5.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
-          force: true
-          directory: ./docs/_build/html
 
   lint:
 
@@ -89,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9, pypy-3.6, pypy-3.7]
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', pypy-3.6, pypy-3.7]
 
     steps:
     - uses: actions/checkout@v2

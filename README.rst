@@ -30,7 +30,7 @@ a ``RangeMap`` which is a mapping from ranges to values, and
 an ``IndexedDict`` class.
 There are also frozen (hashable) varieties of bags and setlists.
 
-Compatible with and tested against Python 3.6, 3.7, 3.8, 3.9 & PyPy3.
+Compatible with and tested against Python 3.6, 3.7, 3.8, 3.9, 3.10 & PyPy3.
 
 Getting Started
 ===============
@@ -118,6 +118,7 @@ Usage
 
 New Collections
 ===============
+
 There are seven new collections provided:
 
 Bags
