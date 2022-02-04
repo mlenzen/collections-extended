@@ -3,10 +3,10 @@
 .. versionadded:: 1.0.3
 """
 from collections.abc import MutableMapping
-from typing import Any, Dict, Generic, Hashable, Iterable, List, Mapping, Tuple, TypeVar, Union
+from typing import Any, Dict, Generic, Hashable, Iterable, List, Mapping, Tuple, TypeVar, Union, Optional
 
 from ._util import deprecation_warning
-from .sentinel import NOT_SET
+from .sentinel import NOT_SET, Sentinel
 
 __all__ = ('IndexedDict', )
 
@@ -243,8 +243,8 @@ class IndexedDict(Generic[K, V], MutableMapping):
 			self,
 			last: bool = NOT_SET,
 			*,
-			key: K = NOT_SET,
-			index: int = NOT_SET,
+			key: Union[K, Sentinel] = NOT_SET,
+			index: Union[int, None, Sentinel] = NOT_SET,
 			) -> Tuple[K, V]:
 		"""Remove and return a (key, value) tuple.
 
@@ -321,9 +321,9 @@ class IndexedDict(Generic[K, V], MutableMapping):
 			self._dict[previous[0]] = i, previous[1]
 			previous, self._list[i] = self._list[i], previous
 
-	def copy(self) -> 'IndexedDict':
+	def copy(self) -> 'IndexedDict[K, V]':
 		"""Return a shallow copy."""
-		ret = IndexedDict()
+		ret: IndexedDict[K, V] = IndexedDict()
 		ret._dict = self._dict.copy()
 		ret._list = list(self._list)
 		return ret
@@ -342,17 +342,17 @@ class IndexedDict(Generic[K, V], MutableMapping):
 		"""
 		return self._list[index][0]
 
-	def __len__(self) -> int:
+	def __len__(self):
 		"""Return number of elements stored."""
 		return len(self._list)
 
-	def __repr__(self) -> str:
+	def __repr__(self):
 		return "{class_name}({data})".format(
 			class_name=self.__class__.__name__,
 			data=repr(self._list),
 			)
 
-	def __str__(self) -> str:
+	def __str__(self):
 		# When Python 3.5 support is dropped, we can rely on dict order and this
 		# can be simplified to:
 		# return "{class_name}({data})".format(
@@ -368,7 +368,7 @@ class IndexedDict(Generic[K, V], MutableMapping):
 			data=data,
 			)
 
-	def __getitem__(self, key: K) -> V:
+	def __getitem__(self, key):
 		"""Return value corresponding to given key.
 
 		Raises KeyError when the key is not present in the mapping.
@@ -377,7 +377,7 @@ class IndexedDict(Generic[K, V], MutableMapping):
 		"""
 		return self._dict[key][1]
 
-	def __setitem__(self, key: K, value: V):
+	def __setitem__(self, key, value):
 		"""Set item with given key to given value.
 
 		If the key is already present in the mapping its order is unchanged,
@@ -393,7 +393,7 @@ class IndexedDict(Generic[K, V], MutableMapping):
 			self._list.append((key, value))
 		self._dict[key] = index, value
 
-	def __delitem__(self, key: K):
+	def __delitem__(self, key):
 		"""Remove item with given key from the mapping.
 
 		Runs in O(n), unless removing last item, then in O(1).
@@ -405,7 +405,7 @@ class IndexedDict(Generic[K, V], MutableMapping):
 
 		self._fix_indices_after_delete(index)
 
-	def __contains__(self, key: K) -> bool:
+	def __contains__(self, key):
 		"""Check if a key is present in the mapping.
 
 		Runs in O(1).
