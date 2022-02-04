@@ -117,7 +117,7 @@ class SetList(Sequence, Set, Generic[T]):
 		return cls(it, **kwargs)
 
 	# Implement Container
-	def __contains__(self, value: T) -> bool:
+	def __contains__(self, value):
 		return value in self._dict
 
 	# Iterable we get by inheriting from Sequence
@@ -127,7 +127,7 @@ class SetList(Sequence, Set, Generic[T]):
 		return len(self._list)
 
 	# Implement Sequence
-	def __getitem__(self, index: Union[int, slice]) -> T:
+	def __getitem__(self, index):
 		if isinstance(index, slice):
 			return self._from_iterable(self._list[index])
 		return self._list[index]
@@ -197,13 +197,13 @@ class SetList(Sequence, Set, Generic[T]):
 
 	# Implement Set
 
-	def issubset(self, other: 'SetList[T]') -> bool:
+	def issubset(self, other):
 		return self <= other
 
-	def issuperset(self, other: 'SetList[T]') -> bool:
+	def issuperset(self, other):
 		return self >= other
 
-	def union(self, other: Iterable[T]) -> 'SetList[T]':
+	def union(self, other):
 		"""Return the union of sets as a new set.
 
 		(i.e. all elements that are in either set.)
@@ -212,7 +212,7 @@ class SetList(Sequence, Set, Generic[T]):
 		out._update(other)
 		return out
 
-	def intersection(self, other: Iterable[T]) -> 'SetList[T]':
+	def intersection(self, other):
 		"""Return the intersection of two sets as a new set.
 
 		(i.e. all elements that are in both sets.)
@@ -222,7 +222,7 @@ class SetList(Sequence, Set, Generic[T]):
 		other = setlist(other)
 		return self._from_iterable(item for item in self if item in other)
 
-	def difference(self, other: Iterable[T]) -> 'SetList[T]':
+	def difference(self, other):
 		"""Return the difference of two or more sets as a new set.
 
 		(i.e. all elements that are in this set but not the others.)
@@ -232,26 +232,26 @@ class SetList(Sequence, Set, Generic[T]):
 		other = setlist(other)
 		return self._from_iterable(item for item in self if item not in other)
 
-	def symmetric_difference(self, other: Iterable[T]) -> 'SetList[T]':
+	def symmetric_difference(self, other):
 		"""Return the symmetric difference (disjuntive union) of two sets.
 
 		(i.e. all elements that are in one set but not both.)
 		"""
 		return self.union(other) - self.intersection(other)
 
-	def __sub__(self, other: Iterable[T]) -> 'SetList[T]':
+	def __sub__(self, other):
 		self._check_type(other, '-')
 		return self.difference(other)
 
-	def __and__(self, other: Iterable[T]) -> 'SetList[T]':
+	def __and__(self, other):
 		self._check_type(other, '&')
 		return self.intersection(other)
 
-	def __or__(self, other: Iterable[T]) -> 'SetList[T]':
+	def __or__(self, other):
 		self._check_type(other, '|')
 		return self.union(other)
 
-	def __xor__(self, other: Iterable[T]) -> 'SetList[T]':
+	def __xor__(self, other):
 		self._check_type(other, '^')
 		return self.symmetric_difference(other)
 
@@ -503,7 +503,7 @@ class setlist(SetList, MutableSequence, MutableSet):
 		"""
 		self._add(item)
 
-	def update(self, values: Iterable[T]):
+	def update(self, values):
 		"""Add all values to the end.
 
 		If any of the values are present, silently ignore
@@ -518,7 +518,7 @@ class setlist(SetList, MutableSequence, MutableSet):
 		"""
 		self._update(values)
 
-	def discard_all(self, elems_to_delete: Iterable[T]):
+	def discard_all(self, elems_to_delete):
 		"""Discard all the elements from elems_to_delete.
 
 		This is much faster than removing them one by one.
@@ -547,7 +547,7 @@ class setlist(SetList, MutableSequence, MutableSet):
 		except ValueError:
 			pass
 
-	def difference_update(self, other: Iterable[T]):
+	def difference_update(self, other):
 		"""Update self to include only the difference with other."""
 		# TODO why does using a set for other fail
 		# other = set(other)
@@ -559,7 +559,7 @@ class setlist(SetList, MutableSequence, MutableSet):
 		if indices_to_delete:
 			self._delete_values_by_index(indices_to_delete)
 
-	def intersection_update(self, other: Iterable[T]):
+	def intersection_update(self, other):
 		"""Update self to include only the intersection with other."""
 		# TODO why does using a set for other fail
 		# other = set(other)
@@ -584,22 +584,22 @@ class setlist(SetList, MutableSequence, MutableSet):
 			self.add(item)
 		self._delete_values_by_index(indices_to_delete)
 
-	def __isub__(self, other: Iterable[T]) -> 'setlist':
+	def __isub__(self, other):
 		self._check_type(other, '-=')
 		self.difference_update(other)
 		return self
 
-	def __iand__(self, other: Iterable[T]) -> 'setlist':
+	def __iand__(self, other):
 		self._check_type(other, '&=')
 		self.intersection_update(other)
 		return self
 
-	def __ior__(self, other: Iterable[T]) -> 'setlist':
+	def __ior__(self, other):
 		self._check_type(other, '|=')
 		self.update(other)
 		return self
 
-	def __ixor__(self, other: Iterable[T]) -> 'setlist':
+	def __ixor__(self, other):
 		self._check_type(other, '^=')
 		self.symmetric_difference_update(other)
 		return self
