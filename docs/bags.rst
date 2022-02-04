@@ -3,7 +3,7 @@
 bags (Multisets)
 ================
 
-`bag` is a multiset_ implementation for Python.
+Bags are a multiset_ implementation for Python.
 Currently, bags have constant time inclusion testing but can only contain
 hashable elements due to the implementation.
 
@@ -14,19 +14,18 @@ There are three classes provided:
 :class:`Bag`
   An abstract base class for bags.
 :class:`bag`
-  A mutable (unhashable) bag.
+  A mutable (unhashable) `Bag`.
 :class:`frozenbag`
-  An immutable (implements :class:`collections.abc.Hashable`) version of a bag.
+  An immutable (implements :class:`collections.abc.Hashable`) `Bag`.
 
-Both classes implement :class:`collections.abc.Sized`,
-:class:`collections.abc.Iterable` and :class:`collections.abc.Container`.
-Both classes implement :class:`collections.abc.Collection` starting in Python
+The `Bag` base class implements :class:`collections.abc.Sized`,
+:class:`collections.abc.Iterable` and :class:`collections.abc.Container`
+as well as :class:`collections.abc.Collection` starting in Python
 3.6 and the polyfilled :class:`Collection` for Python < 3.6.
 
 Set Operations
 --------------
-:class:`bag` and :class:`frozenbag` use python operators for multiset
-operations:
+`Bags` use python operators for multiset operations:
 
 * `__add__` (`a + b`): The sum of two multisets
 * `__sub__` (`a - b`): The difference between a and b
@@ -38,7 +37,7 @@ operations:
 
 Comparison Methods
 ------------------
-Bags are comparable only to other bags.
+`Bags` are comparable only to other `Bags`.
 Ordering comparisons are done setwise.
 
 .. testsetup::
