@@ -1,6 +1,6 @@
 """IndexedDict class definition.
 
-.. versionadded:: 1.1
+.. versionadded:: 1.0.3
 """
 from collections.abc import MutableMapping
 
@@ -20,8 +20,6 @@ class IndexedDict(MutableMapping):
 	"""A Mapping that preserves insertion order and allows access by item index.
 
 	The API is an extension of OrderedDict.
-
-	.. automethod:: __init__
 	"""
 
 	def __init__(self, iterable=None, **kwargs):
@@ -40,7 +38,7 @@ class IndexedDict(MutableMapping):
 
 		If no value is found, return `default` (`None` by default).
 
-		.. deprecated :: 1.1
+		.. deprecated :: 1.0.3
 
 		The `d` parameter has been renamed `default`. `d` will be removed in
 		some future version.
@@ -93,7 +91,7 @@ class IndexedDict(MutableMapping):
 
 		This is generally O(N) unless removing last item, then O(1).
 
-		.. deprecated :: 1.1
+		.. deprecated :: 1.0.3
 
 		The `d` parameter has been renamed `default`. `d` will be removed in
 		some future version.

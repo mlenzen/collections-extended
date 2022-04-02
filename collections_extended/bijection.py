@@ -5,10 +5,7 @@ __all__ = ('bijection', )
 
 
 class bijection(MutableMapping):
-	"""A one-to-one onto mapping, a dict with unique values.
-
-	.. automethod:: __init__
-	"""
+	"""A one-to-one onto mapping, a dict with unique values."""
 
 	def __init__(self, iterable=None, **kwarg):
 		"""Create a bijection from an iterable.
@@ -25,7 +22,8 @@ class bijection(MutableMapping):
 					self[key] = value
 			else:
 				for pair in iterable:
-					self[pair[0]] = pair[1]
+					key, value = pair
+					self[key] = value
 		for key, value in kwarg.items():
 			self[key] = value
 

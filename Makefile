@@ -1,23 +1,21 @@
-VENV = .venv
+PACKAGE = collections_extended
+VENV = $(shell poetry env info --path)
 
 .PHONY: default
 default: clean deps tests
 
 .PHONY: deps
-deps: $(VENV) requirements.txt
-	pip install -r requirements.txt
-
-$(VENV):
-	python -m venv $@
-	$@/bin/pip install --upgrade pip wheel setuptools
+deps:
+	pip install poetry
+	poetry install --remove-untracked
 
 .PHONY: tests
-tests: clean
-	py.test
+tests:
+	poetry run py.test
 
 .PHONY: testall
-testall: clean
-	tox
+testall:
+	poetry run tox
 
 .PHONY: clean
 clean:
@@ -30,15 +28,18 @@ clean:
 	find . -name *,cover -delete
 
 .PHONY: deep-clean
-deep-clean: clean
+deep-clean: clean clean-docs
 	rm --recursive --force $(VENV)
 	rm --recursive --force .eggs
 	rm --recursive --force .pytest_cache
 	rm --recursive --force .tox
 
+# Linting
+
 .PHONY: lint
 lint:
-	flake8 --statistics --count
+	poetry run flake8 --statistics --count
+	poetry check
 
 .PHONY: fixme-check
 fixme-check:
@@ -46,25 +47,32 @@ fixme-check:
 
 .PHONY: coverage
 coverage:
-	coverage run --source collections_extended --module pytest
-	coverage report --show-missing
-	coverage html
+	poetry run coverage run --source $(PACKAGE) --module pytest
+	poetry run coverage report --show-missing
+	poetry run coverage html
+
+# Publishing
 
 .PHONY: publish
-publish: testall lint coverage publish-force
+publish: fixme-check lint testall publish-force
 
 .PHONY: publish-force
 publish-force:
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	poetry build
+	poetry publish
 	git push
 	git push --tags
 
+# Docs
+
+DOCS_BUILD = docs/_build
+
+.PHONY: clean-docs
+clean-docs:
+	rm --force --recursive $(DOCS_BUILD)
+#	rm --force docs/$(PACKAGE).rst
+#	rm --force docs/modules.rst
+
 .PHONY: docs
-docs:
-	rm --force docs/collections_extended.rst
-	rm --force docs/modules.rst
-	#sphinx-apidoc --output-dir docs/ collections_extended
-	make --directory docs clean
-	make --directory docs html
-	#xdg-open docs/_build/html/index.html
+docs: clean-docs
+	poetry run sphinx-build -b dirhtml docs $(DOCS_BUILD)/html
