@@ -29,8 +29,9 @@ class BagView(Collection):
 	def __repr__(self):
 		return '{0.__class__.__name__}({0.bag!r})'.format(self)
 
+	@abstractmethod
 	def __len__(self):
-		return self.bag.num_unique_elements()
+		raise NotImplementedError
 
 	@abstractmethod
 	def __iter__(self):
@@ -46,6 +47,9 @@ class UniqueElementsView(BagView):
 
 	.. versionadded:: 1.0
 	"""
+
+	def __len__(self):
+		return self.bag.num_unique_elements()
 
 	def __iter__(self):
 		for elem in self.bag._dict:
@@ -259,7 +263,7 @@ class Bag(Collection):
 			other (Iterable)
 		"""
 		if not isinstance(other, Bag):
-			return self.issubset(frozenbag(other))
+			other = Bag(other)
 		for elem, count in self.counts():
 			if not count <= other.count(elem):
 				return False
@@ -272,7 +276,7 @@ class Bag(Collection):
 			other (Iterable)
 		"""
 		if not isinstance(other, Bag):
-			return self.issuperset(bag(other))
+			other = Bag(other)
 		for elem, count in other.counts():
 			if not self.count(elem) >= count:
 				return False

@@ -156,6 +156,18 @@ def test_rich_comp_subset():
 	assert b1 <= b2
 
 
+def test_issuperset():
+	b = Bag('abbc')
+	assert b.issuperset('abc')
+	assert b.issuperset(('a', 'b', 'b'))
+
+
+def test_issubset():
+	b = Bag('aabc')
+	assert b.issubset('aabbcc')
+	assert b.issubset(('a', 'a', 'b', 'c', 'd'))
+
+
 def test_rich_comp_unorderable_eq_len():
 	"""Test rich comparisons for bags of equal length but unorderable."""
 	b1 = Bag('abb')
@@ -431,3 +443,34 @@ def test_hashability():
 		bag([a, 1])
 	# test commutativity of bag instantiation.
 	assert bag([4, 4, 5, 5, c]) == bag([4, 5, d, 4, 5])
+
+
+class TestUniqueElementsView:
+
+	def test_view_repr(self):
+		b = bag([1, 2, 3])
+		assert repr(b.unique_elements()) == 'UniqueElementsView(bag((1, 2, 3)))'
+
+	def test_len(self):
+		b = bag([1, 2, 2])
+		assert len(b.unique_elements()) == 2
+
+	def test_contains(self):
+		b = bag([2, 3, 4])
+		assert 2 in b.unique_elements()
+		assert 1 not in b.unique_elements()
+
+
+class TestCountsView:
+
+	def test_view_repr(self):
+		b = bag([1, 2, 3])
+		assert repr(b.counts()) == 'CountsView(bag((1, 2, 3)))'
+
+	def test_len(self):
+		b = bag([1, 2, 2])
+		assert len(b.counts()) == 2
+
+	def test_contains(self):
+		b = bag([2, 3, 4])
+		assert (2, 1) in b.counts()
