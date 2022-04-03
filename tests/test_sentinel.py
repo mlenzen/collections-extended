@@ -26,3 +26,6 @@ class TestSentinel:
 		unpickled = pickle.loads(pickled)
 		assert unpickled == NOT_SET
 		assert unpickled is NOT_SET
+
+	def test_bool(self):
+		assert bool(NOT_SET) is False
