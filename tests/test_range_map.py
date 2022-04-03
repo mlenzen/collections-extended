@@ -606,6 +606,13 @@ class TestMappedRange:
 		assert MappedRange(0, 1, 'a') == MappedRange(0, 1, 'a')
 		assert not MappedRange(0, 1, 'a') is MappedRange(0, 1, 'a')
 		assert MappedRange(0, 1, 'a') != MappedRange(None, 1, 'a')
+		assert not MappedRange(0, 1, 'a') == (0, 1, 'a')
+
+
+def test_range_map_view_repr():
+	rm = RangeMap({1: 'a', 2: 'b'})
+	assert repr(rm.keys()) == "RangeMapKeysView(RangeMap([(1, 2, 'a'), (2, None, 'b')]))"
+	assert repr(rm.values()) == "RangeMapValuesView(RangeMap([(1, 2, 'a'), (2, None, 'b')]))"
 
 
 @given(
