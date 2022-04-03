@@ -57,7 +57,7 @@ def deprecated(msg, dep_version):
 				docstring_msg,
 				])
 		else:
-			docstring = docstring_msg
+			docstring = docstring_msg  # pragma: no cover
 		func.__doc__ = docstring
 
 		@wraps(func)
