@@ -382,6 +382,9 @@ def test_contains():
 	assert 2 not in rm
 	assert 3 in rm
 	assert 4 not in rm
+	assert None not in rm
+	rm[None:1] = '.'
+	assert None in rm
 
 
 def test_get_range():
