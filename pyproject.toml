@@ -42,8 +42,7 @@ tox = "^3.21.4"
 flake8 = "^4.0.1"
 flake8-docstrings = "^1.5.0"
 coverage = "^6.4"
-Sphinx = {version = "^3.4.3"}
-sphinxcontrib-napoleon = {version = "^0.7"}
+Sphinx = "^4"
 alabaster = {git = "https://github.com/mlenzen/alabaster.git"}
 hypothesis = "^6.36.0"
 
