@@ -39,8 +39,6 @@ python = "^3.7"
 pytest = "^6.2.5"
 bumpversion = "^0.6.0"
 tox = "^3.21.4"
-flake8 = "^3.8.4"
-flake8-docstrings = "^1.5.0"
 coverage = "^5.4"
 Sphinx = {version = "^3.4.3"}
 sphinxcontrib-napoleon = {version = "^0.7"}

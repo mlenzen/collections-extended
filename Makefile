@@ -35,9 +35,13 @@ deep-clean: clean clean-docs
 
 # Linting
 
+.PHONY: black
+black:
+	poetry run black $(PACKAGE) tests
+
 .PHONY: lint
 lint:
-	poetry run flake8 --statistics --count
+	poetry run black --check $(PACKAGE) tests
 	poetry check
 
 .PHONY: fixme-check

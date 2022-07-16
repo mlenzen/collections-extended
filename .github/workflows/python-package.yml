@@ -94,7 +94,7 @@ jobs:
     - name: Install dependencies
       run: make deps
 
-    - name: Lint with flake8
+    - name: Run linters
       run: make lint
     - name: Check for unfinished code
       run: make fixme-check
