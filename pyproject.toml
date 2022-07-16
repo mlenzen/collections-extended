@@ -46,6 +46,7 @@ Sphinx = {version = "^3.4.3"}
 sphinxcontrib-napoleon = {version = "^0.7"}
 alabaster = {git = "https://github.com/mlenzen/alabaster.git"}
 hypothesis = "^6.36.0"
+black = "^22.6.0"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-napoleon", "alabaster"]
