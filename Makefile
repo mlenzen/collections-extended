@@ -6,7 +6,6 @@ default: clean deps tests
 
 .PHONY: deps
 deps:
-	pip install poetry
 	poetry install --remove-untracked
 
 .PHONY: tests

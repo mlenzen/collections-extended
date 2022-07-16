@@ -1,6 +1,10 @@
 name: Python package
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
 
 jobs:
 
@@ -9,10 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install poetry
+      run: pipx install poetry
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.9
+        cache: 'poetry'
     - name: Install dependencies
       run: make deps
 
@@ -24,15 +31,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install poetry
+      run: pipx install poetry
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.9
+        cache: 'poetry'
     - name: Install dependencies
       run: make deps
 
     - name: Build Docs
-      run: poetry run make docs
+      run: make docs
 
     - uses: actions/upload-artifact@v2
       with:
@@ -74,10 +84,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install poetry
+      run: pipx install poetry
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.9
+        cache: 'poetry'
     - name: Install dependencies
       run: make deps
 
@@ -118,10 +131,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install poetry
+      run: pipx install poetry
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'poetry'
     - name: Install dependencies
       run: make deps
 
@@ -139,9 +155,10 @@ jobs:
 #    steps:
 #    - uses: actions/checkout@v2
 #    - name: Set up Python
-#      uses: actions/setup-python@v2
+#      uses: actions/setup-python@v4
 #      with:
 #        python-version: 3.9
+#        cache: 'poetry'
 #    - name: Install dependencies
 #      run: |
 #        pip install --upgrade pip setuptools coveralls

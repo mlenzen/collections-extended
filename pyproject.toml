@@ -36,14 +36,13 @@ classifiers = [
 python = "^3.7"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
+pytest = "^7.1.2"
 bumpversion = "^0.6.0"
 tox = "^3.21.4"
-flake8 = "^3.8.4"
+flake8 = "^4.0.1"
 flake8-docstrings = "^1.5.0"
-coverage = "^5.4"
-Sphinx = {version = "^3.4.3"}
-sphinxcontrib-napoleon = {version = "^0.7"}
+coverage = "^6.4"
+Sphinx = "^4"
 alabaster = {git = "https://github.com/mlenzen/alabaster.git"}
 hypothesis = "^6.36.0"
 mypy = "^0.961"
