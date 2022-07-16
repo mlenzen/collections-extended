@@ -39,12 +39,11 @@ python = "^3.7"
 pytest = "^7.1.2"
 bumpversion = "^0.6.0"
 tox = "^3.21.4"
-flake8 = "^4.0.1"
-flake8-docstrings = "^1.5.0"
 coverage = "^6.4"
 Sphinx = "^4"
 alabaster = {git = "https://github.com/mlenzen/alabaster.git"}
 hypothesis = "^6.36.0"
+black = "^22.6.0"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinxcontrib-napoleon", "alabaster"]
