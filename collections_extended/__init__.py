@@ -1,5 +1,5 @@
 """collections_extended contains a few extra basic data structures."""
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
 
 from .bags import bag, frozenbag, UniqueElementsView, CountsView, Bag  # noqa
 from .bijection import bijection
@@ -21,7 +21,12 @@ __all__ = (
 	)
 
 
-def collection(iterable=None, mutable=True, ordered=False, unique=False):
+def collection(
+		iterable: Iterable = None,
+		mutable=True,
+		ordered=False,
+		unique=False,
+		) -> Collection:
 	"""Return a :class:`Collection` with the specified properties.
 
 	Args:

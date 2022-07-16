@@ -1,12 +1,30 @@
 """RangeMap class definition."""
 from abc import ABCMeta, abstractmethod
 from bisect import bisect_left, bisect_right
-from collections.abc import Collection, Mapping, Set
+from typing import (
+	Any,
+	Collection,
+	Hashable,
+	Iterator,
+	Iterable,
+	Mapping,
+	Union,
+	Tuple,
+	TypeVar,
+	Generator,
+	Optional,
+	overload, Generic, List, KeysView, ItemsView, ValuesView,
+)
 
-from .sentinel import NOT_SET
+from .sentinel import NOT_SET, Sentinel
+
+K = TypeVar('K', bound=Hashable)
+V = TypeVar('V')
+
+# FIXME range_map classes needs to use generic types
 
 
-class MappedRange:
+class MappedRange(Generic[K, V]):
 	"""Represents a subrange of a RangeMap.
 
 	This is a glorified namedtuple.
@@ -14,7 +32,7 @@ class MappedRange:
 
 	__slots__ = ('start', 'stop', 'value')
 
-	def __init__(self, start, stop, value):
+	def __init__(self, start: K, stop: K, value: V):
 		"""Create a mapped range.
 
 		Args:
@@ -54,16 +72,16 @@ class MappedRange:
 		return False
 
 
-class RangeMapView(Collection):
+class RangeMapView(Collection, Generic[K, V]):
 	"""Base class for views of RangeMaps."""
 
 	__metaclass__ = ABCMeta
 
-	def __init__(self, mapping):
+	def __init__(self, mapping: 'RangeMap'):
 		"""Create a RangeMapView from a RangeMap."""
 		self._mapping = mapping
 
-	def __len__(self):
+	def __len__(self) -> int:
 		return len(self._mapping)
 
 	@abstractmethod
@@ -71,19 +89,19 @@ class RangeMapView(Collection):
 		raise NotImplementedError
 
 	@abstractmethod
-	def __contains__(self, item):
+	def __contains__(self, item: Any):
 		raise NotImplementedError
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		return '{0.__class__.__name__}({0._mapping!r})'.format(self)
 
 	@property
-	def mapping(self):
+	def mapping(self) -> 'RangeMap[K, V]':
 		"""Return the underlying RangeMap."""
 		return self._mapping
 
 
-class RangeMapKeysView(RangeMapView, Set):
+class RangeMapKeysView(KeysView, RangeMapView):
 	"""A view of the keys that mark the starts of subranges of a RangeMap.
 
 	Since iterating over all the keys is impossible, the view only
@@ -93,12 +111,12 @@ class RangeMapKeysView(RangeMapView, Set):
 	def __contains__(self, key):
 		return key in self.mapping
 
-	def __iter__(self):
+	def __iter__(self) -> Iterator[K]:
 		for mapped_range in self.mapping.ranges():
 			yield mapped_range.start
 
 
-class RangeMapItemsView(RangeMapView, Set):
+class RangeMapItemsView(ItemsView, RangeMapView):
 	"""A view of the items that mark the starts of subranges of a RangeMap.
 
 	Since iterating over all the items is impossible, the view only
@@ -106,7 +124,7 @@ class RangeMapItemsView(RangeMapView, Set):
 	"""
 
 	def __contains__(self, item):
-		# TODO should item be a MappedRange instead of a 2-tuple
+		# TODO should item be a MappedRange instead of a 2-tuple?
 		key, value = item
 		try:
 			mapped_value = self.mapping[key]
@@ -120,7 +138,7 @@ class RangeMapItemsView(RangeMapView, Set):
 			yield (mapped_range.start, mapped_range.value)
 
 
-class RangeMapValuesView(RangeMapView):
+class RangeMapValuesView(ValuesView, RangeMapView):
 	"""A view on the values that mark the start of subranges of a RangeMap.
 
 	Since iterating over all the values is impossible, the view only
@@ -138,7 +156,7 @@ class RangeMapValuesView(RangeMapView):
 			yield mapped_range.value
 
 
-def _check_start_stop(start, stop):
+def _check_start_stop(start: Optional[K], stop: Optional[K]):
 	"""Check that start and stop are valid - orderable and in the right order.
 
 	Raises:
@@ -149,17 +167,24 @@ def _check_start_stop(start, stop):
 		raise ValueError('stop must be > start')
 
 
-def _check_key_slice(key):
+def _check_key_slice(key: Union[K, slice]):
 	if not isinstance(key, slice):
 		raise TypeError('Can only set and delete slices')
 	if key.step is not None:
 		raise ValueError('Cannot set or delete slices with steps')
 
 
-class RangeMap(Mapping):
+class RangeMap(Mapping, Generic[K, V]):
 	"""Map ranges of orderable elements to values."""
 
-	def __init__(self, iterable=None, default_value=NOT_SET):
+	def __init__(
+			self,
+			iterable: Union[
+				Mapping[K, V],
+				Iterable[Tuple[K, K, V]],
+				] = None,
+			default_value: Union[V, Sentinel] = NOT_SET,
+			):
 		"""Create a RangeMap.
 
 		A mapping or other iterable can be passed to initialize the RangeMap.
@@ -179,8 +204,8 @@ class RangeMap(Mapping):
 				least key in mapping or missing ranges in iterable. If no mapping
 				or iterable, the return value for all keys.
 		"""
-		self._keys = [None]
-		self._values = [default_value]
+		self._keys: List[Optional[K]] = [None]
+		self._values: List[Union[V, Sentinel]] = [default_value]
 		if iterable:
 			if isinstance(iterable, Mapping):
 				self._init_from_mapping(iterable)
@@ -188,18 +213,21 @@ class RangeMap(Mapping):
 				self._init_from_iterable(iterable)
 
 	@classmethod
-	def from_mapping(cls, mapping):
+	def from_mapping(cls, mapping: Mapping[K, V]) -> 'RangeMap':
 		"""Create a RangeMap from a mapping of interval starts to values."""
 		obj = cls()
 		obj._init_from_mapping(mapping)
 		return obj
 
-	def _init_from_mapping(self, mapping):
+	def _init_from_mapping(self, mapping: Mapping[K, V]):
 		for key, value in sorted(mapping.items()):
-			self.set(value, key)
+			self._set(value, key)
 
 	@classmethod
-	def from_iterable(cls, iterable):
+	def from_iterable(
+			cls,
+			iterable: Iterable[Union[Tuple[K, K, V], MappedRange[K, V]]],
+			) -> 'RangeMap[K, V]':
 		"""Create a RangeMap from an iterable of tuples defining each range.
 
 		Each element of the iterable is a tuple (start, stop, value).
@@ -208,21 +236,24 @@ class RangeMap(Mapping):
 		obj._init_from_iterable(iterable)
 		return obj
 
-	def _init_from_iterable(self, iterable):
+	def _init_from_iterable(
+			self,
+			iterable: Iterable[Union[Tuple[K, K, V], MappedRange[K, V]]],
+			):
 		for start, stop, value in iterable:
-			self.set(value, start=start, stop=stop)
+			self._set(value, start=start, stop=stop)
 
-	def __str__(self):
+	def __str__(self) -> str:
 		range_format = '({range.start}, {range.stop}): {range.value}'
 		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
 		return 'RangeMap(%s)' % values
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		range_format = '({range.start!r}, {range.stop!r}, {range.value!r})'
 		values = ', '.join([range_format.format(range=r) for r in self.ranges()])
 		return 'RangeMap([%s])' % values
 
-	def ranges(self, start=None, stop=None):
+	def ranges(self, start: K = None, stop: K = None) -> Generator[MappedRange, None, None]:
 		"""Generate MappedRanges for all mapped ranges.
 
 		Yields:
@@ -238,7 +269,7 @@ class RangeMap(Mapping):
 		else:
 			stop_loc = bisect_left(self._keys, stop, lo=1)
 		start_val = self._values[start_loc - 1]
-		candidate_keys = [start] + self._keys[start_loc:stop_loc] + [stop]
+		candidate_keys: List[Optional[K]] = [start] + self._keys[start_loc:stop_loc] + [stop]
 		candidate_values = [start_val] + self._values[start_loc:stop_loc]
 		for i, value in enumerate(candidate_values):
 			if value is not NOT_SET:
@@ -268,14 +299,15 @@ class RangeMap(Mapping):
 
 	__nonzero__ = __bool__
 
-	def _getitem(self, key):
+	def _getitem(self, key: K) -> V:
 		"""Get the value for a key (not a slice)."""
 		if key is None:
 			loc = 0
 		else:
 			loc = bisect_right(self._keys, key, lo=1) - 1
 		value = self._values[loc]
-		if value is NOT_SET:
+		if isinstance(value, Sentinel):
+		# if value is NOT_SET:
 			raise KeyError(key)
 		else:
 			return value
@@ -287,16 +319,15 @@ class RangeMap(Mapping):
 		except KeyError:
 			return restval
 
-	def get_range(self, start=None, stop=None):
-		"""Return a RangeMap for the range start to stop.
-
-		Returns:
-			A RangeMap
-		"""
+	def get_range(self, start: K = None, stop: K = None) -> 'RangeMap[K, V]':
+		"""Return a RangeMap for the range start to stop."""
 		return self.from_iterable(self.ranges(start, stop))
 
-	def set(self, value, start=None, stop=None):
+	def set(self, value: V, start: K = None, stop: K = None):
 		"""Set the range from start to stop to value."""
+		self._set(value=value, start=start, stop=stop)
+
+	def _set(self, value: Union[V, Sentinel], start: K = None, stop: K = None):
 		_check_start_stop(start, stop)
 		# start_index, stop_index will denote the section we are replacing
 		if start is None:
@@ -309,7 +340,7 @@ class RangeMap(Mapping):
 				start_index -= 1
 				start = self._keys[start_index]
 		new_keys = [start]
-		new_values = [value]
+		new_values: List[Union[V, Sentinel]] = [value]
 		if stop is None:
 			stop_index = len(self._keys)
 		else:
@@ -321,7 +352,7 @@ class RangeMap(Mapping):
 		self._keys[start_index:stop_index] = new_keys
 		self._values[start_index:stop_index] = new_values
 
-	def delete(self, start=None, stop=None):
+	def delete(self, start: K = None, stop: K = None):
 		"""Delete the range from start to stop from self.
 
 		Raises:
@@ -340,14 +371,14 @@ class RangeMap(Mapping):
 			if value is NOT_SET:
 				raise KeyError((start, stop))
 		# this is inefficient, we've already found the sub ranges
-		self.set(NOT_SET, start=start, stop=stop)
+		self._set(NOT_SET, start=start, stop=stop)
 
-	def empty(self, start=None, stop=None):
+	def empty(self, start: K = None, stop: K = None):
 		"""Empty the range from start to stop.
 
 		Like delete, but no Error is raised if the entire range isn't mapped.
 		"""
-		self.set(NOT_SET, start=start, stop=stop)
+		self._set(NOT_SET, start=start, stop=stop)
 
 	def clear(self):
 		"""Remove all elements."""
@@ -355,7 +386,7 @@ class RangeMap(Mapping):
 		self._values = [NOT_SET]
 
 	@property
-	def start(self):
+	def start(self) -> Optional[K]:
 		"""Get the start key of the first range.
 
 		None if RangeMap is empty or unbounded to the left.
@@ -371,7 +402,7 @@ class RangeMap(Mapping):
 			return self._keys[0]
 
 	@property
-	def end(self):
+	def end(self) -> Optional[K]:
 		"""Get the stop key of the last range.
 
 		None if RangeMap is empty or unbounded to the right.
@@ -382,7 +413,7 @@ class RangeMap(Mapping):
 			# This is unbounded to the right
 			return None
 
-	def __eq__(self, other):
+	def __eq__(self, other) -> bool:
 		if isinstance(other, RangeMap):
 			return (
 				self._keys == other._keys
@@ -390,6 +421,12 @@ class RangeMap(Mapping):
 				)
 		else:
 			return False
+
+	@overload
+	def __getitem__(self, key: slice) -> 'RangeMap': ...
+
+	@overload
+	def __getitem__(self, key: K) -> V: ...
 
 	def __getitem__(self, key):
 		try:
@@ -399,29 +436,29 @@ class RangeMap(Mapping):
 		else:
 			return self.get_range(key.start, key.stop)
 
-	def __setitem__(self, key, value):
+	def __setitem__(self, key: slice, value: V):
 		_check_key_slice(key)
-		self.set(value, key.start, key.stop)
+		self._set(value, key.start, key.stop)
 
-	def __delitem__(self, key):
+	def __delitem__(self, key: slice):
 		_check_key_slice(key)
 		self.delete(key.start, key.stop)
 
-	def __len__(self):
+	def __len__(self) -> int:
 		count = 0
 		for v in self._values:
 			if v is not NOT_SET:
 				count += 1
 		return count
 
-	def keys(self):
+	def keys(self) -> RangeMapKeysView:
 		"""Return a view of the keys."""
 		return RangeMapKeysView(self)
 
-	def values(self):
+	def values(self) -> RangeMapValuesView:
 		"""Return a view of the values."""
 		return RangeMapValuesView(self)
 
-	def items(self):
+	def items(self) -> RangeMapItemsView:
 		"""Return a view of the item pairs."""
 		return RangeMapItemsView(self)

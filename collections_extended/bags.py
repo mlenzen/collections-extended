@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from collections.abc import Collection, Hashable, Set
 from operator import itemgetter
+from typing import Any, Callable, Iterable, Mapping, Tuple, TypeVar, Dict, Generic
 
 from ._util import deprecated
 
@@ -16,20 +17,22 @@ __all__ = (
 	'frozenbag',
 	)
 
+T = TypeVar('T', bound=Hashable)
 
-class BagView(Collection):
+
+class BagView(Collection, Generic[T]):
 	"""Base class for bag views."""
 
 	__metaclass__ = ABCMeta
 	__slots__ = ('bag', )
 
-	def __init__(self, bag):
+	def __init__(self, bag: 'Bag'):
 		self.bag = bag
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		return '{0.__class__.__name__}({0.bag!r})'.format(self)
 
-	def __len__(self):
+	def __len__(self) -> int:
 		return self.bag.num_unique_elements()
 
 	@abstractmethod
@@ -41,7 +44,7 @@ class BagView(Collection):
 		raise NotImplementedError
 
 
-class UniqueElementsView(BagView):
+class UniqueElementsView(BagView, Generic[T]):
 	"""A view for the unique items and their counts in a bag.
 
 	.. versionadded:: 1.0
@@ -55,7 +58,7 @@ class UniqueElementsView(BagView):
 		return elem in self.bag
 
 
-class CountsView(BagView):
+class CountsView(BagView, Generic[T]):
 	"""A view for the unique items and their counts in a bag.
 
 	.. versionadded:: 1.0
@@ -75,7 +78,7 @@ class CountsView(BagView):
 		return self.bag.count(elem) == count
 
 
-class Bag(Collection):
+class Bag(Collection, Generic[T]):
 	"""Base class for bag classes.
 
 	Base class for bag and frozenbag. Is not mutable and not hashable, so there's
@@ -84,16 +87,16 @@ class Bag(Collection):
 
 	# Basic object methods
 
-	def __init__(self, iterable=None):
+	def __init__(self, iterable: Iterable[T] = None):
 		"""Create a new bag.
 
-		If iterable isn't given, is None or is empty then the bag starts empty.
+		If `iterable` isn't given, is None or is empty then the bag starts empty.
 		Otherwise each element from iterable will be added to the bag
 		however many times it appears.
 
 		This runs in O(len(iterable))
 		"""
-		self._dict = dict()
+		self._dict: Dict[T, int] = dict()
 		self._size = 0
 		if iterable:
 			if isinstance(iterable, Bag):
@@ -103,7 +106,7 @@ class Bag(Collection):
 				for value in iterable:
 					self._increment_count(value)
 
-	def _set_count(self, elem, count):
+	def _set_count(self, elem: T, count: int):
 		if count < 0:
 			raise ValueError
 		self._size += count - self.count(elem)
@@ -112,19 +115,19 @@ class Bag(Collection):
 		else:
 			self._dict[elem] = count
 
-	def _increment_count(self, elem, count=1):
+	def _increment_count(self, elem: T, count: int = 1):
 		self._set_count(elem, self.count(elem) + count)
 
 	@classmethod
-	def _from_iterable(cls, it):
+	def _from_iterable(cls, it: Iterable[T]) -> 'Bag[T]':
 		return cls(it)
 
-	def copy(self):
+	def copy(self) -> 'Bag[T]':
 		"""Create a shallow copy of self.
 
 		This runs in O(len(self.num_unique_elements()))
 		"""
-		out = self._from_iterable(None)
+		out = self.__class__()
 		out._dict = self._dict.copy()
 		out._size = self._size
 		return out
@@ -155,18 +158,18 @@ class Bag(Collection):
 
 	# New public methods (not overriding/implementing anything)
 
-	def num_unique_elements(self):
+	def num_unique_elements(self) -> int:
 		"""Return the number of unique elements.
 
 		This runs in O(1) time
 		"""
 		return len(self._dict)
 
-	def unique_elements(self):
+	def unique_elements(self) -> UniqueElementsView[T]:
 		"""Return a view of unique elements in this bag."""
 		return UniqueElementsView(self)
 
-	def count(self, value):
+	def count(self, value: T) -> int:
 		"""Return the number of value present in this bag.
 
 		If value is not in the bag no Error is raised, instead 0 is returned.
@@ -176,7 +179,7 @@ class Bag(Collection):
 		Args:
 			value: The element of self to get the count of
 		Returns:
-			int: The count of value in self
+			The count of value in self
 		"""
 		return self._dict.get(value, 0)
 
@@ -185,7 +188,7 @@ class Bag(Collection):
 		"`sorted(self.counts(), reverse=True, key=itemgetter(1))` for `n=None`",
 		'1.0',
 		)
-	def nlargest(self, n=None):
+	def nlargest(self, n: int = None) -> Iterable[T]:
 		"""List the n most common elements and their counts.
 
 		List is from the most
@@ -193,14 +196,14 @@ class Bag(Collection):
 
 		Run time should be O(m log m) where m is len(self)
 		Args:
-			n (int): The number of elements to return
+			n: The number of elements to return
 		"""
 		if n is None:
 			return sorted(self.counts(), key=itemgetter(1), reverse=True)
 		else:
 			return heapq.nlargest(n, self.counts(), key=itemgetter(1))
 
-	def counts(self):
+	def counts(self) -> CountsView[T]:
 		"""Return a view of the unique elements in self and their counts.
 
 		.. versionadded:: 1.0.3
@@ -208,7 +211,7 @@ class Bag(Collection):
 		return CountsView(self)
 
 	@classmethod
-	def from_mapping(cls, mapping):
+	def from_mapping(cls, mapping: Mapping[T, int]) -> 'Bag[T]':
 		"""Create a bag from a dict of elem->count.
 
 		Each key in the dict is added if the value is > 0.
@@ -252,7 +255,7 @@ class Bag(Collection):
 
 	# Comparison methods
 
-	def issubset(self, other):
+	def issubset(self, other: Iterable[T]) -> bool:
 		"""Check that every element in self has a count <= in other.
 
 		Args:
@@ -265,7 +268,7 @@ class Bag(Collection):
 				return False
 		return True
 
-	def issuperset(self, other):
+	def issuperset(self, other: Iterable[T]) -> bool:
 		"""Check that every element in self has a count >= in other.
 
 		Args:
@@ -278,37 +281,37 @@ class Bag(Collection):
 				return False
 		return True
 
-	def __le__(self, other):
+	def __le__(self, other: 'Bag'):
 		if not isinstance(other, Bag):
 			return NotImplemented
 		return len(self) <= len(other) and self.issubset(other)
 
-	def __lt__(self, other):
+	def __lt__(self, other: 'Bag'):
 		if not isinstance(other, Bag):
 			return NotImplemented
 		return len(self) < len(other) and self.issubset(other)
 
-	def __gt__(self, other):
+	def __gt__(self, other: 'Bag'):
 		if not isinstance(other, Bag):
 			return NotImplemented
 		return len(self) > len(other) and self.issuperset(other)
 
-	def __ge__(self, other):
+	def __ge__(self, other: 'Bag'):
 		if not isinstance(other, Bag):
 			return NotImplemented
 		return len(self) >= len(other) and self.issuperset(other)
 
-	def __eq__(self, other):
+	def __eq__(self, other: Any):
 		if not isinstance(other, Bag):
 			return False
 		return self._dict == other._dict
 
-	def __ne__(self, other):
+	def __ne__(self, other: Any):
 		return not (self == other)
 
 	# Operations - &, |, +, -, ^, * and isdisjoint
 
-	def _iadd(self, other):
+	def _iadd(self, other: Iterable[T]) -> 'Bag':
 		"""Add all of the elements of other to self.
 
 		if isinstance(it, Bag):
@@ -324,7 +327,7 @@ class Bag(Collection):
 				self._increment_count(elem, 1)
 		return self
 
-	def _iand(self, other):
+	def _iand(self, other: Iterable[T]) -> 'Bag':
 		"""Set multiplicity of each element to the minimum of the two collections.
 
 		if isinstance(other, Bag):
@@ -341,7 +344,7 @@ class Bag(Collection):
 			self._set_count(elem, new_count)
 		return self
 
-	def _ior(self, other):
+	def _ior(self, other: Iterable[T]) -> 'Bag':
 		"""Set multiplicity of each element to the maximum of the two collections.
 
 		if isinstance(other, Bag):
@@ -358,7 +361,7 @@ class Bag(Collection):
 			self._set_count(elem, new_count)
 		return self
 
-	def _ixor(self, other):
+	def _ixor(self, other: Iterable[T]) -> 'Bag':
 		"""Set self to the symmetric difference between the sets.
 
 		if isinstance(other, Bag):
@@ -382,7 +385,7 @@ class Bag(Collection):
 					self._increment_count(elem, 1)
 		return self
 
-	def _isub(self, other):
+	def _isub(self, other: Iterable[T]) -> 'Bag':
 		"""Discard the elements of other from self.
 
 		if isinstance(it, Bag):
@@ -404,7 +407,7 @@ class Bag(Collection):
 					pass
 		return self
 
-	def __and__(self, other):
+	def __and__(self, other: Iterable[T]) -> 'Bag':
 		"""Intersection is the minimum of corresponding counts.
 
 		This runs in O(l + n) where:
@@ -414,17 +417,19 @@ class Bag(Collection):
 		"""
 		return self.copy()._iand(other)
 
-	def isdisjoint(self, other):
+	def isdisjoint(self, other: Iterable[T]) -> bool:
 		"""Return if this bag is disjoint with the passed collection.
 
 		This runs in O(len(other))
 		"""
+		if isinstance(other, Bag):
+			other = other.unique_elements()
 		for value in other:
 			if value in self:
 				return False
 		return True
 
-	def __or__(self, other):
+	def __or__(self, other: Iterable[T]) -> 'Bag':
 		"""Union is the maximum of all elements.
 
 		This runs in O(m + n) where:
@@ -433,7 +438,7 @@ class Bag(Collection):
 		"""
 		return self.copy()._ior(other)
 
-	def __add__(self, other):
+	def __add__(self, other: Iterable[T]) -> 'Bag':
 		"""Return a new bag also containing all the elements of other.
 
 		self + other = self & other + self | other
@@ -448,7 +453,7 @@ class Bag(Collection):
 		"""
 		return self.copy()._iadd(other)
 
-	def __sub__(self, other):
+	def __sub__(self, other: Iterable[T]) -> 'Bag':
 		"""Difference between the sets.
 
 		For normal sets this is all x s.t. x in self and x not in other.
@@ -464,11 +469,15 @@ class Bag(Collection):
 		"""
 		return self.copy()._isub(other)
 
-	def __mul__(self, other):
+	def __mul__(self, other: Iterable[T]) -> 'Bag':
 		"""Cartesian product with other."""
 		return self.product(other)
 
-	def product(self, other, operator=None):
+	def product(
+			self,
+			other: Iterable[T],
+			operator: Callable = None,
+			) -> 'Bag':
 		"""Cartesian product of the two sets.
 
 		Optionally, pass an operator to combine elements instead of creating a
@@ -487,7 +496,7 @@ class Bag(Collection):
 		"""
 		if not isinstance(other, Bag):
 			other = self._from_iterable(other)
-		values = defaultdict(int)
+		values: Dict[T, int] = defaultdict(int)
 		for elem, count in self.counts():
 			for other_elem, other_count in other.counts():
 				if operator:
@@ -498,7 +507,7 @@ class Bag(Collection):
 				values[new_elem] += new_count
 		return self.from_mapping(values)
 
-	def __xor__(self, other):
+	def __xor__(self, other: Iterable[T]) -> 'Bag':
 		"""Symmetric difference between the sets.
 
 		other can be any iterable.
@@ -516,7 +525,7 @@ class bag(Bag):
 	.. automethod:: __init__
 	"""
 
-	def pop(self):
+	def pop(self) -> T:
 		"""Remove and return an element of self."""
 		# TODO can this be done more efficiently (no need to create an iterator)?
 		it = iter(self)
@@ -527,18 +536,18 @@ class bag(Bag):
 		self.remove(value)
 		return value
 
-	def add(self, elem):
+	def add(self, elem: T):
 		"""Add elem to self."""
 		self._increment_count(elem)
 
-	def discard(self, elem):
+	def discard(self, elem: T):
 		"""Remove elem from this bag, silent if it isn't present."""
 		try:
 			self.remove(elem)
 		except ValueError:
 			pass
 
-	def remove(self, elem):
+	def remove(self, elem: T):
 		"""Remove elem from this bag, raising a ValueError if it isn't present.
 
 		Args:
@@ -548,11 +557,11 @@ class bag(Bag):
 		"""
 		self._increment_count(elem, -1)
 
-	def discard_all(self, other):
+	def discard_all(self, other: Iterable[T]):
 		"""Discard all of the elems from other."""
 		self._isub(other)
 
-	def remove_all(self, other):
+	def remove_all(self, other: Iterable[T]):
 		"""Remove all of the elems from other.
 
 		Raises a ValueError if the multiplicity of any elem in other is greater

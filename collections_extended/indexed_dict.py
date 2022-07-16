@@ -3,9 +3,10 @@
 .. versionadded:: 1.0.3
 """
 from collections.abc import MutableMapping
+from typing import Any, Dict, Generic, Hashable, Iterable, List, Mapping, Tuple, TypeVar, Union, Optional
 
 from ._util import deprecation_warning
-from .sentinel import NOT_SET
+from .sentinel import NOT_SET, Sentinel
 
 __all__ = ('IndexedDict', )
 
@@ -15,17 +16,27 @@ KEY_AND_INDEX_ERROR = TypeError(
 KEY_EQ_INDEX_ERROR = TypeError(
 	"Exactly one of `key` and `index` must be specified")
 
+K = TypeVar('K', bound=Hashable)
+V = TypeVar('V')
 
-class IndexedDict(MutableMapping):
+
+class IndexedDict(Generic[K, V], MutableMapping):
 	"""A Mapping that preserves insertion order and allows access by item index.
 
 	The API is an extension of OrderedDict.
 	"""
 
-	def __init__(self, iterable=None, **kwargs):
+	def __init__(
+			self,
+			iterable: Union[
+				Mapping[K, V],
+				Iterable[Tuple[K, V]],
+				] = None,
+			**kwargs: V,
+			):
 		"""Create an IndexedDict and initialize it like a dict."""
-		self._dict = {}  # key -> (index, value)
-		self._list = []  # index -> (key, value)
+		self._dict: Dict[K, Tuple[int, V]] = {}  # key -> (index, value)
+		self._list: List[Tuple[K, V]] = []  # index -> (key, value)
 		self.update(iterable or [], **kwargs)
 
 	def clear(self):
@@ -33,7 +44,13 @@ class IndexedDict(MutableMapping):
 		self._dict = {}
 		self._list = []
 
-	def get(self, key=NOT_SET, index=NOT_SET, default=NOT_SET, d=NOT_SET):
+	def get(
+			self,
+			key: K = NOT_SET,
+			index: int = NOT_SET,
+			default: V = NOT_SET,
+			d: V = NOT_SET,
+			) -> V:
 		"""Return value with given `key` or `index`.
 
 		If no value is found, return `default` (`None` by default).
@@ -78,7 +95,13 @@ class IndexedDict(MutableMapping):
 		else:
 			raise KEY_EQ_INDEX_ERROR
 
-	def pop(self, key=NOT_SET, index=NOT_SET, default=NOT_SET, d=NOT_SET):
+	def pop(
+			self,
+			key: K = NOT_SET,
+			index: int = NOT_SET,
+			default: V = NOT_SET,
+			d: V = NOT_SET,
+			) -> V:
 		"""Remove and return value.
 
 		Optionally, specify the `key` or `index` of the value to pop.
@@ -126,7 +149,11 @@ class IndexedDict(MutableMapping):
 			self._fix_indices_after_delete(index)
 			return value
 
-	def _pop_key(self, key, has_default):
+	def _pop_key(
+			self,
+			key: K,
+			has_default: bool,
+			) -> Union[Tuple[int, V], Tuple[None, None]]:
 		"""Remove an element by key."""
 		try:
 			index, value = self._dict.pop(key)
@@ -141,7 +168,11 @@ class IndexedDict(MutableMapping):
 
 		return index, value
 
-	def _pop_index(self, index, has_default):
+	def _pop_index(
+			self,
+			index: int,
+			has_default: bool,
+			) -> Union[Tuple[None, None, None], Tuple[K, int, V]]:
 		"""Remove an element by index, or last element."""
 		try:
 			if index is NOT_SET:
@@ -162,7 +193,11 @@ class IndexedDict(MutableMapping):
 
 		return key, index, value
 
-	def fast_pop(self, key=NOT_SET, index=NOT_SET):
+	def fast_pop(
+			self,
+			key: K = NOT_SET,
+			index: int = NOT_SET,
+			) -> Tuple[V, int, K, V]:
 		"""Pop a specific item quickly by swapping it to the end.
 
 		Remove value with given key or index (last item by default) fast
@@ -170,7 +205,7 @@ class IndexedDict(MutableMapping):
 
 		Changes order of the remaining items (item that used to be last goes to
 		the popped location).
-		Returns tuple of (poped_value, new_moved_index, moved_key, moved_value).
+		Returns tuple of (popped_value, new_moved_index, moved_key, moved_value).
 		If key is not found raises KeyError or IndexError.
 
 		Runs in O(1).
@@ -204,7 +239,13 @@ class IndexedDict(MutableMapping):
 			self._dict[moved_key] = (index, moved_value)
 			return popped_value, index, moved_key, moved_value
 
-	def popitem(self, last=NOT_SET, *, key=NOT_SET, index=NOT_SET):
+	def popitem(
+			self,
+			last: bool = NOT_SET,
+			*,
+			key: Union[K, Sentinel] = NOT_SET,
+			index: Union[int, None, Sentinel] = NOT_SET,
+			) -> Tuple[K, V]:
 		"""Remove and return a (key, value) tuple.
 
 		By default, the last item is popped.
@@ -247,7 +288,12 @@ class IndexedDict(MutableMapping):
 		self._fix_indices_after_delete(starting_index=index)
 		return key, value
 
-	def move_to_end(self, key=NOT_SET, index=NOT_SET, last=True):
+	def move_to_end(
+			self,
+			key: K = NOT_SET,
+			index: int = NOT_SET,
+			last: bool = True,
+			):
 		"""Move an existing element to the end (or beginning if last==False).
 
 		Runs in O(N).
@@ -275,21 +321,21 @@ class IndexedDict(MutableMapping):
 			self._dict[previous[0]] = i, previous[1]
 			previous, self._list[i] = self._list[i], previous
 
-	def copy(self):
+	def copy(self) -> 'IndexedDict[K, V]':
 		"""Return a shallow copy."""
-		ret = IndexedDict()
+		ret: IndexedDict[K, V] = IndexedDict()
 		ret._dict = self._dict.copy()
 		ret._list = list(self._list)
 		return ret
 
-	def index(self, key):
+	def index(self, key: K) -> int:
 		"""Return index of a record with given key.
 
 		Runs in O(1).
 		"""
 		return self._dict[key][0]
 
-	def key(self, index):
+	def key(self, index: int) -> K:
 		"""Return key of a record at given index.
 
 		Runs in O(1).

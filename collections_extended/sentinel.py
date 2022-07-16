@@ -2,6 +2,8 @@
 
 __all__ = ('Sentinel', 'NOT_SET')
 
+from typing import Any, Dict, Tuple
+
 
 class Sentinel:
 	"""A class to create sentinel objects.
@@ -11,12 +13,12 @@ class Sentinel:
 	Inspired by https://pypi.org/project/sentinels/
 	"""
 
-	_registry = {}
+	_registry: Dict[str, 'Sentinel'] = {}
 
-	def __getnewargs__(self):
+	def __getnewargs__(self) -> Tuple[str]:
 		return self._name,
 
-	def __new__(cls, _name):
+	def __new__(cls, _name: str):
 		"""Find the Sentinel object with name or create a new one."""
 		try:
 			return cls._registry[_name]
@@ -25,7 +27,7 @@ class Sentinel:
 			cls._registry[_name] = new
 			return new
 
-	def __init__(self, name):
+	def __init__(self, name: str):
 		super(Sentinel, self).__init__()
 		self._name = name
 
@@ -35,7 +37,7 @@ class Sentinel:
 	def __bool__(self):
 		return False
 
-	def __eq__(self, other):
+	def __eq__(self, other: Any):
 		if other.__class__ == self.__class__:
 			return self._name == other._name
 		return False

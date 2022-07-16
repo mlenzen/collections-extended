@@ -95,9 +95,32 @@ jobs:
       run: make deps
 
     - name: Lint with flake8
-      run: make lint
+      run: poetry run flake8 --statistics --count
+
+  fixme-check:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
     - name: Check for unfinished code
       run: make fixme-check
+
+  mypy:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install poetry
+      run: pip install poetry
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Run mypy
+      run: poetry run mypy collections_extended
 
   tests:
 
