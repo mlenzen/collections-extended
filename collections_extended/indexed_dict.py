@@ -136,8 +136,8 @@ class IndexedDict(MutableMapping):
 			else:
 				raise
 		key2, value2 = self._list.pop(index)
-		assert key is key2
-		assert value is value2
+		assert key == key2, f"{key!r} != {key2!r}"
+		assert value is value2, f"{value} is not {value2}"
 
 		return index, value
 
