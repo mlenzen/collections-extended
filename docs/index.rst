@@ -10,7 +10,7 @@
 
 There are also frozen (hashable) varieties of bags and setlists.
 
-It is `tested against`_ CPython 3.6, 3.7, 3.8, 3.9, 3.10, PyPy3.6, PyPy3.7, & PyPy3.8.
+It is `tested against`_ CPython 3.7, 3.8, 3.9, 3.10, 3.11, PyPy3.6, PyPy3.7, & PyPy3.8.
 The current version no longer supports Python 2, install a
 1.x version for a Python 2.7 compatible version. New features will
 not be developed but serious bugs may be fixed.

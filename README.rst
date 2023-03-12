@@ -30,7 +30,7 @@ a ``RangeMap`` which is a mapping from ranges to values, and
 an ``IndexedDict`` class.
 There are also frozen (hashable) varieties of bags and setlists.
 
-Compatible with and tested against CPython 3.6, 3.7, 3.8, 3.9, 3.10, PyPy3.6, PyPy3.7 & PyPy3.8.
+Compatible with and tested against CPython 3.7, 3.8, 3.9, 3.10, 3.11, PyPy3.6, PyPy3.7 & PyPy3.8.
 
 Getting Started
 ===============
