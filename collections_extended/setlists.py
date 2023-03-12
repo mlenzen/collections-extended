@@ -564,14 +564,13 @@ class setlist(SetList, MutableSequence, MutableSet):
 		return self
 
 	# New methods
-	def shuffle(self, random=None):
+	def shuffle(self, *args, **kwargs):
 		"""Shuffle all of the elements in self in place.
 
 		Args:
-			random: A function returning a random float in [0.0, 1.0). If none
-				is passed, the default from `random.shuffle` will be used.
+			An arguments accepted by ``random.shuffle``
 		"""
-		random_.shuffle(self._list, random=random)
+		random_.shuffle(self._list, *args, **kwargs)
 		for i, elem in enumerate(self._list):
 			self._dict[elem] = i
 
